@@ -1,7 +1,7 @@
 FROM dart:stable AS build
 WORKDIR /app
-COPY . .
-RUN ls -la && cat pubspec.yaml && dart --version && dart pub get && dart compile exe bin/server.dart -o bin/server
+COPY server/ .
+RUN dart --version && dart pub get && dart compile exe bin/server.dart -o bin/server
 
 FROM scratch
 COPY --from=build /runtime/ /
