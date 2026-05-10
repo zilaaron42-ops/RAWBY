@@ -2,6 +2,7 @@ services:
   - type: web
     name: rawby-server
     runtime: docker
+    rootDir: server
     dockerfilePath: ./Dockerfile
     plan: free
     envVars:
