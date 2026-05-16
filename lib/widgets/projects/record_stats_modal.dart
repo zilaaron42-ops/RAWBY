@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/project_model.dart';
 import '../../providers/user_session_provider.dart';
+import '../../services/api_service.dart';
 import '../../services/scoring_service.dart';
 import '../../theme/app_colors.dart';
 
@@ -27,6 +28,8 @@ class _RecordStatsModalState extends ConsumerState<RecordStatsModal> {
   final _viewsController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _saving = false;
+  bool _fetching = false;
+  String? _fetchStatus;
 
   @override
   void initState() {
@@ -39,6 +42,49 @@ class _RecordStatsModalState extends ConsumerState<RecordStatsModal> {
       _viewsController.text = widget.pendingStats!.views > 0
           ? '${widget.pendingStats!.views}'
           : '';
+    }
+  }
+
+  String? get _reelUrl {
+    if (widget.pendingStats != null) {
+      return widget.pendingStats!.instagramUrl.isNotEmpty
+          ? widget.pendingStats!.instagramUrl
+          : null;
+    }
+    final session = ref.read(userSessionProvider);
+    return session.instagramUrl.isNotEmpty ? session.instagramUrl : null;
+  }
+
+  Future<void> _autoFetch() async {
+    final url = _reelUrl;
+    if (url == null) return;
+    setState(() {
+      _fetching = true;
+      _fetchStatus = null;
+    });
+    try {
+      final api = ref.read(apiServiceProvider);
+      final result = await api.fetchReelLikes(url);
+      final likes = result['likes'] as int? ?? 0;
+      final views = result['views'] as int? ?? 0;
+      if (likes > 0 || views > 0) {
+        setState(() {
+          _likesController.text = '$likes';
+          _viewsController.text = views > 0 ? '$views' : '';
+          _fetchStatus = 'Fetched: $likes likes${views > 0 ? ', $views views' : ''}';
+          _fetching = false;
+        });
+      } else {
+        setState(() {
+          _fetchStatus = result['message'] as String? ?? 'Could not auto-fetch — enter manually.';
+          _fetching = false;
+        });
+      }
+    } catch (_) {
+      setState(() {
+        _fetchStatus = 'Auto-fetch failed — enter stats manually.';
+        _fetching = false;
+      });
     }
   }
 
@@ -252,6 +298,73 @@ class _RecordStatsModalState extends ConsumerState<RecordStatsModal> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Auto-fetch banner
+                if (_reelUrl != null) ...[
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _fetchStatus != null
+                        ? Container(
+                            key: const ValueKey('status'),
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: _fetchStatus!.startsWith('Fetched')
+                                  ? RawbyPalette.success.withOpacity(0.08)
+                                  : theme.colorScheme.errorContainer.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: _fetchStatus!.startsWith('Fetched')
+                                    ? RawbyPalette.success.withOpacity(0.3)
+                                    : theme.colorScheme.error.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _fetchStatus!.startsWith('Fetched')
+                                      ? Icons.check_circle_outline
+                                      : Icons.info_outline,
+                                  size: 15,
+                                  color: _fetchStatus!.startsWith('Fetched')
+                                      ? RawbyPalette.success
+                                      : theme.colorScheme.error,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _fetchStatus!,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: _fetchStatus!.startsWith('Fetched')
+                                          ? RawbyPalette.success
+                                          : theme.colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox(
+                            key: const ValueKey('fetch-btn'),
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _fetching ? null : _autoFetch,
+                              icon: _fetching
+                                  ? const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : const Icon(Icons.download_outlined, size: 16),
+                              label: Text(
+                                _fetching ? 'Fetching from Instagram...' : 'Auto-fetch from Instagram',
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 14),
+                ],
 
                 // Likes input
                 Text('Instagram Likes', style: theme.textTheme.titleSmall),

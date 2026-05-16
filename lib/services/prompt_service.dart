@@ -62,7 +62,7 @@ class PromptService {
         return SongSuggestion(
           title: sm['title'] as String? ?? '',
           artist: sm['artist'] as String? ?? '',
-          type: sm['type'] as String? ?? 'match',
+          type: sm['type'] as String? ?? 'best_match',
           whyItWorks: sm['whyItWorks'] as String? ?? sm['why'] as String? ?? '',
         );
       }).toList();
@@ -76,7 +76,7 @@ class PromptService {
       final keywords = rawKw.map((k) => k as String).toList();
 
       return PromptModel(
-        id: 'ai_${points[i]}_${DateTime.now().millisecondsSinceEpoch}_$i',
+        id: 'aip_${DateTime.now().millisecondsSinceEpoch}_$i',
         level: levels[i],
         points: points[i],
         category: item['category'] as String? ?? '',
@@ -105,7 +105,7 @@ class PromptService {
     PromptModel build(String level, int points, int idx) {
       final templates = PromptTemplates.byLevel(level);
       final seed = DateTime.now().millisecondsSinceEpoch;
-      final tpl = templates[seed % templates.length];
+      final tpl = templates[(seed + idx * 37) % templates.length];
       final creator = insp[idx];
       return PromptModel(
         id: 'local_${points}_${seed}_$idx',

@@ -11,9 +11,13 @@ import "../screens/prompts_screen.dart";
 import "../screens/leaderboard_screen.dart";
 import "../screens/gear_screen.dart";
 import "../screens/profile_screen.dart";
+import "../screens/skill_screen.dart";
 import "../screens/admin_screen.dart";
 import "../screens/idea_bank_screen.dart";
 import "../screens/feedback_wall_screen.dart"; // New import
+import "../screens/settings_screen.dart";
+import "../screens/ai_assistant_screen.dart";
+import "../screens/paywall_screen.dart";
 import "../widgets/navigation/shell_scaffold.dart";
 import "user_session_provider.dart";
 
@@ -28,18 +32,29 @@ class Routes {
   static const leaderboard = "/leaderboard";
   static const gear = "/gear";
   static const profile = "/profile";
+  static const skill = "/skill";
   static const admin = "/admin";
-  static const feedbackWall = "/admin/feedback"; // New route
+  static const feedbackWall = "/admin/feedback";
+  static const settings = "/settings";
+  static const aiAssistant = "/ai-assistant";
+  static const paywall = "/paywall";
 }
 
+// Derived provider that only exposes the auth status (userId).
+// The router watches ONLY this, so preference changes don't rebuild it.
+final _isLoggedInProvider = Provider<bool>((ref) {
+  return ref.watch(
+    userSessionProvider.select((s) => s.userId.isNotEmpty),
+  );
+});
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final session = ref.watch(userSessionProvider);
-  final isLoggedIn = session.userId.isNotEmpty;
+  final isLoggedIn = ref.watch(_isLoggedInProvider);
 
   return GoRouter(
     initialLocation: isLoggedIn ? Routes.home : Routes.login,
     redirect: (context, state) {
-      final loggedIn = session.userId.isNotEmpty;
+      final loggedIn = ref.read(_isLoggedInProvider);
       final onLogin = state.matchedLocation == Routes.login;
       final onRegister = state.matchedLocation == Routes.register;
 
@@ -68,6 +83,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
+      // Settings — standalone
+      GoRoute(
+        path: Routes.settings,
+        name: "settings",
+        pageBuilder: (context, state) => _fadeTransition(
+          state,
+          const SettingsScreen(),
+        ),
+      ),
+
       // Idea Bank — standalone (has its own AppBar, no shell nav)
       GoRoute(
         path: Routes.ideaBank,
@@ -85,6 +110,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => _fadeTransition(
           state,
           const FeedbackWallScreen(),
+        ),
+      ),
+
+      // AI Assistant — standalone
+      GoRoute(
+        path: Routes.aiAssistant,
+        name: "aiAssistant",
+        pageBuilder: (context, state) => _fadeTransition(
+          state,
+          const AiAssistantScreen(),
+        ),
+      ),
+
+      // Paywall — standalone
+      GoRoute(
+        path: Routes.paywall,
+        name: "paywall",
+        pageBuilder: (context, state) => _fadeTransition(
+          state,
+          const PaywallScreen(),
         ),
       ),
 
@@ -132,6 +177,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => _fadeTransition(
               state,
               const ProfileScreen(),
+            ),
+          ),
+          GoRoute(
+            path: Routes.skill,
+            name: "skill",
+            pageBuilder: (context, state) => _fadeTransition(
+              state,
+              const SkillScreen(),
             ),
           ),
           GoRoute(

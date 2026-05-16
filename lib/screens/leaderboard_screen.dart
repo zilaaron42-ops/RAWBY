@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_service.dart';
 import '../constants/ranks.dart';
+import '../widgets/leaderboard/achievements_section.dart';
 
 class LeaderboardScreen extends ConsumerStatefulWidget {
   const LeaderboardScreen({super.key});
@@ -49,7 +50,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         onRefresh: _load,
         color: theme.colorScheme.primary,
         child: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? _LoadingShimmer(theme: theme)
             : _error != null
                 ? Center(
                     child: Column(
@@ -147,6 +148,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                             },
                             childCount: _entries.length >= 3 ? _entries.length - 3 : _entries.length,
                           ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                          child: const AchievementsSection(),
                         ),
                       ),
                     ],
@@ -298,6 +305,69 @@ class _PodiumTile extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ── Loading Shimmer ──────────────────────────────────────────
+
+class _LoadingShimmer extends StatefulWidget {
+  final ThemeData theme;
+  const _LoadingShimmer({required this.theme});
+
+  @override
+  State<_LoadingShimmer> createState() => _LoadingShimmerState();
+}
+
+class _LoadingShimmerState extends State<_LoadingShimmer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
+      ..repeat(reverse: true);
+    _animation = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (ctx, _) {
+        final shimmerColor = widget.theme.colorScheme.surfaceContainerHighest
+            .withValues(alpha: 0.5 + _animation.value * 0.5);
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          children: [
+            // Podium placeholder
+            Container(
+              height: 160,
+              decoration: BoxDecoration(
+                color: shimmerColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...List.generate(8, (i) => Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              height: 64,
+              decoration: BoxDecoration(
+                color: shimmerColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            )),
+          ],
+        );
+      },
     );
   }
 }

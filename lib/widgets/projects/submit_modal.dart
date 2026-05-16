@@ -33,8 +33,11 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
     final url = _urlController.text.trim();
     ref.read(userSessionProvider.notifier).submitProject(instagramUrl: url);
 
-    if (mounted) Navigator.of(context).pop(true);
+    if (mounted) {
+      Navigator.of(context).pop('submitted');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -336,7 +339,7 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
                             ref
                                 .read(userSessionProvider.notifier)
                                 .submitProject(instagramUrl: '');
-                            Navigator.of(context).pop(true);
+                            Navigator.of(context).pop('submitted');
                           },
                     child: Text(
                       'Submit without URL (add later)',

@@ -3,7 +3,6 @@
 // ============================================================
 import 'package:hive/hive.dart';
 
-
 @HiveType(typeId: 8)
 class GearItem extends HiveObject {
   @HiveField(0)
@@ -16,71 +15,99 @@ class GearItem extends HiveObject {
   String category; // 'filming', 'editing', 'digital'
 
   @HiveField(3)
-  String usageState; // 'active', 'rested', 'retired'
+  String brand;
 
   @HiveField(4)
-  bool isNewPurchase;
+  String ownership; // 'new_purchase', 'already_owned', 'shared_access'
 
   @HiveField(5)
-  int pointCost; // deducted from totalScore if isNewPurchase
+  int costHuf;
 
   @HiveField(6)
-  DateTime addedAt;
+  int pointsCost; // deducted from totalScore if new_purchase
 
   @HiveField(7)
-  DateTime? lastUsedAt;
+  String owner; // who you borrowed from (shared_access only)
 
   @HiveField(8)
-  List<String> usedInProjectIds;
+  String notes;
 
   @HiveField(9)
-  String notes;
+  DateTime createdAt;
+
+  @HiveField(10)
+  String usageState; // 'active', 'rested', 'retired'
+
+  @HiveField(11)
+  int outsideUses;
+
+  @HiveField(12)
+  DateTime? lastOutsideUseAt;
+
+  @HiveField(13)
+  List<String> usedInProjectIds;
 
   GearItem({
     required this.id,
     required this.name,
     required this.category,
+    required this.brand,
+    required this.ownership,
+    required this.costHuf,
+    required this.pointsCost,
+    required this.owner,
+    required this.notes,
+    required this.createdAt,
     this.usageState = 'active',
-    this.isNewPurchase = false,
-    this.pointCost = 0,
-    required this.addedAt,
-    this.lastUsedAt,
+    this.outsideUses = 0,
+    this.lastOutsideUseAt,
     this.usedInProjectIds = const [],
-    this.notes = '',
   });
 
   /// Returns true if gear has been used but idle for 30+ days
   bool get shouldSuggestRest {
     if (usageState == 'rested' || usageState == 'retired') return false;
-    if (usedInProjectIds.isEmpty) return false;
-    if (lastUsedAt == null) return false;
-    final daysSinceUse = DateTime.now().difference(lastUsedAt!).inDays;
+    if (usedInProjectIds.isEmpty && outsideUses == 0) return false;
+    final lastUse = lastOutsideUseAt ??
+      (usedInProjectIds.isEmpty ? null : DateTime.now());
+    if (lastUse == null) return false;
+    final daysSinceUse = DateTime.now().difference(lastUse).inDays;
     return daysSinceUse >= 30;
   }
+
+  int get pointCost => pointsCost;
 
   GearItem copyWith({
     String? id,
     String? name,
     String? category,
-    String? usageState,
-    bool? isNewPurchase,
-    int? pointCost,
-    DateTime? addedAt,
-    DateTime? lastUsedAt,
-    List<String>? usedInProjectIds,
+    String? brand,
+    String? ownership,
+    int? costHuf,
+    int? pointsCost,
+    String? owner,
     String? notes,
+    DateTime? createdAt,
+    String? usageState,
+    int? outsideUses,
+    DateTime? lastOutsideUseAt,
+    List<String>? usedInProjectIds,
   }) {
     return GearItem(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
-      usageState: usageState ?? this.usageState,
-      isNewPurchase: isNewPurchase ?? this.isNewPurchase,
-      pointCost: pointCost ?? this.pointCost,
-      addedAt: addedAt ?? this.addedAt,
-      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
-      usedInProjectIds: usedInProjectIds ?? this.usedInProjectIds,
+      brand: brand ?? this.brand,
+      ownership: ownership ?? this.ownership,
+      costHuf: costHuf ?? this.costHuf,
+      pointsCost: pointsCost ?? this.pointsCost,
+      owner: owner ?? this.owner,
       notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      usageState: usageState ?? this.usageState,
+      outsideUses: outsideUses ?? this.outsideUses,
+      lastOutsideUseAt: lastOutsideUseAt ?? this.lastOutsideUseAt,
+      usedInProjectIds: usedInProjectIds ?? this.usedInProjectIds,
     );
   }
 
@@ -88,33 +115,41 @@ class GearItem extends HiveObject {
         id: json['id'] as String? ?? '',
         name: json['name'] as String? ?? json['label'] as String? ?? '',
         category: json['category'] as String? ?? 'filming',
-        usageState: json['usageState'] as String? ?? 'active',
-        isNewPurchase: json['isNewPurchase'] as bool? ?? false,
-        pointCost: (json['pointCost'] as num?)?.toInt() ?? 0,
-        addedAt: json['addedAt'] != null
-            ? DateTime.parse(json['addedAt'] as String)
+        brand: json['brand'] as String? ?? '',
+        ownership: json['ownership'] as String? ?? 'already_owned',
+        costHuf: (json['costHuf'] as num?)?.toInt() ?? 0,
+        pointsCost: (json['pointsCost'] as num?)?.toInt() ?? 0,
+        owner: json['owner'] as String? ?? '',
+        notes: json['notes'] as String? ?? '',
+        createdAt: json['createdAt'] != null
+            ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
-        lastUsedAt: json['lastUsedAt'] != null
-            ? DateTime.tryParse(json['lastUsedAt'] as String)
+        usageState: json['usageState'] as String? ?? 'active',
+        outsideUses: (json['outsideUses'] as num?)?.toInt() ?? 0,
+        lastOutsideUseAt: json['lastOutsideUseAt'] != null
+            ? DateTime.tryParse(json['lastOutsideUseAt'] as String)
             : null,
         usedInProjectIds: (json['usedInProjectIds'] as List<dynamic>?)
                 ?.map((e) => e as String)
                 .toList() ??
             [],
-        notes: json['notes'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'category': category,
-        'usageState': usageState,
-        'isNewPurchase': isNewPurchase,
-        'pointCost': pointCost,
-        'addedAt': addedAt.toIso8601String(),
-        'lastUsedAt': lastUsedAt?.toIso8601String(),
-        'usedInProjectIds': usedInProjectIds,
+        'brand': brand,
+        'ownership': ownership,
+        'costHuf': costHuf,
+        'pointsCost': pointsCost,
+        'owner': owner,
         'notes': notes,
+        'createdAt': createdAt.toIso8601String(),
+        'usageState': usageState,
+        'outsideUses': outsideUses,
+        'lastOutsideUseAt': lastOutsideUseAt?.toIso8601String(),
+        'usedInProjectIds': usedInProjectIds,
       };
 }
 

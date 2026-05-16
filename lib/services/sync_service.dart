@@ -51,8 +51,21 @@ class SyncService {
               'label': g.name,
               'category': g.category,
             }).toList(),
-        // The pushSnapshot field is not needed if syncScores handles all necessary data.
-        // If the backend expects a full snapshot for a different endpoint, use _api.pushSnapshot(session.toJson());
+        'pushSnapshot': {
+          'weekStart': session.weekStart,
+          'deadline': session.deadline,
+          'submittedAt': session.submittedAt,
+          'selectedPromptId': session.selectedPromptId,
+          'workflow': session.workflow.map((t) => {'id': t.id, 'done': t.done}).toList(),
+          'pendingStats': session.pendingStats.map((p) => {'id': p.id, 'dueOn': p.dueOn}).toList(),
+          'cycleDay': session.preferences.cycleDay,
+          'timezone': session.preferences.timezone,
+          'streak': session.streak,
+          'scores': {
+            'total': session.totalScore,
+            'skill': session.skillScore,
+          },
+        },
       });
     } catch (_) {
       // Sync failure is silent — will retry on next save

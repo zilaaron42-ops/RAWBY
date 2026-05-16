@@ -51,13 +51,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final token = result['token'] as String?;
       if (token != null) api.setAuthToken(token);
 
+      // API returns { token, user: { id, username, ... } }
+      final user = result['user'] as Map<String, dynamic>? ?? result;
+
       // Update user session
       ref.read(userSessionProvider.notifier).setUser(
-            userId: result['userId'] as String? ?? result['id'] as String? ?? '',
-            username: result['username'] as String? ?? '',
-            displayName: result['displayName'] as String? ?? '',
-            email: result['email'] as String? ?? '',
-            role: result['role'] as String? ?? 'user',
+            userId: user['id'] as String? ?? '',
+            username: user['username'] as String? ?? '',
+            displayName: user['displayName'] as String? ?? '',
+            email: user['email'] as String? ?? '',
+            role: (user['isAdmin'] == true) ? 'admin' : 'user',
           );
 
       if (mounted) context.go(Routes.home);

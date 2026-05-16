@@ -8,6 +8,8 @@ import 'handlers/leaderboard_handlers.dart';
 import 'handlers/sync_handlers.dart';
 import 'handlers/admin_handlers.dart';
 import 'handlers/instagram_handlers.dart';
+import 'handlers/ai_handlers.dart';
+import 'handlers/admin_prompt_handlers.dart';
 
 Handler buildRouter() {
   final router = Router();
@@ -67,6 +69,17 @@ Handler buildRouter() {
 
   // FCM
   router.post('/api/fcm-token', protect(handleRegisterFcmToken));
+
+  // AI
+  router.post('/api/chat', protect(handleAiChat));
+  router.post('/api/skill-feedback', protect(handleSkillFeedback));
+
+  // Instagram handle stats (placeholder)
+  router.get('/api/instagram-handle', protect(handleInstagramHandleStats));
+
+  // Admin prompt builder
+  router.post('/api/admin/prompts', protect(handleSaveAdminPrompt));
+  router.get('/api/admin/prompts', protect(handleGetAdminPrompts));
 
   return router.call;
 }

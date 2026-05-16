@@ -4,27 +4,37 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../providers/user_session_provider.dart';
-import '../providers/router_provider.dart';
 import '../models/gear_model.dart';
-import '../theme/app_colors.dart';
 import '../widgets/gear/add_gear_modal.dart';
 import '../widgets/gear/add_subscription_modal.dart';
 import '../widgets/gear/edit_gear_modal.dart';
 import '../widgets/gear/edit_subscription_modal.dart';
 
-class GearScreen extends ConsumerWidget {
+class GearScreen extends ConsumerStatefulWidget {
   const GearScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GearScreen> createState() => _GearScreenState();
+}
+
+class _GearScreenState extends ConsumerState<GearScreen> {
+  String _categoryFilter = 'all'; // 'all', 'filming', 'editing', 'digital'
+  String _statusFilter = 'all';   // 'all', 'active', 'rested', 'retired'
+
+  @override
+  Widget build(BuildContext context) {
     final session = ref.watch(userSessionProvider);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final gear = session.gearPurchases;
-    final subscriptions = session.subscriptions.where((s) => s.isActive).toList();
+    final allGear = session.gearPurchases;
     final annualSpend = session.annualSubscriptionSpend;
+
+    // Apply filters
+    final gear = allGear.where((g) {
+      if (_categoryFilter != 'all' && g.category != _categoryFilter) return false;
+      if (_statusFilter != 'all' && g.usageState != _statusFilter) return false;
+      return true;
+    }).toList();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -87,11 +97,46 @@ class GearScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 8),
-            if (gear.isEmpty)
+
+            // ── Filters ──────────────────────────────────────────
+            if (allGear.isNotEmpty) ...[
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _FilterChip(label: 'All', selected: _categoryFilter == 'all', onTap: () => setState(() => _categoryFilter = 'all')),
+                    const SizedBox(width: 6),
+                    _FilterChip(label: 'Filming', icon: Icons.videocam_outlined, selected: _categoryFilter == 'filming', onTap: () => setState(() => _categoryFilter = 'filming')),
+                    const SizedBox(width: 6),
+                    _FilterChip(label: 'Editing', icon: Icons.movie_edit, selected: _categoryFilter == 'editing', onTap: () => setState(() => _categoryFilter = 'editing')),
+                    const SizedBox(width: 6),
+                    _FilterChip(label: 'Digital', icon: Icons.devices_outlined, selected: _categoryFilter == 'digital', onTap: () => setState(() => _categoryFilter = 'digital')),
+                    const SizedBox(width: 12),
+                    Container(width: 1, height: 24, color: theme.colorScheme.outline),
+                    const SizedBox(width: 12),
+                    _FilterChip(label: 'Active', selected: _statusFilter == 'active', onTap: () => setState(() => _statusFilter = _statusFilter == 'active' ? 'all' : 'active')),
+                    const SizedBox(width: 6),
+                    _FilterChip(label: 'Rested', selected: _statusFilter == 'rested', onTap: () => setState(() => _statusFilter = _statusFilter == 'rested' ? 'all' : 'rested')),
+                    const SizedBox(width: 6),
+                    _FilterChip(label: 'Retired', selected: _statusFilter == 'retired', onTap: () => setState(() => _statusFilter = _statusFilter == 'retired' ? 'all' : 'retired')),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            if (gear.isEmpty && allGear.isEmpty)
               _EmptyState(
                 icon: Icons.camera_outlined,
                 message: 'No gear logged yet',
                 subMessage: 'Add your first piece of gear to get started',
+                theme: theme,
+              )
+            else if (gear.isEmpty)
+              _EmptyState(
+                icon: Icons.filter_list_off,
+                message: 'No gear matches filters',
+                subMessage: 'Try changing the category or status filter',
                 theme: theme,
               )
             else
@@ -145,6 +190,60 @@ class GearScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => const AddSubscriptionModal(),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected
+              ? theme.colorScheme.primary.withOpacity(0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 14, color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -205,8 +304,7 @@ class _GearItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = theme.brightness == Brightness.dark;
-    final hasPointCost = gear.isNewPurchase && gear.pointCost > 0;
+    final hasPointCost = gear.ownership == 'new_purchase' && gear.pointCost > 0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -352,8 +450,6 @@ class _SubscriptionItemCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = theme.brightness == Brightness.dark;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),

@@ -233,11 +233,18 @@ class _HistoryCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Row(
                   children: [
-                    Text(
-                      '${entry.likes} ❤️',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    const SizedBox(width: 8),
+                    if (entry.likes > 0) ...[
+                      Icon(Icons.favorite, size: 12, color: RawbyPalette.danger),
+                      const SizedBox(width: 4),
+                      Text('${entry.likes} likes', style: theme.textTheme.labelSmall),
+                      if (entry.views > 0) ...[
+                        const SizedBox(width: 10),
+                        Icon(Icons.visibility, size: 12, color: theme.colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 4),
+                        Text('${entry.views} views', style: theme.textTheme.labelSmall),
+                      ],
+                      const SizedBox(width: 8),
+                    ],
                     if (isLate)
                       Text(
                         '×${multiplier}',

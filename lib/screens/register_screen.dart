@@ -60,13 +60,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       final token = result['token'] as String?;
       if (token != null) api.setAuthToken(token);
 
+      // API returns { token, user: { id, username, ... } }
+      final user = result['user'] as Map<String, dynamic>? ?? result;
+
       // Update user session
       ref.read(userSessionProvider.notifier).setUser(
-            userId: result['userId'] as String? ?? result['id'] as String? ?? '',
-            username: result['username'] as String? ?? _usernameController.text.trim(),
-            displayName: result['displayName'] as String? ?? _displayNameController.text.trim(),
-            email: result['email'] as String? ?? _emailController.text.trim(),
-            role: result['role'] as String? ?? 'user',
+            userId: user['id'] as String? ?? '',
+            username: user['username'] as String? ?? _usernameController.text.trim(),
+            displayName: user['displayName'] as String? ?? _displayNameController.text.trim(),
+            email: user['email'] as String? ?? _emailController.text.trim(),
+            role: (user['isAdmin'] == true) ? 'admin' : 'user',
           );
 
       if (mounted) context.go(Routes.home);

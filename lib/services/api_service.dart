@@ -3,6 +3,7 @@
 // All calls to the Render backend go through here.
 // ============================================================
 import "package:dio/dio.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../constants/app_constants.dart";
 
@@ -194,14 +195,56 @@ class ApiService {
     await _dio.post("/api/fcm-token", data: {"token": token});
   }
 
+  Future<Map<String, dynamic>> getSkillFeedback({
+    required String provider,
+    required String model,
+    required String focusArea,
+    required String notes,
+    required List<dynamic> history,
+    required Map<String, dynamic> stats,
+  }) async {
+    final response = await _dio.post("/api/skill-feedback", data: {
+      "provider": provider,
+      "model": model,
+      "focusArea": focusArea,
+      "notes": notes,
+      "history": history,
+      "stats": stats,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
   Future<List<dynamic>> getUsers() async {
     final response = await _dio.get("/api/users");
     return response.data as List<dynamic>;
   }
-}
 
-// Simple debug print helper
-void debugPrint(String message) {
-  // ignore: avoid_print
-  print(message);
+  Future<Map<String, dynamic>> aiChat({
+    required String message,
+    required List<Map<String, dynamic>> history,
+    required Map<String, dynamic> context,
+  }) async {
+    final response = await _dio.post("/api/chat", data: {
+      "message": message,
+      "history": history,
+      "context": context,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> fetchInstagramHandleStats(String handle) async {
+    final response = await _dio.get("/api/instagram-handle", queryParameters: {
+      "handle": handle,
+    });
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<void> saveAdminPrompt(Map<String, dynamic> prompt) async {
+    await _dio.post("/api/admin/prompts", data: prompt);
+  }
+
+  Future<List<dynamic>> getAdminPrompts() async {
+    final response = await _dio.get("/api/admin/prompts");
+    return response.data as List<dynamic>;
+  }
 }

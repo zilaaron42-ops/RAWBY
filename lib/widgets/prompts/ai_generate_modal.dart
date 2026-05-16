@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/user_session_provider.dart';
 import '../../services/prompt_service.dart';
+import '../../services/season_service.dart';
 import '../../theme/app_colors.dart';
 
 class AiGenerateModal extends ConsumerStatefulWidget {
@@ -292,30 +293,48 @@ class _AiGenerateModalState extends ConsumerState<AiGenerateModal> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: theme.colorScheme.outline),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.wb_sunny_outlined,
-                      size: 18,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Seasonal Mode', style: theme.textTheme.bodyMedium),
-                          Text(
-                            'Tailor prompts to current season & weather',
-                            style: theme.textTheme.bodySmall,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.wb_sunny_outlined,
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Seasonal Mode', style: theme.textTheme.bodyMedium),
+                              Text(
+                                'Tailor prompts to current season & weather',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                        Switch(
+                          value: _seasonalPrompts,
+                          onChanged: (v) => setState(() => _seasonalPrompts = v),
+                        ),
+                      ],
+                    ),
+                    if (_seasonalPrompts) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 28),
+                        child: Text(
+                          SeasonService.getSeasonHint(_region, _seasonalPrompts),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
                       ),
-                    ),
-                    Switch(
-                      value: _seasonalPrompts,
-                      onChanged: (v) => setState(() => _seasonalPrompts = v),
-                    ),
+                    ],
                   ],
                 ),
               ),

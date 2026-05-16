@@ -3,16 +3,59 @@
 // Shows user stats, achievements, and project history
 // ============================================================
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_session_provider.dart';
+import '../services/api_service.dart';
 import '../widgets/projects/history_list.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  bool _fetchingIg = false;
+  String? _igStatus;
+
+  Future<void> _refreshInstagramStats() async {
+    final session = ref.read(userSessionProvider);
+    final handle = session.preferences.instagramHandle;
+    if (handle.isEmpty) return;
+
+    setState(() {
+      _fetchingIg = true;
+      _igStatus = null;
+    });
+    HapticFeedback.lightImpact();
+
+    try {
+      final api = ref.read(apiServiceProvider);
+      final result = await api.fetchInstagramHandleStats(handle);
+      final avgLikes = result['avgLikes'] as int? ?? 0;
+      final lastLikes = result['lastPostLikes'] as int? ?? 0;
+      final msg = result['message'] as String?;
+
+      setState(() {
+        _igStatus = avgLikes > 0
+            ? 'Updated: avg $avgLikes likes, last post $lastLikes likes'
+            : (msg ?? 'Stats not available — Instagram API not configured.');
+        _fetchingIg = false;
+      });
+    } catch (_) {
+      setState(() {
+        _igStatus = 'Could not connect to server.';
+        _fetchingIg = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final session = ref.watch(userSessionProvider);
+    final prefs = session.preferences;
     final theme = Theme.of(context);
     final achievements = session.achievements;
     final earned = achievements.where((a) => a.earned).toList();
@@ -60,24 +103,88 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ],
             ),
+
+            // Bio
+            if (prefs.bio.isNotEmpty && prefs.showBio) ...[
+              const SizedBox(height: 10),
+              Text(
+                prefs.bio,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+
+            // Social handles
+            if ((prefs.instagramHandle.isNotEmpty && prefs.showInstagram) ||
+                (prefs.youtubeHandle.isNotEmpty && prefs.showYoutube)) ...[
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 12,
+                runSpacing: 6,
+                children: [
+                  if (prefs.instagramHandle.isNotEmpty && prefs.showInstagram)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.camera_alt_outlined, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 4),
+                        Text(
+                          '@${prefs.instagramHandle}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (prefs.youtubeHandle.isNotEmpty && prefs.showYoutube)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.play_circle_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 4),
+                        Text(
+                          prefs.youtubeHandle,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
 
-            // Rank progress card
-            Container(
+            // Rank progress card (always show — it's the core identity)
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOut,
+              builder: (ctx, v, child) => Opacity(
+                opacity: v,
+                child: Transform.translate(
+                  offset: Offset(0, 16 * (1 - v)),
+                  child: child,
+                ),
+              ),
+              child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    theme.colorScheme.primary.withOpacity(0.12),
-                    theme.colorScheme.primary.withOpacity(0.04),
+                    theme.colorScheme.primary.withValues(alpha: 0.15),
+                    theme.colorScheme.primary.withValues(alpha: 0.04),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.25),
                 ),
               ),
               child: Column(
@@ -145,33 +252,39 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            ), // TweenAnimationBuilder
             const SizedBox(height: 20),
 
             // Stats row
             Row(
               children: [
-                _StatBox(
-                  label: 'Score',
-                  value: '${session.totalScore}',
-                  theme: theme,
-                ),
-                const SizedBox(width: 10),
+                if (prefs.showScore) ...[
+                  _StatBox(
+                    label: 'Score',
+                    value: '${session.totalScore}',
+                    theme: theme,
+                  ),
+                  const SizedBox(width: 10),
+                ],
                 _StatBox(
                   label: 'Projects',
                   value: '${session.scoringHistory.length}',
                   theme: theme,
                 ),
-                const SizedBox(width: 10),
-                _StatBox(
-                  label: 'Streak',
-                  value: '${session.streak}🔥',
-                  theme: theme,
-                ),
+                if (prefs.showStreak) ...[
+                  const SizedBox(width: 10),
+                  _StatBox(
+                    label: 'Streak',
+                    value: '${session.streak}🔥',
+                    theme: theme,
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 24),
 
             // Achievements
+            if (prefs.showAchievements) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -258,10 +371,45 @@ class ProfileScreen extends ConsumerWidget {
                 );
               }).toList(),
             ),
+            ], // end showAchievements
 
             // Engagement stats
+            if (prefs.showEngagement) ...[
             const SizedBox(height: 20),
-            Text('Engagement', style: theme.textTheme.titleSmall),
+            Row(
+              children: [
+                Text('Engagement', style: theme.textTheme.titleSmall),
+                const Spacer(),
+                if (prefs.instagramHandle.isNotEmpty)
+                  TextButton.icon(
+                    onPressed: _fetchingIg ? null : _refreshInstagramStats,
+                    icon: _fetchingIg
+                        ? const SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh, size: 14),
+                    label: const Text('Refresh', style: TextStyle(fontSize: 12)),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+              ],
+            ),
+            if (_igStatus != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                _igStatus!,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: _igStatus!.startsWith('Updated')
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.error,
+                ),
+              ),
+            ],
             const SizedBox(height: 8),
             Row(
               children: [
@@ -272,19 +420,24 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 10),
                 _StatBox(
-                  label: 'Total Views',
-                  value: '${session.totalViews}',
-                  theme: theme,
-                ),
-                const SizedBox(width: 10),
-                _StatBox(
                   label: 'Avg Likes',
                   value: '${session.avgLikes}',
                   theme: theme,
                 ),
+                const SizedBox(width: 10),
+                _StatBox(
+                  label: 'Last Video',
+                  value: session.history.isNotEmpty && session.history.last.likes > 0
+                      ? '${session.history.last.likes}'
+                      : '—',
+                  theme: theme,
+                ),
               ],
             ),
+            ], // end showEngagement
 
+            // Project History
+            if (prefs.showHistory) ...[
             const SizedBox(height: 32),
             Text(
               'Project History',
@@ -292,12 +445,13 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             const HistoryList(),
+            ], // end showHistory
 
             // Logout
             const SizedBox(height: 32),
             Center(
               child: TextButton.icon(
-                onPressed: () => _confirmLogout(context, ref),
+                onPressed: () => _confirmLogout(context),
                 icon: Icon(Icons.logout, size: 16, color: theme.colorScheme.error),
                 label: Text(
                   'Log Out',
@@ -315,7 +469,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmLogout(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

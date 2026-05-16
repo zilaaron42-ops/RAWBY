@@ -124,22 +124,87 @@ class UserBar extends ConsumerWidget {
             const SizedBox(width: 8),
           ],
 
-          // Admin settings icon (only for admins)
-          if (session.isAdmin)
-            IconButton(
-              icon: Icon(
-                Icons.settings_outlined,
-                color: theme.colorScheme.primary,
-                size: 20,
-              ),
-              onPressed: () => context.go(Routes.admin),
-              tooltip: 'Admin Settings',
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: 36,
-                minHeight: 36,
-              ),
+          // Menu button
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.menu,
+              color: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
+              size: 22,
             ),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            color: isDark ? RawbyPalette.darkCard : RawbyPalette.lightCard,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            offset: const Offset(0, 40),
+            onSelected: (value) {
+              switch (value) {
+                case 'profile':
+                  context.go(Routes.profile);
+                  break;
+                case 'settings':
+                  context.push(Routes.settings);
+                  break;
+                case 'admin':
+                  context.go(Routes.admin);
+                  break;
+                case 'theme':
+                  final prefs = session.preferences;
+                  ref.read(userSessionProvider.notifier).updatePreferences(
+                        prefs.copyWith(
+                          theme: prefs.theme == 'dark' ? 'light' : 'dark',
+                        ),
+                      );
+                  break;
+              }
+            },
+            itemBuilder: (ctx) => [
+              PopupMenuItem(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person_outline, size: 18, color: theme.colorScheme.onSurface),
+                    const SizedBox(width: 10),
+                    Text('Profile', style: theme.textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_outlined, size: 18, color: theme.colorScheme.onSurface),
+                    const SizedBox(width: 10),
+                    Text('Settings', style: theme.textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'theme',
+                child: Row(
+                  children: [
+                    Icon(
+                      isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                      size: 18,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(isDark ? 'Light Mode' : 'Dark Mode', style: theme.textTheme.bodyMedium),
+                  ],
+                ),
+              ),
+              if (session.isAdmin)
+                PopupMenuItem(
+                  value: 'admin',
+                  child: Row(
+                    children: [
+                      Icon(Icons.admin_panel_settings_outlined, size: 18, color: theme.colorScheme.primary),
+                      const SizedBox(width: 10),
+                      Text('Admin', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

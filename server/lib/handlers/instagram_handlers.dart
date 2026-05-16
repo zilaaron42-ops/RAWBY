@@ -28,3 +28,20 @@ Future<Response> handleFetchReelLikes(Request request) async {
     'message': 'Instagram scraping not configured. Enter stats manually.',
   }), headers: _json);
 }
+
+Future<Response> handleInstagramHandleStats(Request request) async {
+  final handle = request.requestedUri.queryParameters['handle'] ?? '';
+
+  if (handle.isEmpty) {
+    return Response(400, body: jsonEncode({'error': 'handle required'}), headers: _json);
+  }
+
+  // Placeholder — real implementation would use Instagram Basic Display API
+  return Response.ok(jsonEncode({
+    'handle': handle,
+    'followers': 0,
+    'avgLikes': 0,
+    'lastPostLikes': 0,
+    'message': 'Instagram handle stats require Graph API configuration.',
+  }), headers: _json);
+}

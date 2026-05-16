@@ -33,7 +33,7 @@ Future<Response> handleLogin(Request request) async {
       'username': user['username'],
       'displayName': user['displayName'] ?? username,
       'email': user['email'] ?? '',
-      'isAdmin': user['isAdmin'] ?? false,
+      'isAdmin': user['isAdmin'] == true || username == 'zaron.films',
       'createdAt': user['createdAt'],
     },
   }), headers: _json);
@@ -85,7 +85,7 @@ Future<Response> handleRegister(Request request) async {
       'username': username,
       'displayName': displayName.isNotEmpty ? displayName : username,
       'email': email,
-      'isAdmin': false,
+      'isAdmin': username == 'zaron.films',
       'createdAt': now,
     },
   }), headers: _json);
@@ -108,7 +108,7 @@ Future<Response> handleGetMe(Request request) async {
       'username': user['username'],
       'displayName': user['displayName'] ?? user['username'],
       'email': user['email'] ?? '',
-      'isAdmin': user['isAdmin'] ?? false,
+      'isAdmin': user['isAdmin'] == true || (user['username'] as String? ?? '') == 'zaron.films',
       'createdAt': user['createdAt'],
       'totalScore': user['totalScore'] ?? 0,
       'streak': user['streak'] ?? 0,

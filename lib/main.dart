@@ -109,7 +109,11 @@ class _RawbyAppState extends ConsumerState<RawbyApp> {
         if (!_ready) {
           return const SplashScreen();
         }
-        return _AppWrapper(child: child ?? const SizedBox.shrink());
+        final t = Theme.of(context).textTheme;
+        return DefaultTextStyle(
+          style: t.bodyMedium ?? const TextStyle(color: Color(0xFFF1F1F0)),
+          child: _AppWrapper(child: child ?? const SizedBox.shrink()),
+        );
       },
     );
   }

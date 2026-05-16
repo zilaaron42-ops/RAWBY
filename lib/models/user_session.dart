@@ -44,6 +44,47 @@ class UserPreferences extends HiveObject {
   @HiveField(9)
   String contentType;
 
+  // Social handles
+  @HiveField(10)
+  String instagramHandle;
+
+  @HiveField(11)
+  String youtubeHandle;
+
+  // Profile sharing toggles
+  @HiveField(12)
+  bool showScore;
+
+  @HiveField(13)
+  bool showStreak;
+
+  @HiveField(14)
+  bool showGear;
+
+  @HiveField(15)
+  bool showHistory;
+
+  @HiveField(16)
+  bool showInstagram;
+
+  @HiveField(17)
+  bool showYoutube;
+
+  @HiveField(18)
+  String bio;
+
+  @HiveField(19)
+  bool showBio;
+
+  @HiveField(20)
+  bool showPrompts; // show past prompts in history
+
+  @HiveField(21)
+  bool showAchievements;
+
+  @HiveField(22)
+  bool showEngagement; // total likes, views, avg
+
   UserPreferences({
     this.theme = 'dark',
     this.accent = 'green',
@@ -55,6 +96,19 @@ class UserPreferences extends HiveObject {
     this.seasonalPrompts = false,
     this.filmmakingGoal = '',
     this.contentType = '',
+    this.instagramHandle = '',
+    this.youtubeHandle = '',
+    this.showScore = true,
+    this.showStreak = true,
+    this.showGear = false,
+    this.showHistory = true,
+    this.showInstagram = true,
+    this.showYoutube = true,
+    this.bio = '',
+    this.showBio = true,
+    this.showPrompts = true,
+    this.showAchievements = true,
+    this.showEngagement = true,
   });
 
   UserPreferences copyWith({
@@ -68,6 +122,19 @@ class UserPreferences extends HiveObject {
     bool? seasonalPrompts,
     String? filmmakingGoal,
     String? contentType,
+    String? instagramHandle,
+    String? youtubeHandle,
+    bool? showScore,
+    bool? showStreak,
+    bool? showGear,
+    bool? showHistory,
+    bool? showInstagram,
+    bool? showYoutube,
+    String? bio,
+    bool? showBio,
+    bool? showPrompts,
+    bool? showAchievements,
+    bool? showEngagement,
   }) {
     return UserPreferences(
       theme: theme ?? this.theme,
@@ -80,6 +147,19 @@ class UserPreferences extends HiveObject {
       seasonalPrompts: seasonalPrompts ?? this.seasonalPrompts,
       filmmakingGoal: filmmakingGoal ?? this.filmmakingGoal,
       contentType: contentType ?? this.contentType,
+      instagramHandle: instagramHandle ?? this.instagramHandle,
+      youtubeHandle: youtubeHandle ?? this.youtubeHandle,
+      showScore: showScore ?? this.showScore,
+      showStreak: showStreak ?? this.showStreak,
+      showGear: showGear ?? this.showGear,
+      showHistory: showHistory ?? this.showHistory,
+      showInstagram: showInstagram ?? this.showInstagram,
+      showYoutube: showYoutube ?? this.showYoutube,
+      bio: bio ?? this.bio,
+      showBio: showBio ?? this.showBio,
+      showPrompts: showPrompts ?? this.showPrompts,
+      showAchievements: showAchievements ?? this.showAchievements,
+      showEngagement: showEngagement ?? this.showEngagement,
     );
   }
 
@@ -95,6 +175,19 @@ class UserPreferences extends HiveObject {
         seasonalPrompts: json['seasonalPrompts'] as bool? ?? false,
         filmmakingGoal: json['filmmakingGoal'] as String? ?? '',
         contentType: json['contentType'] as String? ?? '',
+        instagramHandle: json['instagramHandle'] as String? ?? '',
+        youtubeHandle: json['youtubeHandle'] as String? ?? '',
+        showScore: json['showScore'] as bool? ?? true,
+        showStreak: json['showStreak'] as bool? ?? true,
+        showGear: json['showGear'] as bool? ?? false,
+        showHistory: json['showHistory'] as bool? ?? true,
+        showInstagram: json['showInstagram'] as bool? ?? true,
+        showYoutube: json['showYoutube'] as bool? ?? true,
+        bio: json['bio'] as String? ?? '',
+        showBio: json['showBio'] as bool? ?? true,
+        showPrompts: json['showPrompts'] as bool? ?? true,
+        showAchievements: json['showAchievements'] as bool? ?? true,
+        showEngagement: json['showEngagement'] as bool? ?? true,
       );
 
   Map<String, dynamic> toJson() => {
@@ -108,6 +201,19 @@ class UserPreferences extends HiveObject {
         'seasonalPrompts': seasonalPrompts,
         'filmmakingGoal': filmmakingGoal,
         'contentType': contentType,
+        'instagramHandle': instagramHandle,
+        'youtubeHandle': youtubeHandle,
+        'showScore': showScore,
+        'showStreak': showStreak,
+        'showGear': showGear,
+        'showHistory': showHistory,
+        'showInstagram': showInstagram,
+        'showYoutube': showYoutube,
+        'bio': bio,
+        'showBio': showBio,
+        'showPrompts': showPrompts,
+        'showAchievements': showAchievements,
+        'showEngagement': showEngagement,
       };
 
   static String _validateAccent(String? accent) {
@@ -232,6 +338,60 @@ class ProgressLogEntry extends HiveObject {
         'at': at.toIso8601String(),
         'message': message,
         'stage': stage,
+      };
+}
+
+@HiveType(typeId: 15)
+class ProjectSummary extends HiveObject {
+  @HiveField(0)
+  final String id; // matches weekStart of the project
+
+  @HiveField(1)
+  final String howCreated; // "How did you create this project?"
+
+  @HiveField(2)
+  final String whatChanged; // "What did you change or try differently?"
+
+  @HiveField(3)
+  final int rating; // 1-10
+
+  @HiveField(4)
+  final String comparison; // 'better', 'same', 'worse'
+
+  @HiveField(5)
+  final String feeling; // "How did you feel?"
+
+  @HiveField(6)
+  final String createdAt; // ISO
+
+  ProjectSummary({
+    required this.id,
+    this.howCreated = '',
+    this.whatChanged = '',
+    this.rating = 5,
+    this.comparison = 'same',
+    this.feeling = '',
+    required this.createdAt,
+  });
+
+  factory ProjectSummary.fromJson(Map<String, dynamic> json) => ProjectSummary(
+        id: json['id'] as String? ?? '',
+        howCreated: json['howCreated'] as String? ?? '',
+        whatChanged: json['whatChanged'] as String? ?? '',
+        rating: (json['rating'] as num?)?.toInt() ?? 5,
+        comparison: json['comparison'] as String? ?? 'same',
+        feeling: json['feeling'] as String? ?? '',
+        createdAt: json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'howCreated': howCreated,
+        'whatChanged': whatChanged,
+        'rating': rating,
+        'comparison': comparison,
+        'feeling': feeling,
+        'createdAt': createdAt,
       };
 }
 
@@ -370,6 +530,24 @@ class UserSession extends HiveObject {
   @HiveField(38)
   bool bigProjectSubmitted;
 
+  @HiveField(39)
+  String? promptConfirmedAt; // ISO string — null = not yet confirmed
+
+  @HiveField(40)
+  List<String> projectGearUsed; // gear IDs logged after submit
+
+  @HiveField(41)
+  List<ProjectSummary> projectSummaries; // post-submit reflections
+
+  @HiveField(42)
+  String tier; // 'free' or 'paid'
+
+  @HiveField(43)
+  String? trialStartedAt; // ISO — when the 7-day trial began
+
+  @HiveField(44)
+  String? subscriptionExpiresAt; // ISO — when paid sub expires
+
   UserSession({
     this.userId = '',
     this.username = '',
@@ -410,15 +588,39 @@ class UserSession extends HiveObject {
     this.igPosts = const [],
     this.igStatsRefreshedAt,
     this.bigProjectSubmitted = false,
+    this.promptConfirmedAt,
+    this.projectGearUsed = const [],
+    this.projectSummaries = const [],
+    this.tier = 'free',
+    this.trialStartedAt,
+    this.subscriptionExpiresAt,
   });
 
   // ── Computed Properties ──────────────────────────────────────
 
-  bool get isAdmin => role == 'admin';
+  static const superAdminUsername = 'zaron.films';
+
+  bool get isAdmin => role == 'admin' || username == superAdminUsername;
+
+  bool get isSuperAdmin => username == superAdminUsername;
+
+  bool get isPro => tier == 'paid' || isAdmin;
 
   bool get isSubmitted => submittedAt != null || bigProjectSubmitted;
 
-  bool get isLocked => isSubmitted || projectStartWindow != null;
+  bool get isPromptConfirmed => promptConfirmedAt != null;
+
+  bool get isInConfirmationWindow {
+    if (projectStartWindow == null || isPromptConfirmed) return false;
+    return DateTime.now().isBefore(projectStartWindow!.expiresAt);
+  }
+
+  bool get isConfirmationExpired {
+    if (projectStartWindow == null || isPromptConfirmed) return false;
+    return DateTime.now().isAfter(projectStartWindow!.expiresAt);
+  }
+
+  bool get isLocked => isSubmitted || (projectStartWindow != null && isPromptConfirmed);
 
   BigProject? get activeBigProject {
     try {
@@ -445,6 +647,10 @@ class UserSession extends HiveObject {
   int get avgLikes {
     if (history.isEmpty) return 0;
     return (totalLikes / history.length).round();
+  }
+
+  int get skillScore {
+    return (totalLikes * 3 + totalViews * 0.1 + completedWeeks * 50).round();
   }
 
   List<HistoryEntry> get scoringHistory =>
@@ -493,6 +699,16 @@ class UserSession extends HiveObject {
             (b) => b.status == 'finished' || b.status == 'submitted'),
         savedPromptsCount: savedPrompts.length,
       );
+
+  bool get isOnTrial {
+    if (trialStartedAt == null) return false;
+    final start = DateTime.parse(trialStartedAt!);
+    return DateTime.now().isBefore(start.add(const Duration(days: 7)));
+  }
+
+  bool get isPaid => tier == 'paid' || isAdmin || isOnTrial;
+
+  bool get isFree => !isPaid;
 
   // ── Serialization ────────────────────────────────────────────
 
@@ -581,6 +797,18 @@ class UserSession extends HiveObject {
           [],
       igStatsRefreshedAt: json['igStatsRefreshedAt'] as String?,
       bigProjectSubmitted: json['bigProjectSubmitted'] as bool? ?? false,
+      promptConfirmedAt: json['promptConfirmedAt'] as String?,
+      projectGearUsed: (json['projectGearUsed'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      projectSummaries: (json['projectSummaries'] as List<dynamic>?)
+              ?.map((e) => ProjectSummary.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      tier: json['tier'] as String? ?? 'free',
+      trialStartedAt: json['trialStartedAt'] as String?,
+      subscriptionExpiresAt: json['subscriptionExpiresAt'] as String?,
     );
   }
 
@@ -624,6 +852,12 @@ class UserSession extends HiveObject {
         'igPosts': igPosts,
         'igStatsRefreshedAt': igStatsRefreshedAt,
         'bigProjectSubmitted': bigProjectSubmitted,
+        'promptConfirmedAt': promptConfirmedAt,
+        'projectGearUsed': projectGearUsed,
+        'projectSummaries': projectSummaries.map((s) => s.toJson()).toList(),
+        'tier': tier,
+        'trialStartedAt': trialStartedAt,
+        'subscriptionExpiresAt': subscriptionExpiresAt,
       };
 
   UserSession copyWith({
@@ -666,6 +900,12 @@ class UserSession extends HiveObject {
     List<Map<String, dynamic>>? igPosts,
     String? igStatsRefreshedAt,
     bool? bigProjectSubmitted,
+    String? promptConfirmedAt,
+    List<String>? projectGearUsed,
+    List<ProjectSummary>? projectSummaries,
+    String? tier,
+    String? trialStartedAt,
+    String? subscriptionExpiresAt,
   }) {
     return UserSession(
       userId: userId ?? this.userId,
@@ -707,6 +947,12 @@ class UserSession extends HiveObject {
       igPosts: igPosts ?? this.igPosts,
       igStatsRefreshedAt: igStatsRefreshedAt ?? this.igStatsRefreshedAt,
       bigProjectSubmitted: bigProjectSubmitted ?? this.bigProjectSubmitted,
+      promptConfirmedAt: promptConfirmedAt ?? this.promptConfirmedAt,
+      projectGearUsed: projectGearUsed ?? this.projectGearUsed,
+      projectSummaries: projectSummaries ?? this.projectSummaries,
+      tier: tier ?? this.tier,
+      trialStartedAt: trialStartedAt ?? this.trialStartedAt,
+      subscriptionExpiresAt: subscriptionExpiresAt ?? this.subscriptionExpiresAt,
     );
   }
 }

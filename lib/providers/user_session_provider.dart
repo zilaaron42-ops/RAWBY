@@ -83,7 +83,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     final currentWeekday = now.weekday % 7; // 0=Sun, 1=Mon...6=Sat
     final daysBack = (currentWeekday - anchor + 7) % 7;
     return tz.TZDateTime(now.location, now.year, now.month, now.day)
-        .subtract(Duration(days: daysBack)) as tz.TZDateTime;
+        .subtract(Duration(days: daysBack));
   }
 
   UserSession _realignCycle(UserSession session) {
@@ -240,6 +240,10 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
       email: email,
       role: role,
     );
+    // Auto-start trial for new users on first login/register
+    if (state.trialStartedAt == null) {
+      startTrial();
+    }
     _scheduleSave();
   }
 
@@ -269,8 +273,41 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
       prompts: [found],
       workflow: _weeklyWorkflow(state.preferences.cycleDay),
       projectStartWindow: window,
+      promptConfirmedAt: null, // Reset confirmation — user must confirm within 1h
     );
-    _addProgressLog('Prompt chosen: ${found.level} (${found.points} pts)', 'prompt');
+    _addProgressLog('Prompt chosen: ${found.level} (${found.points} pts) — confirm within 1 hour', 'prompt');
+    _scheduleSave();
+  }
+
+  void confirmPrompt() {
+    if (state.selectedPromptId == null || state.isPromptConfirmed) return;
+    if (state.isConfirmationExpired) {
+      // Window expired — reset selection
+      cancelPromptSelection();
+      return;
+    }
+    state = state.copyWith(
+      promptConfirmedAt: DateTime.now().toIso8601String(),
+    );
+    _addProgressLog('Prompt confirmed — project locked in!', 'prompt');
+    _scheduleSave();
+  }
+
+  void cancelPromptSelection() {
+    if (state.isPromptConfirmed) return; // Can't cancel after confirmation
+    state = state.copyWith(
+      selectedPromptId: null,
+      prompts: [],
+      projectStartWindow: null,
+      promptConfirmedAt: null,
+    );
+    _addProgressLog('Prompt selection cancelled', 'info');
+    _scheduleSave();
+  }
+
+  void logProjectGear(List<String> gearIds) {
+    state = state.copyWith(projectGearUsed: gearIds);
+    _addProgressLog('Gear logged: ${gearIds.length} items', 'info');
     _scheduleSave();
   }
 
@@ -550,14 +587,18 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     required int pointCost,
     required bool isNewPurchase,
   }) {
-    final now = tz.TZDateTime.now(tz.getLocation(state.preferences.timezone));
+    final now = DateTime.now();
     final newGear = GearItem(
       id: 'gear_${now.millisecondsSinceEpoch}',
       name: name,
       category: category,
-      pointCost: pointCost,
-      isNewPurchase: isNewPurchase,
-      addedAt: now,
+      brand: '',
+      ownership: isNewPurchase ? 'new_purchase' : 'already_owned',
+      costHuf: 0,
+      pointsCost: pointCost,
+      owner: '',
+      notes: '',
+      createdAt: now,
       usageState: 'active',
     );
 
@@ -674,6 +715,35 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     _scheduleSave();
   }
 
+  void updateSkillPlan(String plan) {
+    state = state.copyWith(skillAiPlan: plan);
+    _addProgressLog('AI skill plan updated', 'info');
+    _scheduleSave();
+  }
+
+  // ── Project Summary (Post-Submit Reflection) ────────────────
+
+  void saveProjectSummary(ProjectSummary summary) {
+    final existing = state.projectSummaries.any((s) => s.id == summary.id);
+    final updated = existing
+        ? state.projectSummaries.map((s) => s.id == summary.id ? summary : s).toList()
+        : [...state.projectSummaries, summary];
+    state = state.copyWith(projectSummaries: updated);
+    _addProgressLog('Project reflection saved', 'info');
+    _scheduleSave();
+  }
+
+  // ── Trial / Tier ─────────────────────────────────────────────
+
+  void startTrial() {
+    if (state.trialStartedAt != null) return; // Already started
+    state = state.copyWith(
+      trialStartedAt: DateTime.now().toIso8601String(),
+    );
+    _addProgressLog('7-day free trial started', 'info');
+    _scheduleSave();
+  }
+
   // ── Logout ──────────────────────────────────────────────────
 
   void logout() {
@@ -721,9 +791,8 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
 
   // ── Notification Scheduling ──────────────────────────────────
   void _scheduleNotifications() {
+    try {
     final notifications = _ref.read(notificationServiceProvider);
-    final userTimezone = tz.getLocation(state.preferences.timezone);
-
     // Cancel all previous notifications first to avoid duplicates
     notifications.cancelAllNotifications();
 
@@ -748,6 +817,10 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
           notifications.scheduleWorkflowReminder(task.id, task.label, day);
         }
       }
+    }
+    } catch (e) {
+      // Notifications may fail on web — don't block app
+      print('[Notifications] Scheduling failed: $e');
     }
   }
 

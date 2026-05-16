@@ -61,12 +61,23 @@ class RawbyBottomNav extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        isSelected ? item.activeIcon : item.icon,
-                        color: color,
-                        size: 22,
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Icon(
+                          isSelected ? item.activeIcon : item.icon,
+                          color: color,
+                          size: 22,
+                        ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 1),
                       Text(
                         item.label,
                         style: TextStyle(
@@ -115,10 +126,10 @@ class RawbyBottomNav extends StatelessWidget {
         route: Routes.gear,
       ),
       _NavItem(
-        label: 'Profile',
-        icon: Icons.person_outline,
-        activeIcon: Icons.person,
-        route: Routes.profile,
+        label: 'Skills',
+        icon: Icons.bar_chart_outlined,
+        activeIcon: Icons.bar_chart,
+        route: Routes.skill,
       ),
     ];
 

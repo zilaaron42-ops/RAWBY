@@ -4,6 +4,7 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/user_session_provider.dart';
 import '../providers/router_provider.dart';
@@ -11,6 +12,7 @@ import '../services/prompt_service.dart';
 import '../widgets/prompts/prompt_card.dart';
 import '../widgets/prompts/ai_generate_modal.dart';
 import '../widgets/prompts/custom_prompt_modal.dart';
+import '../widgets/prompts/prompt_confirm_banner.dart';
 import '../theme/app_colors.dart';
 
 class PromptsScreen extends ConsumerWidget {
@@ -52,14 +54,14 @@ class PromptsScreen extends ConsumerWidget {
                               Text(
                                 'This Week\'s Prompts',
                                 style: theme.textTheme.headlineMedium,
-                              ),
+                              ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
                               const SizedBox(height: 2),
                               Text(
                                 isLocked
                                     ? 'Prompt locked — project in progress'
                                     : 'Choose one to start your project',
                                 style: theme.textTheme.bodySmall,
-                              ),
+                              ).animate(delay: 80.ms).fadeIn(),
                             ],
                           ),
                         ),
@@ -172,7 +174,9 @@ class PromptsScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                      ),
+                      )
+                    else
+                      const PromptConfirmBanner(),
                   ],
                 ),
               ),
@@ -187,11 +191,12 @@ class PromptsScreen extends ConsumerWidget {
                     final prompt = session.prompts[index];
                     final isSelected = session.selectedPromptId == prompt.id;
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
+                      padding: const EdgeInsets.only(bottom: 16),
                       child: PromptCard(
                         prompt: prompt,
                         isSelected: isSelected,
                         isLocked: isLocked,
+                        index: index,
                         onChoose: isLocked
                             ? null
                             : () {
@@ -201,10 +206,8 @@ class PromptsScreen extends ConsumerWidget {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      '${prompt.level} prompt chosen! (${prompt.points} pts)',
+                                      '${prompt.level} chosen! ${prompt.points} pts',
                                     ),
-                                    duration: const Duration(seconds: 2),
-                                    behavior: SnackBarBehavior.floating,
                                   ),
                                 );
                               },

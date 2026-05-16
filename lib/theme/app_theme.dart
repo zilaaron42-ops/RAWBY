@@ -1,6 +1,6 @@
 // ============================================================
-// RAWBY — Theme System
-// Builds ThemeData for light/dark × green/grey/basic
+// RAWBY — Premium Design System
+// OLED black + glassmorphism + electric green
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,302 +10,247 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData build({
-    required String mode, // 'light' or 'dark'
-    required String accent, // 'green', 'grey', 'basic'
+    required String mode,
+    required String accent,
   }) {
     final isDark = mode == 'dark';
     final colors = AccentColors.forAccent(accent);
-
-    final colorScheme = isDark
-        ? _darkColorScheme(colors)
-        : _lightColorScheme(colors);
+    final colorScheme = isDark ? _darkColorScheme(colors) : _lightColorScheme(colors);
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       brightness: isDark ? Brightness.dark : Brightness.light,
 
-      // Page Transitions (mimics document.startViewTransition)
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
-          TargetPlatform.android: _FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: _FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.fuchsia: _FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.linux: _FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.macOS: _FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.windows: _FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.android: _SpringPageTransitionsBuilder(),
+          TargetPlatform.iOS: _SpringPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: _SpringPageTransitionsBuilder(),
+          TargetPlatform.linux: _SpringPageTransitionsBuilder(),
+          TargetPlatform.macOS: _SpringPageTransitionsBuilder(),
+          TargetPlatform.windows: _SpringPageTransitionsBuilder(),
         },
       ),
 
-      // Scaffold
-      scaffoldBackgroundColor: colorScheme.surface,
+      scaffoldBackgroundColor: isDark ? const Color(0xFF080808) : RawbyPalette.lightBg,
 
-      // AppBar
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.surface,
+        backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        systemOverlayStyle: isDark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
         titleTextStyle: TextStyle(
           color: colorScheme.onSurface,
           fontSize: 18,
           fontWeight: FontWeight.w600,
-          letterSpacing: -0.3,
+          letterSpacing: -0.5,
         ),
       ),
 
-      // Cards
       cardTheme: CardThemeData(
-        color: isDark ? RawbyPalette.darkCard : RawbyPalette.lightCard,
+        color: isDark ? const Color(0xFF141414) : RawbyPalette.lightCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: isDark ? RawbyPalette.darkBorder : RawbyPalette.lightBorder,
-            width: 1,
+            color: isDark ? const Color(0xFF1F1F1F) : RawbyPalette.lightBorder,
           ),
         ),
         margin: EdgeInsets.zero,
       ),
 
-      // Elevated Button (primary action)
+      // Primary buttons — glow effect built via decoration, not theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          foregroundColor: colors.onPrimary,
+          foregroundColor: Colors.black,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
             fontSize: 15,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
           ),
         ),
       ),
 
-      // Outlined Button
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.primary,
-          side: BorderSide(color: colors.primary, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          side: BorderSide(color: colors.primary.withValues(alpha: 0.6), width: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: colors.primary.withValues(alpha: 0.04),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
 
-      // Text Button
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: colors.primary,
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
 
-      // Input fields
+      // Clean dark inputs — no yellow, no weird fills
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? RawbyPalette.inputCreamDark : RawbyPalette.inputCream,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        fillColor: isDark ? const Color(0xFF111111) : const Color(0xFFF5F5F5),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF1F1F1F) : const Color(0xFFE0E0E0),
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: colors.primary, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colors.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: RawbyPalette.danger, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: RawbyPalette.danger, width: 1.5),
         ),
         hintStyle: TextStyle(
-          color: isDark ? const Color(0xFF8A8A7A) : const Color(0xFF9A9A8A),
+          color: isDark ? const Color(0xFF555555) : const Color(0xFF999999),
           fontSize: 14,
         ),
         labelStyle: TextStyle(
-          color: isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight,
+          color: isDark ? const Color(0xFF666666) : const Color(0xFF888888),
           fontSize: 14,
         ),
+        prefixIconColor: isDark ? const Color(0xFF555555) : const Color(0xFF888888),
+        suffixIconColor: isDark ? const Color(0xFF555555) : const Color(0xFF888888),
       ),
 
-      // Divider
       dividerTheme: DividerThemeData(
-        color: isDark ? RawbyPalette.darkBorder : RawbyPalette.lightBorder,
+        color: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFEEEEEE),
         thickness: 1,
         space: 1,
       ),
 
-      // Bottom Navigation Bar
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: isDark
-            ? RawbyPalette.darkSurface.withOpacity(0.95)
-            : RawbyPalette.lightSurface.withOpacity(0.95),
-        selectedItemColor: colors.primary,
-        unselectedItemColor: isDark
-            ? RawbyPalette.textMutedDark
-            : RawbyPalette.textMutedLight,
-        type: BottomNavigationBarType.fixed,
-        elevation: 0,
-        selectedLabelStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-
-      // Navigation Rail (desktop side nav)
-      navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: isDark ? RawbyPalette.darkSurface : RawbyPalette.lightSurface,
-        selectedIconTheme: IconThemeData(color: colors.primary, size: 22),
-        unselectedIconTheme: IconThemeData(
-          color: isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight,
-          size: 22,
-        ),
-        selectedLabelTextStyle: TextStyle(
-          color: colors.primary,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelTextStyle: TextStyle(
-          color: isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight,
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-        ),
-        indicatorColor: colors.primary.withOpacity(0.12),
-        elevation: 0,
-        minWidth: 72,
-        minExtendedWidth: 200,
-      ),
-
-      // Chip
       chipTheme: ChipThemeData(
-        backgroundColor: isDark ? RawbyPalette.darkCard : RawbyPalette.lightCard,
-        selectedColor: colors.primary.withOpacity(0.15),
+        backgroundColor: isDark ? const Color(0xFF141414) : RawbyPalette.lightCard,
+        selectedColor: colors.primary.withValues(alpha: 0.15),
         labelStyle: TextStyle(
           fontSize: 12,
           color: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
         ),
         side: BorderSide(
-          color: isDark ? RawbyPalette.darkBorder : RawbyPalette.lightBorder,
+          color: isDark ? const Color(0xFF1F1F1F) : RawbyPalette.lightBorder,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       ),
 
-      // List Tile
       listTileTheme: ListTileThemeData(
         tileColor: Colors.transparent,
-        iconColor: isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight,
+        iconColor: isDark ? const Color(0xFF666666) : const Color(0xFF999999),
         textColor: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
-      // Switch
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return colors.primary;
-          return isDark ? RawbyPalette.darkMuted : RawbyPalette.lightMuted;
+          return isDark ? const Color(0xFF333333) : const Color(0xFFCCCCCC);
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return colors.primary.withOpacity(0.4);
+            return colors.primary.withValues(alpha: 0.4);
           }
-          return isDark ? RawbyPalette.darkBorder : RawbyPalette.lightBorder;
+          return isDark ? const Color(0xFF1F1F1F) : const Color(0xFFEEEEEE);
         }),
       ),
 
-      // Progress Indicator
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: colors.primary,
-        linearTrackColor: isDark ? RawbyPalette.darkBorder : RawbyPalette.lightBorder,
-        linearMinHeight: 4,
+        linearTrackColor: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFEEEEEE),
+        linearMinHeight: 3,
       ),
 
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: isDark ? RawbyPalette.darkCard : RawbyPalette.textLight,
-        contentTextStyle: TextStyle(
-          color: isDark ? RawbyPalette.textDark : RawbyPalette.lightBg,
+        backgroundColor: isDark ? const Color(0xFF1A1A1A) : const Color(0xFF111111),
+        contentTextStyle: const TextStyle(
+          color: Color(0xFFF5F5F5),
           fontSize: 14,
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
+        elevation: 0,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
-        backgroundColor: isDark ? RawbyPalette.darkCard : RawbyPalette.lightSurface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 8,
+        backgroundColor: isDark ? const Color(0xFF141414) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 0,
         titleTextStyle: TextStyle(
           color: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
         ),
       ),
 
-      // Text theme
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: isDark ? const Color(0xFF0F0F0F) : Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        elevation: 0,
+      ),
+
       textTheme: _buildTextTheme(isDark),
 
-      // Icon theme
       iconTheme: IconThemeData(
-        color: isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight,
+        color: isDark ? const Color(0xFF777777) : const Color(0xFF999999),
         size: 20,
       ),
     );
   }
 
-  // ── Color Schemes ────────────────────────────────────────────
-
   static ColorScheme _darkColorScheme(AccentColors colors) {
     return ColorScheme.dark(
       primary: colors.primary,
-      onPrimary: colors.onPrimary,
+      onPrimary: Colors.black,
       primaryContainer: colors.primaryDark,
       onPrimaryContainer: colors.onPrimary,
       secondary: colors.primaryLight,
-      onSecondary: Colors.white,
-      surface: RawbyPalette.darkBg,
-      onSurface: RawbyPalette.textDark,
-      surfaceContainerHighest: RawbyPalette.darkCard,
-      onSurfaceVariant: RawbyPalette.textMutedDark,
-      outline: RawbyPalette.darkBorder,
-      outlineVariant: RawbyPalette.darkBorder.withOpacity(0.5),
+      onSecondary: Colors.black,
+      tertiary: const Color(0xFF7C4DFF),
+      onTertiary: Colors.white,
+      surface: const Color(0xFF080808),
+      onSurface: const Color(0xFFF0F0F0),
+      surfaceContainerHighest: const Color(0xFF141414),
+      surfaceContainerHigh: const Color(0xFF111111),
+      onSurfaceVariant: const Color(0xFF777777),
+      outline: const Color(0xFF1F1F1F),
+      outlineVariant: const Color(0xFF1A1A1A),
       error: RawbyPalette.danger,
       onError: Colors.white,
-      shadow: Colors.black.withOpacity(0.5),
+      shadow: Colors.black,
     );
   }
 
   static ColorScheme _lightColorScheme(AccentColors colors) {
     return ColorScheme.light(
       primary: colors.primary,
-      onPrimary: colors.onPrimary,
-      primaryContainer: colors.primaryLight.withOpacity(0.2),
+      onPrimary: Colors.black,
+      primaryContainer: colors.primaryLight.withValues(alpha: 0.2),
       onPrimaryContainer: colors.primaryDark,
       secondary: colors.primaryLight,
       onSecondary: Colors.white,
@@ -314,131 +259,40 @@ class AppTheme {
       surfaceContainerHighest: RawbyPalette.lightCard,
       onSurfaceVariant: RawbyPalette.textMutedLight,
       outline: RawbyPalette.lightBorder,
-      outlineVariant: RawbyPalette.lightBorder.withOpacity(0.5),
+      outlineVariant: RawbyPalette.lightBorder.withValues(alpha: 0.5),
       error: RawbyPalette.danger,
       onError: Colors.white,
-      shadow: Colors.black.withOpacity(0.1),
+      shadow: Colors.black.withValues(alpha: 0.1),
     );
   }
 
-  // ── Text Theme ───────────────────────────────────────────────
-
   static TextTheme _buildTextTheme(bool isDark) {
-    final baseColor = isDark ? RawbyPalette.textDark : RawbyPalette.textLight;
-    final mutedColor = isDark ? RawbyPalette.textMutedDark : RawbyPalette.textMutedLight;
+    final base = isDark ? const Color(0xFFF0F0F0) : RawbyPalette.textLight;
+    final muted = isDark ? const Color(0xFF888888) : RawbyPalette.textMutedLight;
 
     return TextTheme(
-      // Display
-      displayLarge: TextStyle(
-        fontSize: 48,
-        fontWeight: FontWeight.w700,
-        color: baseColor,
-        letterSpacing: -1.5,
-        height: 1.1,
-      ),
-      displayMedium: TextStyle(
-        fontSize: 36,
-        fontWeight: FontWeight.w700,
-        color: baseColor,
-        letterSpacing: -1.0,
-        height: 1.15,
-      ),
-      displaySmall: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: -0.5,
-        height: 1.2,
-      ),
-      // Headline
-      headlineLarge: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: -0.3,
-        height: 1.25,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: -0.2,
-        height: 1.3,
-      ),
-      headlineSmall: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: -0.1,
-        height: 1.35,
-      ),
-      // Title
-      titleLarge: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: 0,
-        height: 1.4,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: baseColor,
-        letterSpacing: 0.1,
-        height: 1.4,
-      ),
-      titleSmall: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: mutedColor,
-        letterSpacing: 0.1,
-        height: 1.4,
-      ),
-      // Body
-      bodyLarge: TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
-        color: baseColor,
-        height: 1.6,
-      ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        color: baseColor,
-        height: 1.55,
-      ),
-      bodySmall: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: mutedColor,
-        height: 1.5,
-      ),
-      // Label
-      labelLarge: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: baseColor,
-        letterSpacing: 0.1,
-      ),
-      labelMedium: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: mutedColor,
-        letterSpacing: 0.2,
-      ),
-      labelSmall: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w500,
-        color: mutedColor,
-        letterSpacing: 0.5,
-      ),
+      displayLarge: TextStyle(fontSize: 48, fontWeight: FontWeight.w800, color: base, letterSpacing: -2, height: 1.05),
+      displayMedium: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, color: base, letterSpacing: -1.5, height: 1.1),
+      displaySmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: base, letterSpacing: -0.8, height: 1.15),
+      headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: base, letterSpacing: -0.5, height: 1.2),
+      headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: base, letterSpacing: -0.3, height: 1.25),
+      headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: base, letterSpacing: -0.2, height: 1.3),
+      titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: base, letterSpacing: -0.1, height: 1.4),
+      titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: base, letterSpacing: 0, height: 1.4),
+      titleSmall: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: muted, letterSpacing: 0.1, height: 1.4),
+      bodyLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: base, height: 1.6),
+      bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: base, height: 1.55),
+      bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: muted, height: 1.5),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: base, letterSpacing: 0.1),
+      labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: muted, letterSpacing: 0.2),
+      labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: muted, letterSpacing: 0.8),
     );
   }
 }
 
-/// Custom page transition to mimic document.startViewTransition
-class _FadeUpwardsPageTransitionsBuilder extends PageTransitionsBuilder {
-  const _FadeUpwardsPageTransitionsBuilder();
+/// Spring-physics-feel page transition (like Framer Motion spring)
+class _SpringPageTransitionsBuilder extends PageTransitionsBuilder {
+  const _SpringPageTransitionsBuilder();
 
   @override
   Widget buildTransitions<T>(
@@ -448,12 +302,25 @@ class _FadeUpwardsPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
+    final spring = CurvedAnimation(
+      parent: animation,
+      curve: const Cubic(0.34, 1.56, 0.64, 1.0), // spring overshoot
+    );
+    final fadeOut = CurvedAnimation(
+      parent: secondaryAnimation,
+      curve: Curves.easeIn,
+    );
     return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutQuad,
+      opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: animation, curve: Curves.easeOut),
       ),
-      child: child,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(spring),
+        child: FadeTransition(
+          opacity: Tween<double>(begin: 1.0, end: 0.95).animate(fadeOut),
+          child: child,
+        ),
+      ),
     );
   }
 }
