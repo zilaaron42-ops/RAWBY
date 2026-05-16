@@ -26,36 +26,27 @@ class SettingsScreen extends ConsumerWidget {
     'Other',
   ];
 
-  static const _groqModels = [
-    'llama-3.3-70b-versatile',
-    'llama-3.1-70b-versatile',
-    'llama-3.1-8b-instant',
-    'mixtral-8x7b-32768',
-  ];
-
-  static const _openAiModels = [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(userSessionProvider);
     final prefs = session.preferences;
-    final ai = session.aiSettings;
     final theme = Theme.of(context);
 
     return Scaffold(
       body: AuraBackground(
         child: CustomScrollView(
           slivers: [
-            SliverAppBar.large(
-              title: const Text('Settings'),
-              expandedHeight: 100,
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
+            SliverToBoxAdapter(
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 8),
+                  child: Text(
+                    'Settings',
+                    style: theme.textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
             ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
@@ -70,53 +61,26 @@ class SettingsScreen extends ConsumerWidget {
                       padding: EdgeInsets.fromLTRB(4, 8, 4, 12),
                     ),
                     GlassCard(
-                      child: Column(
+                      child: Row(
                         children: [
-                          _ProviderToggle(
-                            current: ai.provider,
-                            onChange: (p) {
-                              ref
-                                  .read(userSessionProvider.notifier)
-                                  .updateAiSettings(
-                                    ai.copyWith(
-                                      provider: p,
-                                      model: p == 'openai'
-                                          ? 'gpt-4o'
-                                          : 'llama-3.3-70b-versatile',
-                                    ),
-                                  );
-                            },
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(Icons.auto_awesome, size: 18, color: theme.colorScheme.primary),
                           ),
-                          const SizedBox(height: 14),
-                          const _Label('Model'),
-                          const SizedBox(height: 6),
-                          _ModelDropdown(
-                            value: ai.model,
-                            items:
-                                ai.provider == 'openai' ? _openAiModels : _groqModels,
-                            onChange: (m) {
-                              if (m == null) return;
-                              ref
-                                  .read(userSessionProvider.notifier)
-                                  .updateAiSettings(ai.copyWith(model: m));
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  'Auto-applied to every regenerate. Set once here.',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Groq · llama-3.3-70b-versatile',
+                                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                                Text('Fast, private, always-on', style: theme.textTheme.bodySmall),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -197,6 +161,17 @@ class SettingsScreen extends ConsumerWidget {
                                       prefs.copyWith(seasonalPrompts: v));
                             },
                           ),
+                          const SizedBox(height: 14),
+                          const _Label('Cycle Start Day'),
+                          const SizedBox(height: 6),
+                          _ModelDropdown(
+                            value: prefs.cycleDay.isEmpty ? 'Friday' : prefs.cycleDay,
+                            items: const ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                            onChange: (v) {
+                              if (v == null) return;
+                              ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(cycleDay: v));
+                            },
+                          ),
                         ],
                       ),
                     ).animate(delay: 160.ms).fadeIn().slideY(begin: 0.05),
@@ -208,6 +183,64 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     _SuggestionSection(isAdmin: session.isAdmin)
                         .animate(delay: 240.ms).fadeIn().slideY(begin: 0.05),
+
+                    // ── Profile ───────────────────────────────────────────────
+                    const SectionHeader(
+                      title: 'Profile',
+                      subtitle: 'Edit your public info and control what others see',
+                    ),
+                    GlassCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const _Label('Instagram Handle'),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: TextEditingController(text: prefs.instagramHandle)
+                              ..selection = TextSelection.collapsed(offset: prefs.instagramHandle.length),
+                            decoration: const InputDecoration(hintText: '@your_handle'),
+                            onChanged: (v) {
+                              ref.read(userSessionProvider.notifier).updatePreferences(
+                                prefs.copyWith(instagramHandle: v.startsWith('@') ? v.substring(1) : v),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          const _Label('Visible to others'),
+                          const SizedBox(height: 4),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Score & rank'),
+                            value: prefs.showScore,
+                            onChanged: (v) => ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(showScore: v)),
+                          ),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Streak'),
+                            value: prefs.showStreak,
+                            onChanged: (v) => ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(showStreak: v)),
+                          ),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Engagement stats'),
+                            value: prefs.showEngagement,
+                            onChanged: (v) => ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(showEngagement: v)),
+                          ),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Project history'),
+                            value: prefs.showHistory,
+                            onChanged: (v) => ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(showHistory: v)),
+                          ),
+                          SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Achievements'),
+                            value: prefs.showAchievements,
+                            onChanged: (v) => ref.read(userSessionProvider.notifier).updatePreferences(prefs.copyWith(showAchievements: v)),
+                          ),
+                        ],
+                      ),
+                    ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.05),
 
                     // ── About ────────────────────────────────────────
                     const SectionHeader(title: 'About'),
@@ -228,7 +261,7 @@ class SettingsScreen extends ConsumerWidget {
                               value: session.currentRank.label),
                         ],
                       ),
-                    ).animate(delay: 320.ms).fadeIn().slideY(begin: 0.05),
+                    ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.05),
                   ],
                 ),
               ),
@@ -254,85 +287,6 @@ class _Label extends StatelessWidget {
         style: theme.textTheme.labelMedium?.copyWith(
           letterSpacing: 1.0,
           fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-class _ProviderToggle extends StatelessWidget {
-  final String current;
-  final ValueChanged<String> onChange;
-
-  const _ProviderToggle({required this.current, required this.onChange});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _Tab(
-          label: 'Groq · Llama',
-          active: current == 'groq',
-          onTap: () => onChange('groq'),
-        ),
-        const SizedBox(width: 8),
-        _Tab(
-          label: 'OpenAI · GPT',
-          active: current == 'openai',
-          onTap: () => onChange('openai'),
-        ),
-      ],
-    );
-  }
-}
-
-class _Tab extends StatelessWidget {
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  const _Tab({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            gradient: active
-                ? LinearGradient(colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.secondary,
-                  ])
-                : null,
-            color: active ? null : theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: active
-                  ? Colors.transparent
-                  : theme.colorScheme.outline,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                color: active
-                    ? Colors.white
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
         ),
       ),
     );

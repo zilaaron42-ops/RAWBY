@@ -220,6 +220,11 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
 
   // ── State Mutations ──────────────────────────────────────────
 
+  void updateDisplayName(String displayName) {
+    state = state.copyWith(displayName: displayName);
+    _scheduleSave();
+  }
+
   void updatePreferences(UserPreferences prefs) {
     state = state.copyWith(preferences: prefs);
     _scheduleSave();
@@ -587,6 +592,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
 
   void addGear({
     required String name,
+    required String brand,
     required String category,
     required int pointCost,
     required bool isNewPurchase,
@@ -596,7 +602,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
       id: 'gear_${now.millisecondsSinceEpoch}',
       name: name,
       category: category,
-      brand: '',
+      brand: brand,
       ownership: isNewPurchase ? 'new_purchase' : 'already_owned',
       costHuf: 0,
       pointsCost: pointCost,

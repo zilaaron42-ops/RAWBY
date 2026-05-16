@@ -18,6 +18,7 @@ class AddGearModal extends ConsumerStatefulWidget {
 
 class _AddGearModalState extends ConsumerState<AddGearModal> {
   final _nameController = TextEditingController();
+  final _brandController = TextEditingController();
   final _costController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _adding = false;
@@ -30,6 +31,7 @@ class _AddGearModalState extends ConsumerState<AddGearModal> {
   @override
   void dispose() {
     _nameController.dispose();
+    _brandController.dispose();
     _costController.dispose();
     super.dispose();
   }
@@ -39,10 +41,12 @@ class _AddGearModalState extends ConsumerState<AddGearModal> {
     setState(() => _adding = true);
 
     final name = _nameController.text.trim();
+    final brand = _brandController.text.trim();
     final pointCost = int.tryParse(_costController.text.trim()) ?? 0;
 
     ref.read(userSessionProvider.notifier).addGear(
           name: name,
+          brand: brand,
           category: _category,
           pointCost: pointCost,
           isNewPurchase: _isNewPurchase,
@@ -138,6 +142,20 @@ class _AddGearModalState extends ConsumerState<AddGearModal> {
                     hintText: 'e.g. Sony A7III',
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                ),
+                const SizedBox(height: 16),
+                Text('Brand / Maker', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _brandController,
+                  maxLength: 60,
+                  style: TextStyle(
+                    color: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
+                    fontSize: 15,
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: 'e.g. Sony, DJI, Adobe',
+                  ),
                 ),
                 const SizedBox(height: 16),
 

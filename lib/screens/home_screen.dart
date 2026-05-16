@@ -163,7 +163,26 @@ class _HeaderBar extends StatelessWidget {
                 ],
               ),
             ),
-            _RankBadge(session: session),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _HeaderIcon(
+                  icon: Icons.auto_awesome,
+                  tooltip: 'Aurora',
+                  onTap: () => context.push(Routes.assistant),
+                ),
+                _HeaderIcon(
+                  icon: Icons.person_outline,
+                  tooltip: 'Profile',
+                  onTap: () => context.push(Routes.profile),
+                ),
+                _HeaderIcon(
+                  icon: Icons.tune,
+                  tooltip: 'Settings',
+                  onTap: () => context.push(Routes.settings),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -171,38 +190,20 @@ class _HeaderBar extends StatelessWidget {
   }
 }
 
-class _RankBadge extends StatelessWidget {
-  final UserSession session;
+class _HeaderIcon extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
 
-  const _RankBadge({required this.session});
+  const _HeaderIcon({required this.icon, required this.tooltip, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final rank = session.currentRank;
-    return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      radius: 18,
-      onTap: () => context.push(Routes.profile),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            rank.label.toUpperCase(),
-            style: theme.textTheme.labelMedium?.copyWith(
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w800,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          Text(
-            '${session.totalScore} pts',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
+    return IconButton(
+      tooltip: tooltip,
+      icon: Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
+      onPressed: onTap,
     );
   }
 }
@@ -459,7 +460,7 @@ class _BentoGrid extends StatelessWidget {
       StatTile(
         icon: Icons.refresh,
         value: '${session.regensLeft}',
-        label: 'REGENS LEFT',
+        label: 'REGENS',
         color: const Color(0xFF7C4DFF),
       ),
     ];

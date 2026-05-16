@@ -1,7 +1,7 @@
 // ============================================================
 // RAWBY — Bottom Navigation
-// 5 slots: Home / Prompts / [Aurora FAB] / Leaderboard / Profile.
-// Glass-blurred bar with a glowing center FAB to the assistant.
+// 4 items: Home / Prompts / Leaderboard / Gear
+// Aurora, Profile, Settings live in the top header.
 // ============================================================
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -28,16 +28,16 @@ class RawbyBottomNav extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(
         14,
-        12,
+        10,
         14,
-        MediaQuery.of(context).padding.bottom + 10,
+        MediaQuery.of(context).padding.bottom + 8,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            height: 64,
+            height: 60,
             decoration: BoxDecoration(
               color: isDark
                   ? Colors.white.withOpacity(0.04)
@@ -72,10 +72,6 @@ class RawbyBottomNav extends StatelessWidget {
                   active: currentIndex == 1,
                   onTap: () => context.go(Routes.prompts),
                 ),
-                _AuroraFab(
-                  active: currentIndex == _idx('assistant'),
-                  onTap: () => context.go(Routes.assistant),
-                ),
                 _NavItem(
                   icon: Icons.leaderboard_outlined,
                   activeIcon: Icons.leaderboard,
@@ -84,11 +80,11 @@ class RawbyBottomNav extends StatelessWidget {
                   onTap: () => context.go(Routes.leaderboard),
                 ),
                 _NavItem(
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
-                  label: 'You',
-                  active: currentIndex == 4,
-                  onTap: () => context.go(Routes.profile),
+                  icon: Icons.camera_outlined,
+                  activeIcon: Icons.camera,
+                  label: 'Gear',
+                  active: currentIndex == 3,
+                  onTap: () => context.go(Routes.gear),
                 ),
               ],
             ),
@@ -97,8 +93,6 @@ class RawbyBottomNav extends StatelessWidget {
       ),
     );
   }
-
-  int _idx(String key) => switch (key) { 'assistant' => 6, _ => 0 };
 }
 
 class _NavItem extends StatelessWidget {
@@ -154,57 +148,6 @@ class _NavItem extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AuroraFab extends StatelessWidget {
-  final bool active;
-  final VoidCallback onTap;
-
-  const _AuroraFab({required this.active, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return SizedBox(
-      width: 70,
-      child: Center(
-        child: GestureDetector(
-          onTap: () {
-            HapticFeedback.mediumImpact();
-            onTap();
-          },
-          child: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(colors: [
-                theme.colorScheme.primary,
-                theme.colorScheme.secondary,
-              ]),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.colorScheme.primary
-                      .withOpacity(active ? 0.7 : 0.5),
-                  blurRadius: 18,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.auto_awesome,
-                color: Colors.white, size: 22),
-          )
-              .animate(onPlay: (c) => c.repeat(reverse: true))
-              .scale(
-                begin: const Offset(1, 1),
-                end: const Offset(1.04, 1.04),
-                duration: 1800.ms,
-                curve: Curves.easeInOut,
-              ),
         ),
       ),
     );

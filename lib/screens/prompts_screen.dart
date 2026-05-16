@@ -31,6 +31,10 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
 
   Future<void> _silentRegen() async {
     final session = ref.read(userSessionProvider);
+    if (!session.isPro) {
+      context.push(Routes.paywall);
+      return;
+    }
     if (session.regensLeft <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No regenerations left this week.'), behavior: SnackBarBehavior.floating),
@@ -43,8 +47,8 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
       final prefs = session.preferences;
       final service = ref.read(promptServiceProvider);
       final prompts = await service.generateAiPrompts(
-        provider: ai.provider,
-        model: ai.model,
+        provider: 'groq',
+        model: 'llama-3.3-70b-versatile',
         seasonalPrompts: prefs.seasonalPrompts,
         region: prefs.region.isNotEmpty ? prefs.region : 'Central Europe',
         filmmakingGoal: prefs.filmmakingGoal.isNotEmpty ? prefs.filmmakingGoal : 'Grow my audience',
@@ -57,7 +61,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
         final remaining = ref.read(userSessionProvider).regensLeft;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Generated with ${ai.provider == 'openai' ? 'OpenAI' : 'Groq'} · $remaining regens left'),
+            content: Text('Generated · $remaining regens left'),
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
           ),

@@ -116,14 +116,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Settings',
-                      icon: const Icon(Icons.tune),
-                      onPressed: () => context.push(Routes.settings),
-                    ),
-                    IconButton(
-                      tooltip: 'Gear',
-                      icon: const Icon(Icons.camera_outlined),
-                      onPressed: () => context.push(Routes.gear),
+                      tooltip: 'Edit Profile',
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => _showEditProfileModal(context),
                     ),
                   ],
                 ).animate().fadeIn().slideX(begin: -0.04),
@@ -440,6 +435,94 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _showEditProfileModal(BuildContext context) async {
+    final session = ref.read(userSessionProvider);
+    final nameCtrl = TextEditingController(text: session.displayName);
+    final bioCtrl = TextEditingController(text: session.preferences.bio);
+    final igCtrl = TextEditingController(text: session.preferences.instagramHandle);
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        final isDark = theme.brightness == Brightness.dark;
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36, height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.outline,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text('Edit Profile', style: theme.textTheme.titleLarge),
+                const SizedBox(height: 20),
+                Text('Display Name', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(hintText: 'Your name'),
+                ),
+                const SizedBox(height: 16),
+                Text('Bio', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: bioCtrl,
+                  maxLines: 3,
+                  maxLength: 200,
+                  decoration: const InputDecoration(hintText: 'Short bio...'),
+                ),
+                const SizedBox(height: 16),
+                Text('Instagram Handle', style: theme.textTheme.titleSmall),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: igCtrl,
+                  decoration: const InputDecoration(hintText: '@yourhandle'),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final notifier = ref.read(userSessionProvider.notifier);
+                      final prefs = ref.read(userSessionProvider).preferences;
+                      notifier.updateDisplayName(nameCtrl.text.trim());
+                      notifier.updatePreferences(prefs.copyWith(
+                        bio: bioCtrl.text.trim(),
+                        instagramHandle: igCtrl.text.trim().replaceFirst('@', ''),
+                      ));
+                      Navigator.of(ctx).pop();
+                    },
+                    child: const Text('Save'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    nameCtrl.dispose();
+    bioCtrl.dispose();
+    igCtrl.dispose();
   }
 
   Future<void> _confirmLogout(BuildContext context) async {

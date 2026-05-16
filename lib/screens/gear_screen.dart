@@ -4,6 +4,8 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../providers/router_provider.dart';
 import '../providers/user_session_provider.dart';
 import '../models/gear_model.dart';
 import '../widgets/gear/add_gear_modal.dart';
@@ -26,6 +28,30 @@ class _GearScreenState extends ConsumerState<GearScreen> {
   Widget build(BuildContext context) {
     final session = ref.watch(userSessionProvider);
     final theme = Theme.of(context);
+    if (!session.isPro) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_outline, size: 64, color: theme.colorScheme.primary),
+                const SizedBox(height: 20),
+                Text('Gear Tracker is Pro', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text('Upgrade to track your kit, subscriptions, and spending.', style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.push(Routes.paywall),
+                  child: const Text('Upgrade to Pro'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final allGear = session.gearPurchases;
     final annualSpend = session.annualSubscriptionSpend;
 

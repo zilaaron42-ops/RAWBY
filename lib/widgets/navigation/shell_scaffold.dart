@@ -51,13 +51,6 @@ class ShellScaffold extends ConsumerWidget {
         return 2;
       case Routes.gear:
         return 3;
-      case Routes.profile:
-      case Routes.settings:
-        return 4;
-      case Routes.admin:
-        return isAdmin ? 5 : 0;
-      case Routes.assistant:
-        return 6;
       default:
         return 0;
     }
