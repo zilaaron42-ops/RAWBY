@@ -604,6 +604,13 @@ class UserSession extends HiveObject {
 
   bool get isSuperAdmin => username == superAdminUsername;
 
+  String get displayRole {
+    if (username == superAdminUsername) return 'Creator';
+    if (isAdmin) return 'Admin';
+    if (tier == 'paid') return 'Pro';
+    return 'Member';
+  }
+
   bool get isPro => tier == 'paid' || isAdmin;
 
   bool get isSubmitted => submittedAt != null || bigProjectSubmitted;

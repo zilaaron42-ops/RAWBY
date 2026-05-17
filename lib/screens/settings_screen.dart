@@ -254,7 +254,7 @@ class SettingsScreen extends ConsumerWidget {
                               value: '@${session.username}'),
                           _InfoRow(
                               label: 'Role',
-                              value: session.role.toUpperCase()),
+                              value: session.displayRole),
                           _InfoRow(
                               label: 'Total Score',
                               value: '${session.totalScore} pts'),
