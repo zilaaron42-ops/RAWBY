@@ -3,6 +3,7 @@
 // Handles Firebase Cloud Messaging (FCM) and local notifications
 // ============================================================
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -40,7 +41,10 @@ class NotificationService {
     }
   }
 
+  bool get _isMobilePlatform => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
   Future<void> _initializeNotifications() async {
+    if (!_isMobilePlatform) return;
     if (!_hasFirebase) return;
     try {
       await _fcm!.requestPermission(
@@ -76,6 +80,7 @@ class NotificationService {
   }
 
   Future<void> _getAndRegisterToken() async {
+    if (!_isMobilePlatform) return;
     if (!_hasFirebase) return;
     if (!_ref.read(apiServiceProvider).hasAuthToken) return;
     try {

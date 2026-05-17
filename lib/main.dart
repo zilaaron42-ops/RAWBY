@@ -2,6 +2,8 @@
 // RAWBY — Entry Point
 // Initializes: Hive, Firebase, Riverpod, go_router
 // ============================================================
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,15 +48,17 @@ Future<void> main() async {
   final storage = StorageService();
   await storage.init();
 
-  // 4. Initialize Firebase (graceful — won't crash if google-services.json missing)
+  // 4. Initialize Firebase (mobile only — Windows/Linux have no FCM support)
   bool firebaseReady = false;
-  try {
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    firebaseReady = true;
-  } catch (_) {
-    // Firebase not configured yet — push notifications will be disabled
-    // See README for Firebase setup instructions
+  final isMobilePlatform = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  if (isMobilePlatform) {
+    try {
+      await Firebase.initializeApp();
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      firebaseReady = true;
+    } catch (_) {
+      // Firebase not configured yet — push notifications will be disabled
+    }
   }
 
   // 5. Run app with Riverpod
