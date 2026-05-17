@@ -5,43 +5,105 @@
 // ============================================================
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
+import '../store.dart';
 
 const _jsonHeaders = {'content-type': 'application/json'};
 
 const _systemPrompt = '''
-You write hyper-specific weekly story prompts for a SOLO videographer who films themselves. Write in English. Keep writing clear and direct: short sentences, common vocabulary, no jargon, no flowery language. Output ONLY a JSON array with exactly 3 objects.
+You write weekly short-film prompts for a solo videographer. Clear, direct English. No jargon. Cinematic but human. Output ONLY a valid JSON array with exactly 3 objects — no markdown, no commentary.
 
-CRITICAL UNIQUENESS RULES — enforce these strictly:
-- Every song title and artist across all 3 prompts MUST be different. Zero repeated artists or tracks.
-- Every story scenario, location type, and emotional core MUST be different across the 3 prompts. No two prompts may share a similar plot, setting category, or mood.
-- Categories must be freshly invented each call — do not reuse common templates like "morning_routine", "late_night", or "decision_moment".
-- Vary the protagonist's activity type: one prompt should involve objects/environment only (no direct-to-camera), one should involve the person doing something physical, one should involve waiting/observing.
+═══════════════════════════════════════
+THEME UNIVERSE — pick freely and boldly
+═══════════════════════════════════════
+Nature & outdoors: forest morning, fog on a river, empty field at golden hour, rain on a window, first snow, tide going out, single tree in wind, muddy trail after rain, birds leaving a wire, lake at dusk, mountain mist, wild grass in late sun
+City & urban life: empty street at 6am, bus ride alone, rooftop at night, underpass graffiti, market stall closing, subway commute, corner café window, parking lot rain, bridge at midnight, construction noise at dawn, pigeons on a ledge
+At home: kitchen before anyone wakes, laundry folding, mirror moment, bed unmade at noon, late-night fridge light, window watching a neighbour, reading a letter, plants on a sill, closet clearing, old photos, shower fog on glass
+Emotional stories: a goodbye you weren't ready for, realising you've grown, missing someone without knowing why, the moment after a big decision, loving something you're about to lose, the first day of something new, the last day of something old
+Friends & people: two friends sitting in silence, a stranger's act of kindness, someone laughing alone, a phone call that changes everything, waiting for someone who might not come, a crowd and feeling invisible
+Sports & movement: early morning run before the city wakes, solo skate session, bike ride with no destination, cold-water swim, gym at closing time, stretching after a long day, climbing something small just to see
+Art & creativity: drawing something imperfect, playing music to an empty room, writing and deleting, the mess before the painting is finished, dancing when no one watches, photographing something ordinary
+Love & relationships: the moment before you say it, holding something that belonged to someone else, looking at an old photo of two people, the first and last time somewhere together
+Regret & time: revisiting somewhere you used to go, finding something you forgot you had, a habit you've tried to quit, the person you were a year ago, what you didn't say
+Quiet & simple: a candle burning down, water dripping slowly, leaves falling one at a time, light moving across a wall, an empty chair, a door left open, a cup going cold
 
-Each object has these keys:
-- text: the prompt itself (the scene the videographer will shoot). 100 to 160 words. Describe the exact location, time of day, what the videographer does in the scene, what objects are present, what changes or happens, and the mood. Be cinematic and specific — name surfaces, textures, weather, the position of light, small actions. Do NOT include camera or shooting instructions in text; those go in the shots array.
-- shots: an array of 3 to 5 strings. Each string is one specific camera angle or shot. Start each shot with WHEN in the scene to use it (e.g. "Opening — ", "When they pick up the phone — ", "Final shot — "). Then include lens focal length, camera movement, lighting direction, and framing. CRITICAL: For Sequence and Short Story levels, the videographer is ALONE — there is nobody behind the camera. ALL shots must be achievable solo: tripod, locked-off, timer, or camera placed on a surface. Do NOT suggest handheld tracking, dolly, or pan-follows for these levels (nobody is there to operate the camera while the subject is in frame). Handheld shots are ONLY allowed when shooting objects/details with nobody in frame, or for the Story + Character level where a friend can hold the camera. Each shot: 15-25 words.
-- outcome: one sentence naming the closing image or what the viewer sees at the end. Concrete and visual.
-- purpose: one sentence stating the message, takeaway, or reason behind the story.
-- emotion: 1 to 3 short emotion words separated by commas (e.g. "quiet relief, doubt").
-- inspiration: the creator's handle you chose for this prompt.
-- category: a short snake_case tag that YOU invent. Pick a fresh, specific theme for each prompt (e.g. "fading_routine", "night_bus_home", "kitchen_doubt"). Never reuse the same category between prompts.
-- level: one of "Sequence", "Short Story", "Story + Character".
-- points: 10, 30, or 50 matching the level.
-- songs: an array of exactly 3 objects, each with "title" (song name), "artist" (performer), "tier" (MUST be exactly one of: "best_match", "trending", "classic_fit"), and "why" (one sentence on why it fits). The 3 songs MUST follow this EXACT structure:
-  1. First song: tier MUST be "best_match" — the song that genuinely fits the story mood and energy best, any era, any popularity level.
-  2. Second song: tier MUST be "trending" — a song that is currently trending and popular on Instagram Reels or TikTok (2024-2026), that also fits the theme reasonably well. Pick songs people actually use in short-form video right now.
-  3. Third song: tier MUST be "classic_fit" — a song that is still popular and widely recognized (not necessarily brand new), and fits the mood well. Think timeless hits or recent classics people still listen to.
-IMPORTANT: The tier field MUST be exactly "best_match", "trending", or "classic_fit" — do not use any other values.
-- licenseFreeKeywords: an array of 2-3 search keywords/phrases the user can type into a royalty-free music library (like Epidemic Sound, Artlist, or YouTube Audio Library) to find similar-sounding tracks. Be specific about mood and genre, e.g. "ambient piano melancholy" or "lo-fi warm acoustic morning".
-No markdown, no commentary, no trailing prose. Just the JSON array.
+═══════════════════════════════════════
+LESS IS MORE — this is a law, not a tip
+═══════════════════════════════════════
+At least one prompt per week MUST be minimal. Simple idea. One location. Quiet. No plot. Pure mood. Example: someone sits on their kitchen floor eating cereal at 2am. That's the whole story. No explanation needed. The best Reels often have the simplest concept executed with feeling. Not every prompt needs an emotional arc. Some just need presence.
+
+═══════════════════════════════════════
+SONGS — diversity is mandatory
+═══════════════════════════════════════
+The 3 prompts must have songs from DIFFERENT genres. Mix from: indie folk, bedroom pop, classical piano, lo-fi hip-hop, ambient electronic, jazz, soul/R&B, alternative rock, singer-songwriter, cinematic score, synth-pop, neo-soul, acoustic, dream pop, trap, art pop, punk, country/Americana, bossa nova.
+
+BANNED OVERUSED SONGS (never suggest these): "Glimpse of Us" Joji, "Bad Guy" Billie Eilish, "Heat Waves" Glass Animals, "Drivers License" Olivia Rodrigo, "Blinding Lights" The Weeknd, "Watermelon Sugar" Harry Styles, "As It Was" Harry Styles, "lovely" Billie Eilish & Khalid, "River" Bishop Briggs, "The Night We Met" Lord Huron, "Clair de Lune" Debussy (as a cliché), "Fade" Alan Walker, anything by Marshmello or The Chainsmokers.
+
+Think beyond the obvious. Some examples of songs that work well but are underused in Reels: "Lua" Bright Eyes, "Motion Picture Soundtrack" Radiohead, "Holocene" Bon Iver, "Comptine d'un autre été" Yann Tiersen, "Funeral" Phoebe Bridgers, "First Day of My Life" Bright Eyes, "Pink + White" Frank Ocean, "Sunday Morning" Maroon 5, "Coffee" beabadoobee, "Golden" Harry Styles (golden hour footage), "Lavender Haze" Taylor Swift (slow burn), "Buttercup" Hippo Campus, "Ribs" Lorde, "Youth" Daughter, "Oblivion" Grimes, "Motion Sickness" Phoebe Bridgers, "Video Games" Lana Del Rey, "Skinny Love" Bon Iver, "Bloom" The Paper Kites, "Let Her Go" Passenger, "Flightless Bird" Iron & Wine, "Falling" Trevor Daniel, "Heartbeats" José González, "Run" Hozier, "Cherry Wine" Hozier, "Like Real People Do" Hozier, "The Joke" Brandi Carlile, "Heaven" Bryan Adams, "Atlas Hands" Benjamin Francis Leftwich, "Slow Burn" Kacey Musgraves, "Rainbow" Kacey Musgraves, "Mess Is Mine" Vance Joy, "Riptide" Vance Joy, "Tenerife Sea" Ed Sheeran, "Supermarket Flowers" Ed Sheeran, "Retrograde" James Blake, "Digital Witness" St. Vincent, "Liability" Lorde, "Perfect Places" Lorde.
+
+SONG STRUCTURE (for each prompt — must be exactly these tiers):
+1. "best_match" — the song that GENUINELY fits the mood. Think freely. Any era. Not necessarily popular.
+2. "trending" — a song currently used heavily on Instagram Reels or TikTok (2024-2026). Must also fit the theme.
+3. "classic_fit" — timeless or widely known. Still resonates. Fits the scene.
+
+═══════════════════════════════════════
+JSON SCHEMA (each of the 3 objects)
+═══════════════════════════════════════
+- text: 100-160 words. Exact location, time of day, what happens, what objects are present, emotional arc, sensory details (light, texture, sound, temperature). NO camera instructions in text.
+- shots: array of 3-5 strings. Each starts with WHEN (e.g. "Opening — "). Then: focal length, movement, light direction, framing. For Sequence and Short Story: ALL shots must be achievable SOLO — tripod, timer, surface. No handheld tracking with person in frame. For Story + Character: handheld allowed since a friend is present.
+- outcome: one sentence. The closing image.
+- purpose: one sentence. What the viewer feels or takes away.
+- emotion: 1-3 words.
+- inspiration: handle from the provided list.
+- category: fresh snake_case tag you invent. Specific. Never reuse across the 3 prompts.
+- level: "Sequence" / "Short Story" / "Story + Character"
+- points: 10 / 30 / 50
+- songs: array of exactly 3 objects with keys: title, artist, tier, why
+- licenseFreeKeywords: array of 2-3 specific royalty-free search phrases (mood + genre, e.g. "melancholy acoustic guitar dusk", "lo-fi rainy window morning")
 ''';
+
+Future<String?> _getSpotifyToken() async {
+  final id = Platform.environment['SPOTIFY_CLIENT_ID'] ?? '';
+  final secret = Platform.environment['SPOTIFY_CLIENT_SECRET'] ?? '';
+  if (id.isEmpty || secret.isEmpty) return null;
+  final creds = base64Encode(utf8.encode('$id:$secret'));
+  final res = await http.post(
+    Uri.parse('https://accounts.spotify.com/api/token'),
+    headers: {
+      'Authorization': 'Basic $creds',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  );
+  if (res.statusCode != 200) return null;
+  final data = jsonDecode(res.body) as Map<String, dynamic>;
+  return data['access_token'] as String?;
+}
+
+Future<List<String>> _fetchSpotifySongs(String token, String query) async {
+  final encoded = Uri.encodeComponent(query);
+  final res = await http.get(
+    Uri.parse('https://api.spotify.com/v1/search?q=$encoded&type=track&limit=5&market=US'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+  if (res.statusCode != 200) return [];
+  final data = jsonDecode(res.body) as Map<String, dynamic>;
+  final items = ((data['tracks'] as Map)['items'] as List<dynamic>? ?? []);
+  return items.map((t) {
+    final track = t as Map<String, dynamic>;
+    final artists = (track['artists'] as List).map((a) => a['name']).join(', ');
+    return '"${track['name']}" by $artists';
+  }).toList();
+}
 
 String _userPrompt({
   required List<Map<String, dynamic>> inspirations,
   required String region,
   required bool seasonalPrompts,
+  List<String> spotifySongs = const [],
+  List<String> communityPrompts = const [],
 }) {
   final inspirationGuide = inspirations
       .map((i) =>
@@ -50,8 +112,21 @@ String _userPrompt({
 
   final locationHint = _buildLocationHint(region: region, seasonal: seasonalPrompts);
 
+  final spotifyBlock = spotifySongs.isEmpty ? '' : '''
+
+REAL SPOTIFY SONGS — currently on the platform, use some of these where they fit:
+${spotifySongs.join('\n')}
+These are real, current tracks. Prefer them over generic guesses when they match the mood.
+''';
+
+  final communityBlock = communityPrompts.isEmpty ? '' : '''
+
+COMMUNITY INSPIRATION — prompts written by real RAWBY users. Let these inspire your creativity and style. Do NOT copy them — let them spark ideas:
+${communityPrompts.map((p) => '• $p').join('\n')}
+''';
+
   return '''
-Create 3 weekly prompts. Each prompt MUST be a CONCRETE scenario, not abstract. Bad: "a conversation about life". Good: "you sit in your kitchen at 6 AM, rain streaking the window, staring at a job offer email on your phone. The espresso machine hisses. A half-packed suitcase is open on the floor. You trace the rim of the mug with your thumb. You pick up the phone, put it down, then open the kitchen window and let the cold air in. Outside the street is empty. You stand there breathing and decide nothing."
+Create 3 weekly prompts. Each prompt MUST be a CONCRETE scenario, not abstract. Bad: "a conversation about life". Good: "you sit in your kitchen at 6 AM, rain streaking the window, staring at a job offer email on your phone. The espresso machine hisses. A half-packed suitcase is open on the floor. You trace the rim of the mug with your thumb. You pick up the phone, put it down, then open the kitchen window and let the cold air in. Outside the street is empty. You stand there breathing and decide nothing."$spotifyBlock$communityBlock
 
 The text field MUST be 100 to 160 words. Describe the scene in cinematic detail: location, time, light, objects, small specific actions, the emotional arc. Do NOT put camera instructions in text — those go in the shots array.
 
@@ -141,10 +216,31 @@ Future<Response> handleGeneratePrompts(Request request) async {
     final region = data['region'] as String? ?? '';
     final seasonalPrompts = data['seasonalPrompts'] as bool? ?? false;
 
+    // Fetch Spotify songs for variety
+    final List<String> spotifySongs = [];
+    try {
+      final token = await _getSpotifyToken();
+      if (token != null) {
+        final queries = ['indie cinematic mood', 'trending reels 2025', 'emotional acoustic'];
+        for (final q in queries) {
+          spotifySongs.addAll(await _fetchSpotifySongs(token, q));
+        }
+      }
+    } catch (_) {}
+
+    // Fetch community prompts for inspiration
+    final List<String> communityPrompts = [];
+    try {
+      final recent = await Store.instance.getRecentCommunityPrompts(limit: 6);
+      communityPrompts.addAll(recent.map((p) => p['text'] as String? ?? '').where((t) => t.isNotEmpty));
+    } catch (_) {}
+
     final userPromptText = _userPrompt(
       inspirations: inspirations,
       region: region,
       seasonalPrompts: seasonalPrompts,
+      spotifySongs: spotifySongs,
+      communityPrompts: communityPrompts,
     );
 
     final rawText = provider == 'openai'

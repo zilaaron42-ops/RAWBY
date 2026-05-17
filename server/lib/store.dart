@@ -17,6 +17,7 @@ class Store {
   late DbCollection _updates;
   late DbCollection _fcmTokens;
   late DbCollection _suggestions;
+  late DbCollection _communityPrompts;
 
   Future<void> initialize() async {
     final mongoUri = Platform.environment['MONGO_URI'] ??
@@ -31,6 +32,7 @@ class Store {
     _updates = _db.collection('updates');
     _fcmTokens = _db.collection('fcm_tokens');
     _suggestions = _db.collection('suggestions');
+    _communityPrompts = _db.collection('community_prompts');
 
     // Ensure indexes
     await _users.createIndex(keys: {'username': 1}, unique: true);
@@ -217,5 +219,20 @@ class Store {
       where.eq('id', id),
       modify.set('adminReply', reply).set('repliedAt', DateTime.now().toIso8601String()),
     );
+  }
+
+  // ── Community Prompts ──────────────────────────────────────────
+
+  Future<void> saveCommunityPrompt(Map<String, dynamic> data) async {
+    data['id'] = _uuid.v4();
+    data['createdAt'] = DateTime.now().toIso8601String();
+    await _communityPrompts.insertOne(data);
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentCommunityPrompts({int limit = 6}) async {
+    final docs = await _communityPrompts
+        .find(where.sortBy('createdAt', descending: true).limit(limit))
+        .toList();
+    return docs.map((d) { d.remove('_id'); return Map<String, dynamic>.from(d); }).toList();
   }
 }

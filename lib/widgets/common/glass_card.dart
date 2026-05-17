@@ -198,17 +198,17 @@ class StatTile extends StatelessWidget {
     final tint = color ?? theme.colorScheme.primary;
     return GlassCard(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       radius: 14,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
               color: tint.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(9),
             ),
-            child: Icon(icon, size: 14, color: tint),
+            child: Icon(icon, size: 16, color: tint),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -220,16 +220,16 @@ class StatTile extends StatelessWidget {
                   value,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    fontSize: 13,
+                    fontSize: 14,
                     height: 1,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   label,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: 9,
+                    fontSize: 9.5,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

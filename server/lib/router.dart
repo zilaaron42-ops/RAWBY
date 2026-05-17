@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'auth.dart';
+import 'store.dart';
 import 'handlers/auth_handlers.dart';
 import 'handlers/prompt_handlers.dart';
 import 'handlers/leaderboard_handlers.dart';
@@ -82,6 +83,21 @@ Handler buildRouter() {
   // Admin prompt builder
   router.post('/api/admin/prompts', protect(handleSaveAdminPrompt));
   router.get('/api/admin/prompts', protect(handleGetAdminPrompts));
+
+  // Community prompts (user-written, used as AI inspiration)
+  router.post('/api/community-prompt', protect((Request r) async {
+    final body = jsonDecode(await r.readAsString()) as Map<String, dynamic>;
+    final text = (body['text'] as String? ?? '').trim();
+    if (text.isEmpty) {
+      return Response(400, body: jsonEncode({'error': 'text required'}), headers: {'content-type': 'application/json'});
+    }
+    await Store.instance.saveCommunityPrompt({
+      'text': text,
+      'userId': getUserId(r),
+      'category': body['category'] as String? ?? '',
+    });
+    return Response.ok(jsonEncode({'ok': true}), headers: {'content-type': 'application/json'});
+  }));
 
   // Suggestions
   router.post('/api/suggestions', protect(handleSubmitSuggestion));

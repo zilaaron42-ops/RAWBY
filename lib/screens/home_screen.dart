@@ -477,7 +477,7 @@ class _BentoGrid extends StatelessWidget {
         crossAxisCount: 4,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
-        mainAxisExtent: 56,
+        mainAxisExtent: 72,
       ),
       itemCount: cells.length,
       itemBuilder: (ctx, i) {
