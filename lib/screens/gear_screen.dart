@@ -63,8 +63,10 @@ class _GearScreenState extends ConsumerState<GearScreen> {
     }).toList();
 
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.paddingOf(context).bottom + 80),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -197,6 +199,7 @@ class _GearScreenState extends ConsumerState<GearScreen> {
               ...session.subscriptions.map((sub) => _SubscriptionItemCard(sub: sub, theme: theme)),
           ],
         ),
+      ),
       ),
     );
   }

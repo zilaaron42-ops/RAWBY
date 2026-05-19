@@ -46,7 +46,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
 
       // Check for overtake
       final userId = session.userId;
-      final newPos = entries.indexWhere((e) => (e as Map)['userId'] == userId);
+      final newPos = entries.indexWhere((e) => (e as Map<String, dynamic>)['userId'] == userId);
       if (_prevUserPosition != null && newPos != -1 && newPos > _prevUserPosition!) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -111,7 +111,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                     final nextRank = session.nextRank;
                     final ptsToNext = nextRank != null ? (nextRank.minScore - session.totalScore).clamp(0, 9999) : 0;
                     final userId = session.userId;
-                    final userPos = _entries.indexWhere((e) => (e as Map)['userId'] == userId);
+                    final userPos = _entries.indexWhere((e) => (e as Map<String, dynamic>)['userId'] == userId);
                     return CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
@@ -228,7 +228,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                          padding: EdgeInsets.fromLTRB(16, 24, 16, MediaQuery.paddingOf(context).bottom + 80),
                           child: const AchievementsSection(),
                         ),
                       ),
@@ -255,18 +255,19 @@ class _Podium extends StatelessWidget {
     final first = entries[0] as Map<String, dynamic>;
     final second = entries[1] as Map<String, dynamic>;
     final third = entries[2] as Map<String, dynamic>;
+    final base = MediaQuery.sizeOf(context).height * 0.13;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // 2nd place
-        Expanded(child: _PodiumTile(entry: second, place: 2, height: 100, theme: theme)),
+        Expanded(child: _PodiumTile(entry: second, place: 2, height: base * 0.77, theme: theme)),
         const SizedBox(width: 8),
         // 1st place
-        Expanded(child: _PodiumTile(entry: first, place: 1, height: 130, theme: theme)),
+        Expanded(child: _PodiumTile(entry: first, place: 1, height: base, theme: theme)),
         const SizedBox(width: 8),
         // 3rd place
-        Expanded(child: _PodiumTile(entry: third, place: 3, height: 80, theme: theme)),
+        Expanded(child: _PodiumTile(entry: third, place: 3, height: base * 0.62, theme: theme)),
       ],
     );
   }

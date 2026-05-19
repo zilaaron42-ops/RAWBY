@@ -82,7 +82,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             // ── History ───────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 80),
+                padding: EdgeInsets.fromLTRB(20, 4, 20, MediaQuery.paddingOf(context).bottom + 80),
                 child: _HistoryPanel(),
               ),
             ),
@@ -155,11 +155,8 @@ class _HeaderBar extends StatelessWidget {
               child: Consumer(
                 builder: (ctx, ref, _) {
                   final s = ref.watch(userSessionProvider);
-                  final initial = (s.displayName.isNotEmpty
-                          ? s.displayName
-                          : s.username)
-                      .substring(0, 1)
-                      .toUpperCase();
+                  final name = s.displayName.isNotEmpty ? s.displayName : s.username;
+                  final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
                   final theme = Theme.of(ctx);
                   return Container(
                     width: 38,

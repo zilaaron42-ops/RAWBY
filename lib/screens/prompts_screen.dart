@@ -229,7 +229,7 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
                   !session.isSubmitted)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.paddingOf(context).bottom + 80),
                     child: _PromptsWorkflowPanel(
                       session: session,
                       hideDays: session.activeBigProject != null,

@@ -68,7 +68,7 @@ class SkillScreen extends ConsumerWidget {
                   _buildJournalSection(theme, session),
                   const SizedBox(height: 24),
                   _buildAiPlanSection(context, theme, session, ref),
-                  const SizedBox(height: 100),
+                  SizedBox(height: MediaQuery.paddingOf(context).bottom + 80),
                 ],
               ),
             ),

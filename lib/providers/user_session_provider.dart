@@ -472,11 +472,12 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     required int views,
   }) {
     final now = tz.TZDateTime.now(tz.getLocation(state.preferences.timezone));
-    final pendingEntry = state.pendingStats.firstWhere(
-      (p) => p.id == pendingId,
-      orElse: () => throw Exception(
-          'PendingStats with id $pendingId not found for recording'),
-    );
+    final idx = state.pendingStats.indexWhere((p) => p.id == pendingId);
+    if (idx == -1) {
+      print('[recordPendingStats] no pending entry with id $pendingId');
+      return;
+    }
+    final pendingEntry = state.pendingStats[idx];
 
     final submitted = DateTime.parse(pendingEntry.submittedAt).toUtc();
     final deadline = DateTime.parse(pendingEntry.deadline).toUtc();
