@@ -66,7 +66,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: RawbyPalette.danger.withOpacity(0.15),
+              color: RawbyPalette.danger.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
             ),
             child: const Text(
@@ -107,7 +107,7 @@ class _TimeUnit extends StatelessWidget {
           width: 44,
           padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -150,7 +150,7 @@ class _Separator extends StatelessWidget {
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
-          color: color.withOpacity(0.5),
+          color: color.withValues(alpha: 0.5),
         ),
       ),
     );

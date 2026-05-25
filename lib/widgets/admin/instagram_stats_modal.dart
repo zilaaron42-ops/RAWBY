@@ -141,7 +141,7 @@ class _InstagramStatsModalState extends ConsumerState<InstagramStatsModal> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -349,10 +349,10 @@ class _InstagramStatsModalState extends ConsumerState<InstagramStatsModal> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.error.withOpacity(0.08),
+                      color: theme.colorScheme.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: theme.colorScheme.error.withOpacity(0.3),
+                        color: theme.colorScheme.error.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(

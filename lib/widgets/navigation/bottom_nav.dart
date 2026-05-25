@@ -39,17 +39,17 @@ class RawbyBottomNav extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.04)
-                  : Colors.white.withOpacity(0.72),
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.white.withValues(alpha: 0.72),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.08)
-                    : Colors.black.withOpacity(0.04),
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.04),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.5 : 0.06),
+                  color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.06),
                   blurRadius: 28,
                   offset: const Offset(0, 14),
                 ),

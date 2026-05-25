@@ -94,7 +94,7 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -130,10 +130,10 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.06),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: theme.colorScheme.primary.withOpacity(0.15),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.15),
                       ),
                     ),
                     child: Row(
@@ -177,13 +177,13 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: isLate
-                        ? theme.colorScheme.error.withOpacity(0.08)
-                        : theme.colorScheme.primary.withOpacity(0.06),
+                        ? theme.colorScheme.error.withValues(alpha: 0.08)
+                        : theme.colorScheme.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isLate
-                          ? theme.colorScheme.error.withOpacity(0.3)
-                          : theme.colorScheme.primary.withOpacity(0.15),
+                          ? theme.colorScheme.error.withValues(alpha: 0.3)
+                          : theme.colorScheme.primary.withValues(alpha: 0.15),
                     ),
                   ),
                   child: Row(
@@ -214,7 +214,7 @@ class _SubmitModalState extends ConsumerState<SubmitModal> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.outline.withOpacity(0.2),
+                            color: theme.colorScheme.outline.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(

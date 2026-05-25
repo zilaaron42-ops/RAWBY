@@ -42,9 +42,9 @@ class RawbySideNav extends StatelessWidget {
                   height: 28,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.16),
+                    color: Colors.white.withValues(alpha: 0.16),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                       width: 1.5,
                     ),
                   ),
@@ -92,7 +92,7 @@ class RawbySideNav extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? theme.colorScheme.primary.withOpacity(0.12)
+                                ? theme.colorScheme.primary.withValues(alpha: 0.12)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(10),
                           ),

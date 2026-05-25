@@ -107,7 +107,7 @@ class _CustomPromptModalState extends ConsumerState<CustomPromptModal> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -203,7 +203,7 @@ class _CustomPromptModalState extends ConsumerState<CustomPromptModal> {
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
                             color: _level == opt.level
-                                ? theme.colorScheme.primary.withOpacity(0.08)
+                                ? theme.colorScheme.primary.withValues(alpha: 0.08)
                                 : theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
@@ -247,9 +247,9 @@ class _CustomPromptModalState extends ConsumerState<CustomPromptModal> {
                                 decoration: BoxDecoration(
                                   color: _level == opt.level
                                       ? theme.colorScheme.primary
-                                          .withOpacity(0.15)
+                                          .withValues(alpha: 0.15)
                                       : theme.colorScheme.outline
-                                          .withOpacity(0.2),
+                                          .withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(

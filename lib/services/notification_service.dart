@@ -121,8 +121,7 @@ class NotificationService {
     if (route != null && route.isNotEmpty) {
       // Navigate when notification is tapped
       // The router is accessed via the provider when needed by the UI layer
-      // ignore: avoid_print
-      print('Notification opened with route: $route');
+      debugPrint('Notification opened with route: $route');
     }
   }
 

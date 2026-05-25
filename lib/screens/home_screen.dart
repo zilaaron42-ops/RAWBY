@@ -206,8 +206,8 @@ class _NextStepCard extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
       radius: 22,
       gradient: [
-        theme.colorScheme.primary.withOpacity(0.15),
-        theme.colorScheme.secondary.withOpacity(0.05),
+        theme.colorScheme.primary.withValues(alpha: 0.15),
+        theme.colorScheme.secondary.withValues(alpha: 0.05),
       ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,8 +512,8 @@ class _AuroraCTA extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
         radius: 20,
         gradient: [
-          theme.colorScheme.secondary.withOpacity(0.12),
-          theme.colorScheme.primary.withOpacity(0.04),
+          theme.colorScheme.secondary.withValues(alpha: 0.12),
+          theme.colorScheme.primary.withValues(alpha: 0.04),
         ],
         child: Row(
           children: [
@@ -528,7 +528,7 @@ class _AuroraCTA extends StatelessWidget {
                 ]),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.4),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.4),
                     blurRadius: 18,
                     spreadRadius: 1,
                   ),

@@ -87,7 +87,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.primary,
-          side: BorderSide(color: colors.primary.withOpacity(0.4), width: 1.2),
+          side: BorderSide(color: colors.primary.withValues(alpha: 0.4), width: 1.2),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -160,8 +160,8 @@ class AppTheme {
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: isDark
-            ? RawbyPalette.darkSurface.withOpacity(0.92)
-            : RawbyPalette.lightSurface.withOpacity(0.92),
+            ? RawbyPalette.darkSurface.withValues(alpha: 0.92)
+            : RawbyPalette.lightSurface.withValues(alpha: 0.92),
         selectedItemColor: colors.primary,
         unselectedItemColor: isDark
             ? RawbyPalette.textMutedDark
@@ -200,7 +200,7 @@ class AppTheme {
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        indicatorColor: colors.primary.withOpacity(0.12),
+        indicatorColor: colors.primary.withValues(alpha: 0.12),
         elevation: 0,
         minWidth: 72,
         minExtendedWidth: 200,
@@ -209,7 +209,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor:
             isDark ? RawbyPalette.darkCard : RawbyPalette.lightCard,
-        selectedColor: colors.primary.withOpacity(0.18),
+        selectedColor: colors.primary.withValues(alpha: 0.18),
         labelStyle: GoogleFonts.inter(
           fontSize: 12,
           color: isDark ? RawbyPalette.textDark : RawbyPalette.textLight,
@@ -300,7 +300,7 @@ class AppTheme {
       surfaceContainerHighest: RawbyPalette.darkCard,
       onSurfaceVariant: RawbyPalette.textMutedDark,
       outline: RawbyPalette.darkBorder,
-      outlineVariant: RawbyPalette.darkBorder.withOpacity(0.5),
+      outlineVariant: RawbyPalette.darkBorder.withValues(alpha: 0.5),
       error: RawbyPalette.danger,
       onError: Colors.white,
       shadow: Colors.black,

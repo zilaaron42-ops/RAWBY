@@ -121,7 +121,7 @@ class _SkillFeedbackModalState extends ConsumerState<SkillFeedbackModal> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.12),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -150,9 +150,9 @@ class _SkillFeedbackModalState extends ConsumerState<SkillFeedbackModal> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.05),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2)),
+                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
                   ),
                   child: Text(
                     _result!,

@@ -134,8 +134,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen>
 
   Future<void> _toggleListening() async {
     final session = ref.read(userSessionProvider);
-    final isPro = session.role == 'admin' || session.role == 'paid';
-    if (!isPro) {
+    if (!session.isPro) {
       _showProGate();
       return;
     }
@@ -153,7 +152,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen>
     await _speech.listen(
       listenFor: const Duration(seconds: 30),
       pauseFor: const Duration(seconds: 3),
-      partialResults: true,
+      listenOptions: stt.SpeechListenOptions(partialResults: true),
       onResult: (r) {
         _input.text = r.recognizedWords;
         if (r.finalResult && r.recognizedWords.trim().isNotEmpty) {
@@ -298,7 +297,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final session = ref.watch(userSessionProvider);
-    final isPro = session.role == 'admin' || session.role == 'paid';
+    final isPro = session.isPro;
 
     if (!session.isPro) {
       return Scaffold(
@@ -335,8 +334,8 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen>
     return Scaffold(
       body: AuraBackground(
         colors: [
-          theme.colorScheme.primary.withOpacity(0.18),
-          theme.colorScheme.secondary.withOpacity(0.14),
+          theme.colorScheme.primary.withValues(alpha: 0.18),
+          theme.colorScheme.secondary.withValues(alpha: 0.14),
         ],
         child: SafeArea(
           child: Column(
@@ -568,7 +567,7 @@ class _Header extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.primary.withOpacity(
+                      color: theme.colorScheme.primary.withValues(alpha: 
                           listening ? 0.6 : (thinking ? 0.5 : 0.35)),
                       blurRadius: 28,
                       spreadRadius: 2,
@@ -647,8 +646,8 @@ class _OrbPainter extends CustomPainter {
     final glow = Paint()
       ..shader = RadialGradient(
         colors: [
-          secondary.withOpacity(0.9),
-          primary.withOpacity(0.4),
+          secondary.withValues(alpha: 0.9),
+          primary.withValues(alpha: 0.4),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -661,8 +660,8 @@ class _OrbPainter extends CustomPainter {
       final blob = Paint()
         ..shader = RadialGradient(
           colors: [
-            primary.withOpacity(0.9),
-            secondary.withOpacity(0.0),
+            primary.withValues(alpha: 0.9),
+            secondary.withValues(alpha: 0.0),
           ],
         ).createShader(Rect.fromCircle(
             center: center +
@@ -876,7 +875,7 @@ class _SendButton extends StatelessWidget {
             ]),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.primary.withOpacity(0.4),
+                color: theme.colorScheme.primary.withValues(alpha: 0.4),
                 blurRadius: 14,
                 offset: const Offset(0, 6),
               ),

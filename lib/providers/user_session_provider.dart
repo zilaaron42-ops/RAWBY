@@ -3,6 +3,7 @@
 // ============================================================
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../models/user_session.dart';
@@ -423,13 +424,13 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     final now = tz.TZDateTime.now(tz.getLocation(state.preferences.timezone));
     final submitted = DateTime.parse(state.submittedAt!).toUtc();
     final deadline = DateTime.parse(state.deadline).toUtc();
-    final currentPrompt = state.prompts.isNotEmpty
-        ? state.prompts.first
-        : _emptyPrompt(); // Should always have one selected
+    // Prompts are cleared after submit — get points from the history entry
+    final historyEntry = state.history.where((h) => h.id == state.weekStart).firstOrNull;
+    final promptPoints = historyEntry?.points ?? 10;
 
     final score = ScoringService.calculateScore(
       likes: likes,
-      promptPoints: currentPrompt.points,
+      promptPoints: promptPoints,
       submittedAt: submitted,
       deadline: deadline,
     );
@@ -474,7 +475,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     final now = tz.TZDateTime.now(tz.getLocation(state.preferences.timezone));
     final idx = state.pendingStats.indexWhere((p) => p.id == pendingId);
     if (idx == -1) {
-      print('[recordPendingStats] no pending entry with id $pendingId');
+      debugPrint('[recordPendingStats] no pending entry with id $pendingId');
       return;
     }
     final pendingEntry = state.pendingStats[idx];
@@ -829,7 +830,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
     }
     } catch (e) {
       // Notifications may fail on web — don't block app
-      print('[Notifications] Scheduling failed: $e');
+      debugPrint('[Notifications] Scheduling failed: $e');
     }
   }
 

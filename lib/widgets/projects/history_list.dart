@@ -82,12 +82,12 @@ class _PendingStatsCard extends ConsumerWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isReady
-            ? theme.colorScheme.primary.withOpacity(0.06)
+            ? theme.colorScheme.primary.withValues(alpha: 0.06)
             : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isReady
-              ? theme.colorScheme.primary.withOpacity(0.3)
+              ? theme.colorScheme.primary.withValues(alpha: 0.3)
               : theme.colorScheme.outline,
         ),
       ),
@@ -118,8 +118,8 @@ class _PendingStatsCard extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
                   color: isReady
-                      ? theme.colorScheme.primary.withOpacity(0.12)
-                      : theme.colorScheme.outline.withOpacity(0.15),
+                      ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                      : theme.colorScheme.outline.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -261,7 +261,7 @@ class _HistoryCard extends StatelessWidget {
                           vertical: 1,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.outline.withOpacity(0.2),
+                          color: theme.colorScheme.outline.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

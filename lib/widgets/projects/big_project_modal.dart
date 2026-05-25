@@ -87,7 +87,7 @@ class _BigProjectModalState extends ConsumerState<BigProjectModal> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
@@ -122,10 +122,10 @@ class _BigProjectModalState extends ConsumerState<BigProjectModal> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.error.withOpacity(0.06),
+                    color: theme.colorScheme.error.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: theme.colorScheme.error.withOpacity(0.2),
+                      color: theme.colorScheme.error.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -229,7 +229,7 @@ class _BigProjectModalState extends ConsumerState<BigProjectModal> {
                     activeTrackColor: theme.colorScheme.primary,
                     inactiveTrackColor: theme.colorScheme.outline,
                     thumbColor: theme.colorScheme.primary,
-                    overlayColor: theme.colorScheme.primary.withOpacity(0.12),
+                    overlayColor: theme.colorScheme.primary.withValues(alpha: 0.12),
                     trackHeight: 4,
                   ),
                   child: Slider(
@@ -253,10 +253,10 @@ class _BigProjectModalState extends ConsumerState<BigProjectModal> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.06),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
                     ),
                   ),
                   child: Row(

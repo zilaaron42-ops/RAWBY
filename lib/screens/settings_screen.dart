@@ -431,7 +431,7 @@ class _AccentSelector extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: selected
-                  ? (a['color'] as Color).withOpacity(0.15)
+                  ? (a['color'] as Color).withValues(alpha: 0.15)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(40),
               border: Border.all(
@@ -450,7 +450,7 @@ class _AccentSelector extends StatelessWidget {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: (a['color'] as Color).withOpacity(0.4),
+                        color: (a['color'] as Color).withValues(alpha: 0.4),
                         blurRadius: 8,
                       ),
                     ],
@@ -645,7 +645,7 @@ class _SuggestionSectionState extends ConsumerState<_SuggestionSection> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.08),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -706,7 +706,7 @@ class _AiProviderTile extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: selected
-                    ? theme.colorScheme.primary.withOpacity(0.15)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.15)
                     : theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(10),
               ),

@@ -195,7 +195,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 return ((session.totalScore - current.minScore) / range).clamp(0.0, 1.0);
                               })(),
                               minHeight: 6,
-                              backgroundColor: theme.colorScheme.outline.withOpacity(0.2),
+                              backgroundColor: theme.colorScheme.outline.withValues(alpha: 0.2),
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 theme.colorScheme.primary,
                               ),
@@ -276,12 +276,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: a.earned
-                          ? theme.colorScheme.primary.withOpacity(0.12)
+                          ? theme.colorScheme.primary.withValues(alpha: 0.12)
                           : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: a.earned
-                            ? theme.colorScheme.primary.withOpacity(0.3)
+                            ? theme.colorScheme.primary.withValues(alpha: 0.3)
                             : theme.colorScheme.outline,
                       ),
                     ),
@@ -320,11 +320,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             height: 4,
                             child: LinearProgressIndicator(
                               value: a.progressPercent,
-                              backgroundColor: theme.colorScheme.outline.withOpacity(0.3),
+                              backgroundColor: theme.colorScheme.outline.withValues(alpha: 0.3),
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 a.progressPercent >= 1.0
                                     ? theme.colorScheme.primary
-                                    : theme.colorScheme.primary.withOpacity(0.6),
+                                    : theme.colorScheme.primary.withValues(alpha: 0.6),
                               ),
                             ),
                           ),

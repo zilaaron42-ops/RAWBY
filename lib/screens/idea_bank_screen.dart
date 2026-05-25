@@ -324,8 +324,8 @@ class _FilterChips extends StatelessWidget {
                           horizontal: 5, vertical: 1),
                       decoration: BoxDecoration(
                         color: active
-                            ? Colors.white.withOpacity(0.25)
-                            : theme.colorScheme.primary.withOpacity(0.12),
+                            ? Colors.white.withValues(alpha: 0.25)
+                            : theme.colorScheme.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -369,9 +369,9 @@ class _SwipeBg extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 0),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       alignment: alignment,
       child: Row(
@@ -412,8 +412,8 @@ class _AiSuggestCard extends ConsumerWidget {
         radius: 20,
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         gradient: [
-          theme.colorScheme.primary.withOpacity(0.14),
-          theme.colorScheme.secondary.withOpacity(0.06),
+          theme.colorScheme.primary.withValues(alpha: 0.14),
+          theme.colorScheme.secondary.withValues(alpha: 0.06),
         ],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,7 +514,7 @@ class _Empty extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.bookmark_border,
-              size: 64, color: theme.colorScheme.primary.withOpacity(0.5)),
+              size: 64, color: theme.colorScheme.primary.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
           Text('Your bank is empty', style: theme.textTheme.titleLarge),
           const SizedBox(height: 6),

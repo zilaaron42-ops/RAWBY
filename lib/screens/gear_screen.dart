@@ -82,10 +82,10 @@ class _GearScreenState extends ConsumerState<GearScreen> {
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.08),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -245,7 +245,7 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: selected
-              ? theme.colorScheme.primary.withOpacity(0.15)
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -343,7 +343,7 @@ class _GearItemCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: gear.shouldSuggestRest
-              ? theme.colorScheme.error.withOpacity(0.5)
+              ? theme.colorScheme.error.withValues(alpha: 0.5)
               : theme.colorScheme.outline,
         ),
       ),
@@ -486,7 +486,7 @@ class _SubscriptionItemCard extends ConsumerWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: sub.isActive ? theme.colorScheme.primary.withOpacity(0.3) : theme.colorScheme.outline,
+          color: sub.isActive ? theme.colorScheme.primary.withValues(alpha: 0.3) : theme.colorScheme.outline,
         ),
       ),
       child: Row(

@@ -25,7 +25,7 @@ class GlassCard extends StatelessWidget {
     this.onTap,
     this.gradient,
     this.tint,
-    this.blur = 18,
+    this.blur = 10,
     this.borderOpacity = 0.12,
   });
 
@@ -34,7 +34,7 @@ class GlassCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final baseTint = tint ??
-        (isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.55));
+        (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white.withValues(alpha: 0.55));
 
     final card = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -53,12 +53,12 @@ class GlassCard extends StatelessWidget {
                   ),
             border: Border.all(
               color: (isDark ? Colors.white : Colors.black)
-                  .withOpacity(borderOpacity),
+                  .withValues(alpha: borderOpacity),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.35 : 0.06),
+                color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.06),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),
@@ -146,12 +146,12 @@ class FilmTag extends StatelessWidget {
         color: bg,
         gradient: filled
             ? LinearGradient(
-                colors: gradient ?? [c, c.withOpacity(0.7)],
+                colors: gradient ?? [c, c.withValues(alpha: 0.7)],
               )
             : null,
         border: filled
             ? null
-            : Border.all(color: c.withOpacity(0.4), width: 1),
+            : Border.all(color: c.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -205,7 +205,7 @@ class StatTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: tint.withOpacity(0.12),
+              color: tint.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(9),
             ),
             child: Icon(icon, size: 16, color: tint),
@@ -270,7 +270,7 @@ class GradientButton extends StatelessWidget {
     final colors = gradient ??
         [
           theme.colorScheme.primary,
-          theme.colorScheme.primary.withOpacity(0.7),
+          theme.colorScheme.primary.withValues(alpha: 0.7),
         ];
 
     return Material(
@@ -289,7 +289,7 @@ class GradientButton extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: colors.first.withOpacity(0.35),
+                color: colors.first.withValues(alpha: 0.35),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),
@@ -400,8 +400,8 @@ class AuraBackground extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final c = colors ??
         [
-          theme.colorScheme.primary.withOpacity(isDark ? 0.20 : 0.14),
-          theme.colorScheme.secondary.withOpacity(isDark ? 0.16 : 0.10),
+          theme.colorScheme.primary.withValues(alpha: isDark ? 0.20 : 0.14),
+          theme.colorScheme.secondary.withValues(alpha: isDark ? 0.16 : 0.10),
         ];
     return Stack(
       fit: StackFit.expand,
@@ -420,7 +420,7 @@ class AuraBackground extends StatelessWidget {
           ),
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+            filter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
             child: Container(color: Colors.transparent),
           ),
         ),
@@ -435,7 +435,7 @@ class AuraBackground extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
-            colors: [color, color.withOpacity(0)],
+            colors: [color, color.withValues(alpha: 0)],
           ),
         ),
       );

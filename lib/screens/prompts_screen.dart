@@ -168,12 +168,13 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
                           final activeBig = session.activeBigProject;
                           final allDone = session.workflow.isNotEmpty &&
                               session.workflow.every((t) => t.done);
-                          if (isLocked || allDone || activeBig != null)
+                          if (isLocked || allDone || activeBig != null) {
                             return _SubmitPanel(
                               session: session,
                               onSubmit: () => _showSubmitModal(context),
                               onRecord: () => _showRecordStatsModal(context),
                             );
+                          }
                           return const SizedBox.shrink();
                         }),
                         const SizedBox(height: 16),
@@ -481,8 +482,8 @@ class _Pill extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               gradient: primary
                   ? LinearGradient(colors: [
-                      theme.colorScheme.primary.withOpacity(0.16),
-                      theme.colorScheme.secondary.withOpacity(0.08),
+                      theme.colorScheme.primary.withValues(alpha: 0.16),
+                      theme.colorScheme.secondary.withValues(alpha: 0.08),
                     ])
                   : null,
               color: primary
@@ -490,7 +491,7 @@ class _Pill extends StatelessWidget {
                   : theme.colorScheme.surfaceContainerHighest,
               border: Border.all(
                 color: primary
-                    ? theme.colorScheme.primary.withOpacity(0.35)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.35)
                     : theme.colorScheme.outline,
               ),
             ),
@@ -640,7 +641,7 @@ class _Row extends StatelessWidget {
                 : null,
             color: gradient
                 ? null
-                : theme.colorScheme.primary.withOpacity(0.12),
+                : theme.colorScheme.primary.withValues(alpha: 0.12),
           ),
           child: Icon(icon,
               color: gradient ? Colors.white : theme.colorScheme.primary,
@@ -746,12 +747,12 @@ class _PromptsTask extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: task.done
-              ? theme.colorScheme.primary.withOpacity(0.06)
+              ? theme.colorScheme.primary.withValues(alpha: 0.06)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: task.done
-                ? theme.colorScheme.primary.withOpacity(0.25)
+                ? theme.colorScheme.primary.withValues(alpha: 0.25)
                 : theme.colorScheme.outline,
           ),
         ),
@@ -806,7 +807,7 @@ class _EmptyState extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.movie_outlined,
-              size: 56, color: theme.colorScheme.primary.withOpacity(0.6)),
+              size: 56, color: theme.colorScheme.primary.withValues(alpha: 0.6)),
           const SizedBox(height: 16),
           Text(
             'Nothing this week yet',

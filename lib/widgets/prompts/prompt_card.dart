@@ -61,14 +61,14 @@ class _PromptCardState extends ConsumerState<PromptCard> {
         boxShadow: widget.isSelected
             ? [
                 BoxShadow(
-                  color: gradient.first.withOpacity(0.25),
+                  color: gradient.first.withValues(alpha: 0.25),
                   blurRadius: 30,
                   offset: const Offset(0, 16),
                 ),
               ]
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isDark ? 0.4 : 0.04),
+                  color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.04),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -96,7 +96,7 @@ class _PromptCardState extends ConsumerState<PromptCard> {
                   child: Icon(
                     icon,
                     size: 120,
-                    color: Colors.white.withOpacity(0.12),
+                    color: Colors.white.withValues(alpha: 0.12),
                   ),
                 ),
                 Padding(
@@ -299,9 +299,9 @@ class _LevelChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -334,7 +334,7 @@ class _SourceChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.25),
+        color: Colors.black.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -366,8 +366,8 @@ class _SaveStar extends StatelessWidget {
         height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: saved ? Colors.white : Colors.white.withOpacity(0.18),
-          border: Border.all(color: Colors.white.withOpacity(0.4)),
+          color: saved ? Colors.white : Colors.white.withValues(alpha: 0.18),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
         ),
         child: Icon(
           saved ? Icons.bookmark : Icons.bookmark_border,
@@ -400,12 +400,12 @@ class _MetaPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: accent
-            ? theme.colorScheme.primary.withOpacity(0.10)
+            ? theme.colorScheme.primary.withValues(alpha: 0.10)
             : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(40),
         border: Border.all(
           color: accent
-              ? theme.colorScheme.primary.withOpacity(0.3)
+              ? theme.colorScheme.primary.withValues(alpha: 0.3)
               : theme.colorScheme.outline,
         ),
       ),
@@ -570,7 +570,7 @@ class _ShotRow extends StatelessWidget {
           height: 22,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.12),
+            color: theme.colorScheme.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
@@ -606,7 +606,7 @@ class _SongTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: theme.colorScheme.outline),
       ),

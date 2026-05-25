@@ -126,8 +126,8 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                           child: GlassCard(
                             gradient: [
-                              theme.colorScheme.primary.withOpacity(0.12),
-                              theme.colorScheme.secondary.withOpacity(0.04),
+                              theme.colorScheme.primary.withValues(alpha: 0.12),
+                              theme.colorScheme.secondary.withValues(alpha: 0.04),
                             ],
                             child: Row(
                               children: [
@@ -331,7 +331,7 @@ class _PodiumTile extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: place == 1 ? 28 : 22,
-              backgroundColor: _medalColor.withOpacity(0.2),
+              backgroundColor: _medalColor.withValues(alpha: 0.2),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: TextStyle(
@@ -364,14 +364,14 @@ class _PodiumTile extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                _medalColor.withOpacity(0.3),
-                _medalColor.withOpacity(0.1),
+                _medalColor.withValues(alpha: 0.3),
+                _medalColor.withValues(alpha: 0.1),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-            border: Border.all(color: _medalColor.withOpacity(0.3)),
+            border: Border.all(color: _medalColor.withValues(alpha: 0.3)),
           ),
           child: Center(
             child: Text(

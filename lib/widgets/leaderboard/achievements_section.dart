@@ -44,7 +44,7 @@ class _BadgeChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isEarned ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceVariant,
+        color: isEarned ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isEarned ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
