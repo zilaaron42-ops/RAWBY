@@ -47,45 +47,61 @@ Future<void> _sendVerificationEmail(String toEmail, String token) async {
 final _json = {'content-type': 'application/json'};
 
 Future<Response> handleLogin(Request request) async {
-  final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
-  final username = (body['username'] as String?)?.trim() ?? '';
-  final password = (body['password'] as String?)?.trim() ?? '';
+  try {
+    final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+    final username = (body['username'] as String?)?.trim() ?? '';
+    final password = (body['password'] as String?)?.trim() ?? '';
 
-  if (username.isEmpty || password.isEmpty) {
-    return Response(400, body: jsonEncode({'error': 'Username and password required'}), headers: _json);
-  }
+    if (username.isEmpty || password.isEmpty) {
+      return Response(400, body: jsonEncode({'error': 'Username and password required'}), headers: _json);
+    }
 
-  final userId = await Store.instance.getUserIdByUsername(username);
-  if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
-  }
+    final userId = await Store.instance.getUserIdByUsername(username);
+    if (userId == null) {
+      return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
+    }
 
-  final user = (await Store.instance.getUserById(userId))!;
-  if (!verifyPassword(password, user['passwordHash'] as String)) {
-    return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
-  }
+    final user = await Store.instance.getUserById(userId);
+    if (user == null) {
+      return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
+    }
 
-  final isAdmin = user['isAdmin'] == true || username == 'zaron.films';
-  if (!isAdmin && user['emailVerified'] == false) {
-    return Response(403, body: jsonEncode({
-      'error': 'email_not_verified',
-      'message': 'Please verify your email before logging in. Check your inbox.',
+    final storedHash = user['passwordHash'] as String?;
+    if (storedHash == null || !verifyPassword(password, storedHash)) {
+      return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
+    }
+
+    // Upgrade legacy SHA-256 hash to bcrypt transparently
+    final upgraded = upgradeHashIfNeeded(password, storedHash);
+    if (upgraded != null) {
+      await Store.instance.updateUserField(userId, 'passwordHash', upgraded);
+    }
+
+    final isAdmin = user['isAdmin'] == true || username == 'zaron.films';
+    if (!isAdmin && user['emailVerified'] == false) {
+      return Response(403, body: jsonEncode({
+        'error': 'email_not_verified',
+        'message': 'Please verify your email before logging in. Check your inbox.',
+      }), headers: _json);
+    }
+
+    final token = generateToken(userId, username);
+
+    return Response.ok(jsonEncode({
+      'token': token,
+      'user': {
+        'id': userId,
+        'username': user['username'],
+        'displayName': user['displayName'] ?? username,
+        'email': user['email'] ?? '',
+        'isAdmin': isAdmin,
+        'createdAt': user['createdAt'],
+      },
     }), headers: _json);
+  } catch (e, st) {
+    print('[handleLogin] error: $e\n$st');
+    return Response.internalServerError(body: jsonEncode({'error': 'Internal server error'}), headers: _json);
   }
-
-  final token = generateToken(userId, username);
-
-  return Response.ok(jsonEncode({
-    'token': token,
-    'user': {
-      'id': userId,
-      'username': user['username'],
-      'displayName': user['displayName'] ?? username,
-      'email': user['email'] ?? '',
-      'isAdmin': user['isAdmin'] == true || username == 'zaron.films',
-      'createdAt': user['createdAt'],
-    },
-  }), headers: _json);
 }
 
 Future<Response> handleRegister(Request request) async {

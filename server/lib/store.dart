@@ -81,6 +81,10 @@ class Store {
     await _users.insertOne(data);
   }
 
+  Future<void> updateUserField(String id, String field, dynamic value) async {
+    await _users.updateOne(where.eq('userId', id), modify.set(field, value));
+  }
+
   Future<void> updateUser(String id, Map<String, dynamic> data) async {
     data['userId'] = id;
     if (data.containsKey('username')) {

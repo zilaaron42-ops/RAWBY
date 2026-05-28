@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:bcrypt/bcrypt.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:shelf/shelf.dart';
 
@@ -20,8 +21,28 @@ String hashPassword(String password) {
   return BCrypt.hashpw(password, BCrypt.gensalt());
 }
 
+bool _isBcryptHash(String hash) => hash.startsWith(r'$2');
+
+String _sha256Hash(String password) =>
+    sha256.convert(utf8.encode(password)).toString();
+
+/// Handles both bcrypt and legacy SHA-256 hashes. Never throws.
 bool verifyPassword(String password, String hash) {
-  return BCrypt.checkpw(password, hash);
+  if (_isBcryptHash(hash)) {
+    try {
+      return BCrypt.checkpw(password, hash);
+    } catch (_) {
+      return false;
+    }
+  }
+  return _sha256Hash(password) == hash;
+}
+
+/// If hash is legacy SHA-256 and password matches, returns new bcrypt hash to store.
+String? upgradeLegacyHash(String password, String currentHash) {
+  if (_isBcryptHash(currentHash)) return null;
+  if (_sha256Hash(password) != currentHash) return null;
+  return hashPassword(password);
 }
 
 // ── JWT ──────────────────────────────────────────────────────────
