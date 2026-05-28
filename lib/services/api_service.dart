@@ -25,13 +25,14 @@ class ApiService {
       },
     ));
 
-    // Logging interceptor (debug only)
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      error: true,
-      logPrint: (obj) => debugPrint("[API] $obj"),
-    ));
+    if (kDebugMode) {
+      _dio.interceptors.add(LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        error: true,
+        logPrint: (obj) => debugPrint("[API] $obj"),
+      ));
+    }
 
     // Auth interceptor — injects token if available
     _dio.interceptors.add(InterceptorsWrapper(

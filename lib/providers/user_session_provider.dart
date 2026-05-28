@@ -171,7 +171,7 @@ class UserSessionNotifier extends StateNotifier<UserSession> {
 
     PromptModel build(String level, int points, int idx) {
       final templates = PromptTemplates.byLevel(level);
-      final tpl = templates[DateTime.now().millisecondsSinceEpoch % templates.length];
+      final tpl = templates[(DateTime.now().millisecondsSinceEpoch ~/ 1000 + idx) % templates.length];
       final creator = insp[idx];
       return PromptModel(
         id: 'p${points}_${DateTime.now().millisecondsSinceEpoch}',

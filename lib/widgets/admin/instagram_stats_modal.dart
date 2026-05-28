@@ -90,11 +90,13 @@ class _InstagramStatsModalState extends ConsumerState<InstagramStatsModal> {
     // In a real app, this would update a specific project's likes/views
     // or a global cache, possibly through userSessionProvider.
 
-    if (mounted) Navigator.of(context).pop({
-      "url": url,
-      "likes": likes,
-      "views": views,
-    });
+    if (mounted) {
+      Navigator.of(context).pop({
+        "url": url,
+        "likes": likes,
+        "views": views,
+      });
+    }
   }
 
   @override

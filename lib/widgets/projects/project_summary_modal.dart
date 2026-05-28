@@ -25,7 +25,7 @@ class _ProjectSummaryModalState extends ConsumerState<ProjectSummaryModal> {
   final _feelingController = TextEditingController();
   int _rating = 5;
   String _comparison = 'same';
-  bool _submitting = false;
+  final bool _submitting = false;
 
   @override
   void dispose() {

@@ -39,19 +39,25 @@ class Routes {
   static const paywall = "/paywall";
 }
 
-// Derived provider that only exposes the auth status (userId).
-// The router watches ONLY this, so preference changes don't rebuild it.
 final _isLoggedInProvider = Provider<bool>((ref) {
   return ref.watch(
     userSessionProvider.select((s) => s.userId.isNotEmpty),
   );
 });
 
+class _AuthNotifier extends ChangeNotifier {
+  _AuthNotifier(Ref ref) {
+    ref.listen<bool>(_isLoggedInProvider, (_, __) => notifyListeners());
+  }
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final isLoggedIn = ref.watch(_isLoggedInProvider);
+  final notifier = _AuthNotifier(ref);
+  ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    initialLocation: isLoggedIn ? Routes.home : Routes.login,
+    initialLocation: ref.read(_isLoggedInProvider) ? Routes.home : Routes.login,
+    refreshListenable: notifier,
     redirect: (context, state) {
       final loggedIn = ref.read(_isLoggedInProvider);
       final onLogin = state.matchedLocation == Routes.login;

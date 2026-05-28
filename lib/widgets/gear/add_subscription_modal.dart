@@ -3,7 +3,6 @@
 // User adds a new subscription, tracks cost and frequency
 // ============================================================
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ID generation handled by provider
 import '../../providers/user_session_provider.dart';

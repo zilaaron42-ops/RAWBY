@@ -247,7 +247,7 @@ class _HistoryCard extends StatelessWidget {
                     ],
                     if (isLate)
                       Text(
-                        '×${multiplier}',
+                        '×$multiplier',
                         style: TextStyle(
                           fontSize: 11,
                           color: theme.colorScheme.error,

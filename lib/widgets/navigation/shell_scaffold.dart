@@ -28,16 +28,16 @@ class ShellScaffold extends ConsumerWidget {
 
     if (isDesktop) {
       return _DesktopLayout(
-        child: child,
         currentIndex: currentIndex,
         isAdmin: session.isAdmin,
+        child: child,
       );
     }
 
     return _MobileLayout(
-      child: child,
       currentIndex: currentIndex,
       isAdmin: session.isAdmin,
+      child: child,
     );
   }
 
