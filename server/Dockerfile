@@ -1,10 +1,10 @@
 FROM dart:stable AS build
 WORKDIR /app
 COPY server/ .
-RUN dart --version && dart pub get && dart compile exe bin/server.dart -o bin/server
+RUN dart pub get
 
-FROM scratch
-COPY --from=build /runtime/ /
-COPY --from=build /app/bin/server /app/bin/server
+FROM dart:stable
+WORKDIR /app
+COPY --from=build /app .
 EXPOSE 8080
-CMD ["/app/bin/server"]
+CMD ["dart", "run", "bin/server.dart"]
