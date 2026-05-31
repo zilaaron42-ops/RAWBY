@@ -9,6 +9,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
 import '../store.dart';
+import '../data/song_catalog.dart';
 
 const _jsonHeaders = {'content-type': 'application/json'};
 
@@ -226,17 +227,22 @@ Future<String?> _getSpotifyToken() async {
 Future<List<String>> _fetchSpotifySongs(String token, String query) async {
   final encoded = Uri.encodeComponent(query);
   final res = await http.get(
-    Uri.parse('https://api.spotify.com/v1/search?q=$encoded&type=track&limit=5&market=US'),
+    Uri.parse('https://api.spotify.com/v1/search?q=$encoded&type=track&limit=12&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
   if (res.statusCode != 200) return [];
   final data = jsonDecode(res.body) as Map<String, dynamic>;
   final items = ((data['tracks'] as Map)['items'] as List<dynamic>? ?? []);
-  return items.map((t) {
+  final out = <String>[];
+  for (final t in items) {
     final track = t as Map<String, dynamic>;
+    // Famous only: Spotify popularity 0-100. Keep mainstream tracks.
+    final pop = (track['popularity'] as num?)?.toInt() ?? 0;
+    if (pop < 55) continue;
     final artists = (track['artists'] as List).map((a) => a['name']).join(', ');
-    return '"${track['name']}" by $artists';
-  }).toList();
+    out.add('"${track['name']}" by $artists');
+  }
+  return out;
 }
 
 String _userPrompt({
@@ -267,9 +273,11 @@ ${avoidPrompts.take(12).map((p) => '• $p').join('\n')}
 
   final spotifyBlock = spotifySongs.isEmpty ? '' : '''
 
-REAL SPOTIFY SONGS — currently on the platform, use some of these where they fit:
+═══════════════════════════════════════
+FAMOUS SONG POOL — pick from these
+═══════════════════════════════════════
+Real, FAMOUS, widely-known songs (many tagged with their mood). For EACH prompt, choose its 3 songs from THIS pool, matching the scene's vibe. Only if nothing here fits a scene may you use another equally-famous, real song. NEVER pick anything obscure.
 ${spotifySongs.join('\n')}
-These are real, current tracks. Prefer them over generic guesses when they match the mood.
 ''';
 
   final communityBlock = communityPrompts.isEmpty ? '' : '''
@@ -285,11 +293,11 @@ The text field MUST be 100 to 160 words. Describe the scene in cinematic detail:
 
 The shots array MUST contain 3 to 5 specific shot descriptions. Each shot MUST start with WHEN in the story to use it (e.g. "Opening —", "When they look away —", "Final shot —"). Then include focal length, movement, lighting, and framing. This is a shot list the videographer follows in order.
 
-SONG SUGGESTIONS: For each prompt, include a "songs" array with exactly 3 objects. Each song has: title, artist, tier, why.
-- Song 1 (tier: "best_match"): the song that fits the story mood and energy best. Any era, any popularity.
-- Song 2 (tier: "trending"): a song currently trending and popular on Instagram Reels / TikTok (2024-2026). Must also fit the theme.
-- Song 3 (tier: "classic_fit"): a song that's still popular and widely known, and fits the mood well. Think timeless or recent classics.
-CRITICAL: Use EXACTLY these tier values: "best_match", "trending", "classic_fit". Do not use any other tier names.
+SONG SUGGESTIONS: For each prompt include a "songs" array with exactly 3 objects (keys: title, artist, tier, why). ALL 3 must be FAMOUS, real, widely-known songs — prefer the FAMOUS SONG POOL above — and ALL 3 must fit that scene's mood and energy (never one fit + two random). Vary era/genre across the 3 where it suits the vibe.
+- Song 1 (tier: "best_match"): the famous song that best nails the scene's mood.
+- Song 2 (tier: "trending"): a big, well-known modern pop / rap / dance hit that fits.
+- Song 3 (tier: "classic_fit"): a famous older classic (60s-90s rock, soul, disco, pop) that fits.
+CRITICAL: Use EXACTLY these tier values: "best_match", "trending", "classic_fit". Real songs only — never invent a song or mismatch artist/title; if unsure, pick a more famous one.
 Also include "licenseFreeKeywords" — 2-3 search phrases for royalty-free music libraries.
 
 LEVEL RULES (strict):
@@ -369,17 +377,30 @@ Future<Response> handleGeneratePrompts(Request request) async {
     final region = data['region'] as String? ?? '';
     final seasonalPrompts = data['seasonalPrompts'] as bool? ?? false;
 
-    // Fetch Spotify songs for variety
+    // Build a pool of FAMOUS songs to ground the picks. Spotify first (real,
+    // popularity-filtered) over rotating popular genres; plus a rotating sample
+    // of the curated backup catalog (sole source if Spotify is unavailable).
+    final rng = Random();
     final List<String> spotifySongs = [];
     try {
       final token = await _getSpotifyToken();
       if (token != null) {
-        final queries = ['indie cinematic mood', 'trending reels 2025', 'emotional acoustic'];
-        for (final q in queries) {
-          spotifySongs.addAll(await _fetchSpotifySongs(token, q));
+        final picks = List<String>.from(_genrePalette)..shuffle(rng);
+        for (final g in picks.take(4)) {
+          spotifySongs.addAll(await _fetchSpotifySongs(token, g));
         }
       }
     } catch (_) {}
+    // Backup catalog sample — always added for breadth (and reliability when
+    // Spotify is off). Rotated each call so picks vary across generations.
+    final catalog = List<String>.from(kSongCatalog)..shuffle(rng);
+    for (final line in catalog.take(90)) {
+      final parts = line.split('|');
+      if (parts.length >= 3) {
+        spotifySongs.add('"${parts[0]}" by ${parts[1]} — ${parts[2]}');
+      }
+    }
+    spotifySongs.shuffle(rng);
 
     // Fetch community prompts for inspiration
     final List<String> communityPrompts = [];
