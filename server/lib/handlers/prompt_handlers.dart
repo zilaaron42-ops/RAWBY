@@ -44,14 +44,19 @@ LESS IS MORE — this is a law, not a tip
 At least one prompt per week MUST be minimal. Simple idea. One location. Quiet. No plot. Pure mood. Example: someone sits on their kitchen floor eating cereal at 2am. That's the whole story. No explanation needed. The best Reels often have the simplest concept executed with feeling. Not every prompt needs an emotional arc. Some just need presence.
 
 ═══════════════════════════════════════
-SONGS — real, recognizable, fitting
+SONGS — FAMOUS songs only, all 3 must fit the vibe
 ═══════════════════════════════════════
-Suggest ONLY real songs that genuinely exist, by the correct artist. Prefer songs a normal listener would actually recognize — popular and well-loved beats obscure-and-clever every time. If you are not certain a song is real AND correctly attributed, pick a famous one instead. NEVER invent songs. NEVER guess what is "currently trending" on TikTok/Reels — you cannot know, so don't try. Never mangle title/artist pairs. A little variety in vibe across the 3 prompts is fine, but recognizability always wins: if in doubt, choose the song most people would know.
+For each prompt give 3 songs. HARD RULES (earlier picks were far too obscure — fix that):
+- POPULAR ONLY. Every song must be famous and mainstream — the kind millions of people know: big chart hits, iconic tracks, household-name artists. If a normal person wouldn't instantly recognize it, DO NOT use it. No indie / bedroom-pop / lo-fi / "tasteful underground" picks. The FAME BAR is artists at the level of Queen, Fleetwood Mac, Michael Jackson, Whitney Houston, ABBA, Elton John, Nirvana, Eminem, Dr. Dre, 2Pac, 50 Cent, Rihanna, Beyoncé, Drake, Kendrick Lamar, Travis Scott, Taylor Swift, The Weeknd, Adele, Coldplay, Daft Punk — that LEVEL of fame is required (this is NOT a list to copy from).
+- ALL THREE FIT THE STORY. Read the scene's mood and energy; every one of the 3 songs must suit it. Never "one fits, two random".
+- VARY BY ERA/GENRE, but only what fits the vibe: a hype/gym scene → popular rap/hip-hop; a nostalgic golden-hour scene → a famous 70s/80s classic; a heartbreak scene → a well-known ballad; an upbeat scene → a big pop or dance hit. Mix eras across the 3 (a classic, a modern hit, something in between) so they aren't samey.
+- REAL + correctly attributed. Never invent a song, never mismatch artist/title. If unsure, pick a MORE famous one.
+- DON'T default to the same songs every time. Different prompts and different weeks must get different famous songs.
 
-SONG STRUCTURE (for each prompt — exactly these 3 tiers, keys unchanged):
-1. "best_match" — the real song that best fits the mood. May be popular. Must genuinely fit.
-2. "trending" — a genuinely popular, widely-known hit (a real song people actually recognize) that also fits the theme.
-3. "classic_fit" — a timeless, broadly recognized song that fits the scene.
+SONG STRUCTURE (each prompt: exactly 3 song objects, keys unchanged):
+1. "best_match" — the famous song that best nails the scene's vibe.
+2. "trending" — a big, well-known modern pop / rap / dance hit that fits.
+3. "classic_fit" — a famous older classic (60s–90s: rock, soul, disco, pop) that fits.
 
 ═══════════════════════════════════════
 JSON SCHEMA (each of the 3 objects)
@@ -152,11 +157,10 @@ const _visualDevices = [
 
 /// Genre pools to force genuinely different song palettes each week.
 const _genrePalette = [
-  'indie folk', 'bedroom pop', 'classical piano', 'lo-fi hip-hop',
-  'ambient electronic', 'jazz', 'soul/R&B', 'alternative rock',
-  'singer-songwriter', 'cinematic score', 'synth-pop', 'neo-soul',
-  'acoustic', 'dream pop', 'trap', 'art pop', 'punk',
-  'country/Americana', 'bossa nova', 'post-rock', 'gospel', 'shoegaze',
+  'classic rock (70s/80s)', 'motown & soul', 'disco & funk', '80s synth-pop',
+  '90s hip-hop', '2000s pop', 'modern pop hits', 'mainstream rap/hip-hop',
+  'R&B', 'rock anthems', 'dance/electronic hits', 'country pop',
+  'latin pop / reggaeton', 'classic ballads', '90s/2000s R&B', 'pop-punk',
 ];
 
 /// Rotating concrete EXAMPLES. We hand the model exactly ONE, chosen at
@@ -195,7 +199,7 @@ These are mandatory divergence constraints for THIS generation only. Obey them; 
 - TIME OF DAY: spread the 3 prompts across these registers — ${times.join(' · ')}. Do not put all three in the same light.
 - EMOTIONAL CORES: the 3 prompts must carry distinct emotional registers drawn from — ${moods.join(' · ')}. At most one may be melancholy/reflective; the rest must NOT be.
 - VISUAL DEVICE: give at least one prompt a strong formal constraint — pick from: ${devices.join(' · ')}. State it inside that prompt's shots.
-- SONGS: pick real, recognizable songs that genuinely fit each scene. Light variety in vibe is welcome (loose inspiration only: ${genres.join(', ')}), but recognizability ALWAYS wins — never force an obscure genre, and never pick a song most people wouldn't know.
+- SONGS: all 3 songs per prompt must be FAMOUS, widely-known hits that genuinely fit that scene's vibe. For variety THIS generation, lean toward these popular flavors where they fit the mood: ${genres.join(', ')}. Never pick obscure songs, and don't fall back on the same defaults you'd usually reach for.
 
 Use the uniqueness id ($seed) as a reason to make fresh, specific, unexpected choices — not the safe first idea.
 ''';
