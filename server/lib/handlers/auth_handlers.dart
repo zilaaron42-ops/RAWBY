@@ -100,8 +100,7 @@ Future<Response> handleLogin(Request request) async {
     }), headers: _json);
   } catch (e, st) {
     print('[login] Unhandled error: $e\n$st');
-    // TEMP diagnostic: surface the cause so we can confirm JWT_SECRET/Mongo.
-    return Response(500, body: jsonEncode({'error': 'Internal server error', 'detail': e.toString()}), headers: _json);
+    return Response(500, body: jsonEncode({'error': 'Internal server error'}), headers: _json);
   }
 }
 

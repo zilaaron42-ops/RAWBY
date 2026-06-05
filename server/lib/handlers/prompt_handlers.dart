@@ -386,7 +386,7 @@ Future<Response> handleGeneratePrompts(Request request) async {
       final token = await _getSpotifyToken();
       if (token != null) {
         final picks = List<String>.from(_genrePalette)..shuffle(rng);
-        for (final g in picks.take(4)) {
+        for (final g in picks.take(2)) {
           spotifySongs.addAll(await _fetchSpotifySongs(token, g));
         }
       }
@@ -394,7 +394,7 @@ Future<Response> handleGeneratePrompts(Request request) async {
     // Backup catalog sample — always added for breadth (and reliability when
     // Spotify is off). Rotated each call so picks vary across generations.
     final catalog = List<String>.from(kSongCatalog)..shuffle(rng);
-    for (final line in catalog.take(90)) {
+    for (final line in catalog.take(28)) {
       final parts = line.split('|');
       if (parts.length >= 3) {
         spotifySongs.add('"${parts[0]}" by ${parts[1]} — ${parts[2]}');
@@ -469,7 +469,7 @@ Future<String> _callGroq({required String model, required String userPrompt}) as
       'top_p': 0.95,
       'presence_penalty': 0.6,
       'frequency_penalty': 0.3,
-      'max_tokens': 8000,
+      'max_tokens': 3500,
       'response_format': {'type': 'json_object'},
       'messages': [
         {'role': 'system', 'content': _systemPrompt},
@@ -500,7 +500,7 @@ Future<String> _callOpenAi({required String model, required String userPrompt}) 
       'top_p': 0.95,
       'presence_penalty': 0.6,
       'frequency_penalty': 0.3,
-      'max_tokens': 8000,
+      'max_tokens': 3500,
       'response_format': {'type': 'json_object'},
       'messages': [
         {'role': 'system', 'content': _systemPrompt},
@@ -527,7 +527,7 @@ Future<String> _callClaudePrompts({required String model, required String userPr
     },
     body: jsonEncode({
       'model': model,
-      'max_tokens': 8000,
+      'max_tokens': 3500,
       'temperature': 1.0,
       'system': _systemPrompt,
       'messages': [
