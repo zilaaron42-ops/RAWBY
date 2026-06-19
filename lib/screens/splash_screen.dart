@@ -48,7 +48,20 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               scale: _scale,
               child: FadeTransition(
                 opacity: _fade,
-                child: const RawbyLogo(size: 56),
+                // Soft pine glow behind the mark — subtle, not theatrical.
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: RawbyPalette.green600.withValues(alpha: 0.28),
+                        blurRadius: 28,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const RawbyLogo(size: 56),
+                ),
               ),
             ),
             const SizedBox(height: 16),

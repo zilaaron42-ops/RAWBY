@@ -186,7 +186,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen>
       final response = await api.aiChat(
         messages: historyForApi,
         context: ctx,
-        provider: session.aiSettings.provider,
+        provider: 'groq', // Groq only — Claude disabled
       );
 
       if (mounted) {

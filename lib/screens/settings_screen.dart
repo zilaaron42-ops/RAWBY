@@ -61,30 +61,14 @@ class SettingsScreen extends ConsumerWidget {
                       padding: EdgeInsets.fromLTRB(4, 8, 4, 12),
                     ),
                     GlassCard(
-                      child: Column(
-                        children: [
-                          _AiProviderTile(
-                            provider: 'groq',
-                            label: 'Groq · llama-3.3-70b',
-                            subtitle: 'Fast, private, always-on',
-                            icon: Icons.bolt,
-                            selected: session.aiSettings.provider == 'groq',
-                            onTap: () => ref.read(userSessionProvider.notifier)
-                                .updateAiSettings(session.aiSettings.copyWith(provider: 'groq')),
-                          ),
-                          if (session.isAdmin) ...[
-                            const Divider(height: 1),
-                            _AiProviderTile(
-                              provider: 'claude',
-                              label: 'Claude · Sonnet 4.6',
-                              subtitle: 'Admin only · Anthropic',
-                              icon: Icons.auto_awesome,
-                              selected: session.aiSettings.provider == 'claude',
-                              onTap: () => ref.read(userSessionProvider.notifier)
-                                  .updateAiSettings(session.aiSettings.copyWith(provider: 'claude')),
-                            ),
-                          ],
-                        ],
+                      child: _AiProviderTile(
+                        provider: 'groq',
+                        label: 'Groq · llama-3.3-70b',
+                        subtitle: 'Fast, private, always-on',
+                        icon: Icons.bolt,
+                        selected: true,
+                        onTap: () => ref.read(userSessionProvider.notifier)
+                            .updateAiSettings(session.aiSettings.copyWith(provider: 'groq')),
                       ),
                     ).animate().fadeIn().slideY(begin: 0.05),
 

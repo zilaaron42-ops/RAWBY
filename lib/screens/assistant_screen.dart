@@ -231,7 +231,7 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen>
           'promptLevel': selectedPrompt?.level,
           'promptText': selectedPrompt?.text ?? '',
         },
-        provider: session.aiSettings.provider,
+        provider: 'groq', // Groq only — Claude disabled
       );
 
       _chatHistory.add({'role': 'assistant', 'content': reply});

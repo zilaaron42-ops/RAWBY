@@ -381,7 +381,8 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
-/// Decorative background — soft radial blobs in accent colors.
+/// Minimalist background — soft accent blobs behind a heavy blur. Clean and
+/// quiet (no grain / vignette), so frosted cards stay the focus.
 class AuraBackground extends StatelessWidget {
   final Widget child;
   final List<Color>? colors;
@@ -400,8 +401,8 @@ class AuraBackground extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final c = colors ??
         [
-          theme.colorScheme.primary.withValues(alpha: isDark ? 0.20 : 0.14),
-          theme.colorScheme.secondary.withValues(alpha: isDark ? 0.16 : 0.10),
+          theme.colorScheme.primary.withValues(alpha: isDark ? 0.16 : 0.10),
+          theme.colorScheme.secondary.withValues(alpha: isDark ? 0.12 : 0.08),
         ];
     return Stack(
       fit: StackFit.expand,
@@ -420,7 +421,7 @@ class AuraBackground extends StatelessWidget {
           ),
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
+            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
             child: Container(color: Colors.transparent),
           ),
         ),

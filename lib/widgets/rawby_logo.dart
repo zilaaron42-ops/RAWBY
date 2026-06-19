@@ -1,85 +1,48 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
+/// RAWBY wordmark — bold "RAWBY" set in a pine / moss-green squircle.
+/// Minimalist, brand-fixed (always pine green, independent of accent theme).
 class RawbyLogo extends StatelessWidget {
   final double size;
+
+  /// When true, shows just the green block + mark (default). Set [wordmark]
+  /// to render the block beside a larger "RAWBY" lockup if needed later.
   const RawbyLogo({super.key, this.size = 48});
+
+  // Pine / moss green — fixed brand colours, not theme-driven.
+  static const Color _pine = RawbyPalette.green600; // #3D6B41
+  static const Color _moss = RawbyPalette.green700; // #2A4D2D
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
     return ClipPath(
-      clipper: _SquircleClipper(radius: size * 0.28),
+      clipper: _SquircleClipper(radius: size * 0.30),
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-          color: primary,
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              primary,
-              Color.lerp(primary, Colors.black, 0.25)!,
-            ],
+            colors: [_pine, _moss],
           ),
         ),
+        alignment: Alignment.center,
         child: Padding(
-          padding: EdgeInsets.all(size * 0.1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['R', 'A', 'W'].map((l) => _Key(letter: l, size: size * 0.26)).toList(),
+          padding: EdgeInsets.symmetric(horizontal: size * 0.14),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              'RAWBY',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                letterSpacing: size * 0.01,
+                height: 1,
+                fontSize: size * 0.30,
               ),
-              SizedBox(height: size * 0.04),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['B', 'Y'].map((l) => _Key(letter: l, size: size * 0.26)).toList(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Key extends StatelessWidget {
-  final String letter;
-  final double size;
-  const _Key({required this.letter, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(size * 0.06),
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.22),
-        color: Colors.white.withValues(alpha: 0.14),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.35),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            offset: Offset(0, size * 0.08),
-            blurRadius: size * 0.14,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          letter,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: size * 0.44,
-            fontWeight: FontWeight.w800,
-            height: 1,
+            ),
           ),
         ),
       ),

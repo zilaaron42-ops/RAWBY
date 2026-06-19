@@ -10,6 +10,7 @@ import '../providers/user_session_provider.dart';
 import '../providers/router_provider.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/rawby_logo.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -274,19 +275,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
-          // Gradient hero accent
+          // Subtle pine wash at the very top — minimalist, not a loud hero.
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            height: size.height * 0.45,
+            height: size.height * 0.34,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    primary.withValues(alpha: 0.15),
+                    RawbyPalette.green600.withValues(alpha: 0.10),
                     theme.colorScheme.surface.withValues(alpha: 0),
                   ],
                 ),
@@ -298,26 +299,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  const SizedBox(height: 64),
-                  // Logo
-                  const RawbyLogo(size: 52),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 88),
+                  // Logo — pine wordmark block
+                  const RawbyLogo(size: 64),
+                  const SizedBox(height: 18),
                   Text(
                     'Create. Compete. Grow.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
-                      letterSpacing: 0.5,
+                      letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 52),
 
-                  // Form card
+                  // Form card — minimalist: faint fill, hairline border.
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
+                      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: theme.colorScheme.outlineVariant),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
+                      ),
                     ),
                     child: Form(
                       key: _formKey,

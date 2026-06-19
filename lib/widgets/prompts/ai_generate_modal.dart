@@ -97,7 +97,7 @@ class _AiGenerateModalState extends ConsumerState<AiGenerateModal> {
       final service = ref.read(promptServiceProvider);
       final ai = session.aiSettings;
       final prompts = await service.generateAiPrompts(
-        provider: ai.provider,
+        provider: 'groq', // Groq only — Claude disabled
         model: ai.model,
         seasonalPrompts: _seasonalPrompts,
         region: _region,

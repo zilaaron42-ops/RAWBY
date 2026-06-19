@@ -54,7 +54,7 @@ class _SkillFeedbackModalState extends ConsumerState<SkillFeedbackModal> {
     try {
       final api = ref.read(apiServiceProvider);
       final data = await api.getSkillFeedback(
-        provider: ai.provider,
+        provider: 'groq', // Groq only — Claude disabled
         model: ai.model,
         focusArea: _selectedFocus,
         notes: _notesController.text,
