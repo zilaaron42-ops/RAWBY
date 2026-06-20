@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+/* ── Accent themes — cinema-* scale reads these RGB triplets, so one
+   swap recolours every accent + the logo. Default = amber (gold). ── */
+:root,
+[data-accent="amber"] {
+  --c-300: 246 220 156;
+  --c-400: 240 200 104;
+  --c-500: 232 182 71;
+  --c-600: 201 148 44;
+  --c-700: 143 105 24;
+  --brand-1: #f2d27a;
+  --brand-2: #e8b647;
+  --brand-3: #b4831f;
+  --brand-ink: #3a2904;
+  --glow: 232 182 71;
+}
+[data-accent="green"] {
+  --c-300: 143 189 147;
+  --c-400: 111 163 115;
+  --c-500: 90 138 94;
+  --c-600: 61 107 65;
+  --c-700: 42 77 45;
+  --brand-1: #7fb184;
+  --brand-2: #5a8a5e;
+  --brand-3: #2a4d2d;
+  --brand-ink: #0c2410;
+  --glow: 90 138 94;
+}
+[data-accent="azure"] {
+  --c-300: 147 197 253;
+  --c-400: 96 165 250;
+  --c-500: 59 130 246;
+  --c-600: 37 99 235;
+  --c-700: 29 78 216;
+  --brand-1: #8fc1fc;
+  --brand-2: #3b82f6;
+  --brand-3: #1d4ed8;
+  --brand-ink: #06203f;
+  --glow: 59 130 246;
+}
+[data-accent="rose"] {
+  --c-300: 244 168 184;
+  --c-400: 236 107 133;
+  --c-500: 232 93 117;
+  --c-600: 177 43 92;
+  --c-700: 138 30 71;
+  --brand-1: #f4a8b8;
+  --brand-2: #e85d75;
+  --brand-3: #8a1e47;
+  --brand-ink: #3a0a1d;
+  --glow: 232 93 117;
+}
+
+/* ── Light / dark surfaces — semantic tokens. ── */
+:root,
+[data-theme="dark"] {
+  --bg: 10 11 13;
+  --surface: 22 23 25;
+  --card: 30 32 35;
+  --text-hi: 241 241 240;
+  --text-dim: 156 163 175;
+  --hairline: 255 255 255 / 0.08;
+  --hairline-strong: 255 255 255 / 0.16;
+  --glass: 255 255 255 / 0.045;
+  --glass-hover: 255 255 255 / 0.08;
+  --field: 0 0 0 / 0.3;
+  --chip: 255 255 255 / 0.05;
+  --divide: 255 255 255 / 0.06;
+  --grain-opacity: 0.06;
+  --scene-veil: 10 11 13 / 0.55;
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: 244 244 243;
+  --surface: 255 255 255;
+  --card: 255 255 255;
+  --text-hi: 15 23 42;
+  --text-dim: 71 85 105;
+  --hairline: 15 23 42 / 0.1;
+  --hairline-strong: 15 23 42 / 0.18;
+  --glass: 255 255 255 / 0.72;
+  --glass-hover: 255 255 255 / 0.88;
+  --field: 15 23 42 / 0.04;
+  --chip: 15 23 42 / 0.05;
+  --divide: 15 23 42 / 0.08;
+  --grain-opacity: 0.025;
+  --scene-veil: 244 244 243 / 0.5;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--bg));
+  color: rgb(var(--text-hi));
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+::selection {
+  background: rgba(232, 182, 71, 0.3);
+  color: #fff;
+}
+
+/* Visible focus ring for keyboard users (no mouse-focus noise). */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0a0b0d, 0 0 0 4px rgba(232, 182, 71, 0.7);
+  border-radius: 8px;
+}
+
+/* Respect reduced-motion: kill non-essential animation + transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin cinematic scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0b0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2c30;
+  border-radius: 8px;
+  border: 2px solid #0a0b0d;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3d42;
+}
+
+@layer components {
+  /* Glass surface — backdrop blur, translucent fill, hairline border */
+  .glass {
+    @apply rounded-glass border border-hairline bg-glass shadow-glass backdrop-blur-xl;
+  }
+
+  /* Interactive card hover — transform/opacity only (no layout shift) */
+  .card-hover {
+    @apply cursor-pointer transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-hairline-strong hover:shadow-glow-sm;
+  }
+
+  /* Display heading helper */
+  .h-display {
+    @apply font-display tracking-tight;
+  }
+
+  /* Constrain reading measure for long-form text */
+  .measure {
+    @apply max-w-prose;
+  }
+}
+
+/* Faint film-grain overlay (used by <FilmGrain/>) */
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Letterbox bars */
+.letterbox::before,
+.letterbox::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: #000;
+  z-index: 5;
+  pointer-events: none;
+}
+.letterbox::before {
+  top: 0;
+}
+.letterbox::after {
+  bottom: 0;
+}

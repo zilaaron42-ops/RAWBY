@@ -1,0 +1,14 @@
+# Static SPA — backend already lives at https://rawby-1.onrender.com
+services:
+  - type: web
+    name: rawby-web
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://rawby-1.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
