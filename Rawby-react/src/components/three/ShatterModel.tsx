@@ -25,7 +25,7 @@ interface Props {
   speed?: number;
 }
 
-export function ShatterModel({ children, mode, onDone, speed = 1.8 }: Props) {
+export function ShatterModel({ children, mode, onDone, speed = 2.2 }: Props) {
   const group = useRef<THREE.Group>(null);
   const pieces = useRef<Piece[]>([]);
   // p: 1 = fully assembled, 0 = fully exploded.
@@ -45,7 +45,7 @@ export function ShatterModel({ children, mode, onDone, speed = 1.8 }: Props) {
         Math.random() - 0.5
       )
         .normalize()
-        .multiplyScalar(1.6 + Math.random() * 1.8);
+        .multiplyScalar(0.7 + Math.random() * 0.9);
       arr.push({
         mesh: m,
         basePos: m.position.clone(),

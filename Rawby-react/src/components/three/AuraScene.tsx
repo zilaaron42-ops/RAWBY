@@ -10,6 +10,7 @@ import * as THREE from "three";
 import { CyclingHero } from "./CyclingHero";
 import { Particles } from "./Particles";
 import { PaintOnce } from "./PaintOnce";
+import { Env } from "./Env";
 import { REDUCED } from "./reduced";
 
 function Rig({ children }: { children: React.ReactNode }) {
@@ -53,6 +54,7 @@ export function AuraScene() {
           gl={{ antialias: true, alpha: true }}
           style={{ position: "absolute", inset: 0 }}
         >
+          <Env intensity={0.4} />
           <ambientLight intensity={0.9} />
           <directionalLight position={[5, 5, 5]} intensity={1.8} color="#F6DC9C" />
           <pointLight position={[-4, -2, 3]} intensity={1} color="#6FA373" />

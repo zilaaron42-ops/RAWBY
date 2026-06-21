@@ -5,10 +5,12 @@ import { Suspense } from "react";
 import { CyclingHero } from "./CyclingHero";
 import { Particles } from "./Particles";
 import { PaintOnce } from "./PaintOnce";
+import { Env } from "./Env";
 
 export default function AuthHero({ onChange }: { onChange: (name: string) => void }) {
   return (
     <Canvas camera={{ position: [0, 0, 6], fov: 45 }} dpr={[1, 1.6]}>
+      <Env intensity={0.55} />
       <ambientLight intensity={1.1} />
       <directionalLight position={[4, 6, 6]} intensity={2.4} color="#FFE9B0" />
       <pointLight position={[-5, -1, 4]} intensity={1.3} color="#6FA373" />

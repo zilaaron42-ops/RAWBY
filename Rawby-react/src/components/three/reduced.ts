@@ -1,6 +1,5 @@
-// True when the OS requests reduced motion. The 3D scene still renders
-// (a static frame is not "motion"), but all useFrame animation, cycling,
-// and parallax are skipped so we honour the preference.
-export const REDUCED =
-  typeof window !== "undefined" &&
-  !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+// The 3D hero is the centerpiece the owner explicitly wants animated, so
+// it always plays (cycle + shatter + spin). Page-level motion still honours
+// prefers-reduced-motion via the CSS media query in index.css.
+// Flip this back to the matchMedia check to make the 3D respect it too.
+export const REDUCED = false;
