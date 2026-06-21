@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HERO_LABELS } from "../three/heroLabels";
 import { FilmGrain } from "../ui/FilmGrain";
 import { Logo } from "../ui/Logo";
+import { Icon } from "../ui/Icon";
 
 // 3D is heavy — defer it so the form paints immediately.
 const AuraScene = lazy(() =>
@@ -104,6 +105,37 @@ export function Field({
         {...props}
         className="w-full rounded-xl border border-hairline bg-field px-4 py-3 text-sm text-text-hi outline-none transition-colors placeholder:text-text-dim/60 focus:border-cinema-500/70 focus:ring-2 focus:ring-cinema-500/20"
       />
+    </label>
+  );
+}
+
+/** Password input with a show/hide toggle. */
+export function PasswordField({
+  label,
+  ...props
+}: { label: string } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const [show, setShow] = useState(false);
+  return (
+    <label className="mb-4 block">
+      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-dim">
+        {label}
+      </span>
+      <div className="relative">
+        <input
+          {...props}
+          type={show ? "text" : "password"}
+          className="w-full rounded-xl border border-hairline bg-field px-4 py-3 pr-11 text-sm text-text-hi outline-none transition-colors placeholder:text-text-dim/60 focus:border-cinema-500/70 focus:ring-2 focus:ring-cinema-500/20"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          aria-label={show ? "Hide password" : "Show password"}
+          aria-pressed={show}
+          className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-text-dim transition-colors hover:text-text-hi"
+        >
+          <Icon name={show ? "eyeOff" : "eye"} size={18} />
+        </button>
+      </div>
     </label>
   );
 }

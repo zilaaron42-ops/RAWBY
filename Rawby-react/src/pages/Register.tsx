@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { AuthLayout, Field } from "../components/layout/AuthLayout";
+import { AuthLayout, Field, PasswordField } from "../components/layout/AuthLayout";
 import { GradientButton } from "../components/ui/GradientButton";
 import { ColdStartNote } from "../components/ui/Bits";
 import { auth } from "../lib/endpoints";
@@ -54,9 +54,8 @@ export default function Register() {
         <Field label="Display name" value={f.displayName} onChange={upd("displayName")} required />
         <Field label="Username" value={f.username} onChange={upd("username")} autoComplete="username" required />
         <Field label="Email" type="email" value={f.email} onChange={upd("email")} autoComplete="email" required />
-        <Field
+        <PasswordField
           label="Password"
-          type="password"
           value={f.password}
           onChange={upd("password")}
           autoComplete="new-password"

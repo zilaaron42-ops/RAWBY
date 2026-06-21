@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { AuthLayout, Field } from "../components/layout/AuthLayout";
+import { AuthLayout, Field, PasswordField } from "../components/layout/AuthLayout";
 import { GradientButton } from "../components/ui/GradientButton";
 import { ColdStartNote } from "../components/ui/Bits";
 import { auth } from "../lib/endpoints";
@@ -44,9 +44,8 @@ export default function Login() {
           autoComplete="username"
           required
         />
-        <Field
+        <PasswordField
           label="Password"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="current-password"
