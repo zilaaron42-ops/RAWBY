@@ -57,6 +57,58 @@ Future<Response> handleLogin(Request request) async {
       return Response(400, body: jsonEncode({'error': 'Username and password required'}), headers: _json);
     }
 
+    // ── Env-configured admin bootstrap ───────────────────────────────
+    // Lets the owner sign in even before an admin record exists. The
+    // credentials live in the server environment (ADMIN_USERNAME /
+    // ADMIN_PASSWORD), never in source. On first matching login the admin
+    // user is created (isAdmin + verified); thereafter the record exists.
+    final adminUser = Platform.environment['ADMIN_USERNAME'];
+    final adminPass = Platform.environment['ADMIN_PASSWORD'];
+    if (adminUser != null &&
+        adminPass != null &&
+        adminUser.isNotEmpty &&
+        adminPass.isNotEmpty &&
+        username == adminUser &&
+        password == adminPass) {
+      var adminId = await Store.instance.getUserIdByUsername(username);
+      if (adminId == null) {
+        adminId = Store.instance.generateId();
+        await Store.instance.createUser(adminId, {
+          'username': username,
+          'displayName': 'Admin',
+          'email': '',
+          'passwordHash': hashPassword(password),
+          'isAdmin': true,
+          'emailVerified': true,
+          'createdAt': DateTime.now().toUtc().toIso8601String(),
+          'totalScore': 0,
+          'streak': 0,
+        });
+      } else {
+        final existing = await Store.instance.getUserById(adminId);
+        if (existing != null) {
+          await Store.instance.updateUser(adminId, {
+            ...existing,
+            'isAdmin': true,
+            'emailVerified': true,
+          });
+        }
+      }
+      final adminToken = generateToken(adminId, username);
+      final adminRecord = await Store.instance.getUserById(adminId);
+      return Response.ok(jsonEncode({
+        'token': adminToken,
+        'user': {
+          'id': adminId,
+          'username': username,
+          'displayName': adminRecord?['displayName'] ?? 'Admin',
+          'email': adminRecord?['email'] ?? '',
+          'isAdmin': true,
+          'createdAt': adminRecord?['createdAt'],
+        },
+      }), headers: _json);
+    }
+
     final userId = await Store.instance.getUserIdByUsername(username);
     if (userId == null) {
       return Response(401, body: jsonEncode({'error': 'Invalid username or password'}), headers: _json);
