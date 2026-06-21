@@ -20,3 +20,5 @@ export const SECONDARY_ITEMS: NavItem[] = [
   { to: "/profile", label: "Profile", icon: "user" },
   { to: "/settings", label: "Settings", icon: "settings" },
 ];
+
+export const ADMIN_ITEM: NavItem = { to: "/admin", label: "Admin", icon: "shield" };

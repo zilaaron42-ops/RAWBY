@@ -13,6 +13,28 @@ export function levelStyle(level?: string) {
   return LEVELS.find((l) => l.name === level) ?? LEVELS[1];
 }
 
+// How much each like is worth, scaled by level. Score = base + likes·weight·lateMult.
+export const LEVEL_WEIGHT: Record<string, number> = {
+  Sequence: 0.5,
+  "Short Story": 1,
+  "Story + Character": 2,
+  "Big Project": 5,
+};
+
+export function likesBonus(level: string, likes: number, lateMult: number): number {
+  return Math.round(likes * (LEVEL_WEIGHT[level] ?? 1) * lateMult);
+}
+
+export const GEAR_CATEGORIES = [
+  "Camera",
+  "Lens",
+  "Audio",
+  "Lighting",
+  "Support",
+  "Accessory",
+  "Other",
+] as const;
+
 // Late penalty multipliers (days past deadline).
 export const LATE_MULTIPLIERS = [
   { day: "On time", mult: 1.0 },

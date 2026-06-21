@@ -13,6 +13,7 @@ import IdeaBank from "./pages/IdeaBank";
 import Assistant from "./pages/Assistant";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/assistant" element={<Assistant />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -8,6 +8,7 @@ import { FilmTag } from "../components/ui/FilmTag";
 import { Icon } from "../components/ui/Icon";
 import { SkeletonCard } from "../components/ui/Skeleton";
 import { useMe } from "../hooks/queries";
+import { useProgress } from "../hooks/useProgress";
 import { useAuth } from "../store/auth";
 import { WEEKLY_CYCLE } from "../lib/constants";
 import { stagger } from "../lib/motion";
@@ -29,6 +30,7 @@ const nf = new Intl.NumberFormat("en-US");
 export default function Home() {
   const { data, isLoading } = useMe();
   const user = useAuth((s) => s.user);
+  const prog = useProgress();
 
   const snap: Snapshot = { ...FALLBACK, ...(data?.snapshot ?? {}) };
   const history = data?.snapshot?.history ?? data?.history ?? [];
@@ -137,30 +139,32 @@ export default function Home() {
         <StatTile icon="refresh" value={snap.regensLeft ?? 0} label="Regens left" accent="#3B82F6" />
       </motion.div>
 
-      {/* Weekly cycle progress */}
+      {/* Weekly cycle — tap to track your progress */}
       <GlassCard className="mt-6">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="h-display text-lg font-bold text-text-hi">Production cycle</h3>
-          <span className="inline-flex items-center gap-1.5 text-xs text-text-dim">
-            <Icon name="calendar" size={14} /> Friday → Friday
+          <h3 className="h-display text-lg font-bold text-text-hi">Your progress</h3>
+          <span className="text-xs text-text-dim">
+            {prog.done.length}/{WEEKLY_CYCLE.length} phases · tap to tick
           </span>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           {WEEKLY_CYCLE.map((p, i) => {
-            const done = i < activePhaseIdx;
+            const done = prog.done.includes(p.phase);
             const active = i === activePhaseIdx;
             return (
-              <motion.div
+              <motion.button
                 key={p.phase + i}
+                type="button"
+                onClick={() => prog.toggle.mutate(p.phase)}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                className={`rounded-xl border p-3 transition-colors ${
-                  active
-                    ? "border-cinema-500/60 bg-cinema-500/10"
-                    : done
-                      ? "border-green-500/30 bg-green-500/[0.06]"
-                      : "border-hairline bg-chip"
+                className={`rounded-xl border p-3 text-left transition-colors ${
+                  done
+                    ? "border-green-500/40 bg-green-500/[0.08]"
+                    : active
+                      ? "border-cinema-500/60 bg-cinema-500/10"
+                      : "border-hairline bg-chip hover:border-hairline-strong"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -169,11 +173,11 @@ export default function Home() {
                   </span>
                   {done && <Icon name="check" size={13} className="text-green-400" />}
                 </div>
-                <div className={`mt-1 text-sm font-semibold ${active ? "text-cinema-400" : "text-text-hi"}`}>
+                <div className={`mt-1 text-sm font-semibold ${active && !done ? "text-cinema-400" : "text-text-hi"}`}>
                   {p.phase}
                 </div>
                 <div className="mt-0.5 text-[11px] leading-tight text-text-dim">{p.desc}</div>
-              </motion.div>
+              </motion.button>
             );
           })}
         </div>

@@ -66,6 +66,8 @@ export interface Snapshot {
   phase?: string;
   weekNumber?: number;
   history?: ProjectHistoryItem[];
+  gear?: GearItem[]; // owned gear inventory
+  phaseDone?: string[]; // completed phases for the current project
 }
 
 export interface MeResponse {
@@ -84,8 +86,15 @@ export interface ProjectHistoryItem {
   date?: string;
   link?: string;
   submittedAt?: string; // ISO timestamp, captured automatically
-  gear?: string[]; // gear used on this project
+  lateIdx?: number; // index into LATE_MULTIPLIERS at submit time
+  gear?: string[]; // gear item ids used on this project
   likes?: number; // fetched reel likes (feeds scoring)
+}
+
+export interface GearItem {
+  id: string;
+  name: string;
+  category: string;
 }
 
 export interface LeaderboardEntry {

@@ -5,6 +5,7 @@ import { GradientButton } from "./ui/GradientButton";
 import { Icon } from "./ui/Icon";
 import { LEVELS, LATE_MULTIPLIERS } from "../lib/constants";
 import { useSubmitFilm, computeScore } from "../hooks/useSubmitFilm";
+import { useGear } from "../hooks/useGear";
 
 interface Props {
   open: boolean;
@@ -28,7 +29,9 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
   const [link, setLink] = useState("");
   const [level, setLevel] = useState(defaultLevel);
   const [lateIdx, setLateIdx] = useState(0);
+  const [usedGear, setUsedGear] = useState<string[]>([]);
   const submit = useSubmitFilm();
+  const { gear } = useGear();
 
   // Reset when (re)opened.
   useEffect(() => {
@@ -37,6 +40,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
       setLink("");
       setLevel(defaultLevel);
       setLateIdx(computeAutoLate().idx);
+      setUsedGear([]);
       submit.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,7 +73,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (title.trim()) submit.mutate({ title, link, level, lateIdx });
+            if (title.trim()) submit.mutate({ title, link, level, lateIdx, gear: usedGear });
           }}
           className="space-y-4"
         >
@@ -128,6 +132,36 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
             </span>
             <span className="text-sm font-semibold text-text-hi">×{LATE_MULTIPLIERS[lateIdx].mult}</span>
           </div>
+
+          {/* Gear used (from your inventory) */}
+          {gear.length > 0 && (
+            <div>
+              <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-text-dim">
+                Gear used
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {gear.map((g) => {
+                  const on = usedGear.includes(g.id);
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() =>
+                        setUsedGear((u) => (on ? u.filter((x) => x !== g.id) : [...u, g.id]))
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                        on
+                          ? "border-cinema-500 bg-cinema-500/15 text-cinema-300"
+                          : "border-hairline bg-chip text-text-dim hover:text-text-hi"
+                      }`}
+                    >
+                      {g.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Live score preview */}
           <div className="flex items-center justify-between rounded-xl border border-cinema-500/30 bg-cinema-500/[0.08] px-4 py-3">

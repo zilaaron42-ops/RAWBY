@@ -40,6 +40,47 @@ export default function Settings() {
         <ThemeControls />
       </GlassCard>
 
+      <GlassCard className="mb-4 space-y-5">
+        <div>
+          <div className="text-sm font-semibold text-text-hi">Prompt tuning</div>
+          <div className="text-xs text-text-dim">Country + season shape your generated prompts.</div>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <label htmlFor="set-region" className="text-sm text-text-hi">Country / region</label>
+          <select
+            id="set-region"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            className="rounded-xl border border-hairline bg-field px-3 py-2 text-sm text-text-hi outline-none focus:border-cinema-500/70"
+          >
+            {REGIONS.map((r) => (
+              <option key={r} value={r} className="bg-ink-card">{r}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-sm text-text-hi">Seasonal prompts</div>
+            <div className="text-xs text-text-dim">Tune ideas to the time of year.</div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={seasonal}
+            onClick={() => setSeasonal(!seasonal)}
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+              seasonal ? "bg-cinema-500" : "border border-hairline bg-chip"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                seasonal ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </div>
+      </GlassCard>
+
       <GlassCard className="mb-4 space-y-4">
         <div>
           <div className="text-sm font-semibold text-text-hi">Prompt tuning</div>

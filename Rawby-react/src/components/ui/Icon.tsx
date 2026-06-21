@@ -35,7 +35,8 @@ export type IconName =
   | "plus"
   | "quote"
   | "eye"
-  | "eyeOff";
+  | "eyeOff"
+  | "shield";
 
 // Inner SVG geometry per icon.
 const PATHS: Record<IconName, JSX.Element> = {
@@ -70,6 +71,7 @@ const PATHS: Record<IconName, JSX.Element> = {
   quote: <><path d="M7 7H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-2H5V9h2V7Zm10 0h-2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v-2h-2V9h2V7Z" /></>,
   eye: <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>,
   eyeOff: <><path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c6.5 0 10 7 10 7a18 18 0 0 1-3 3.7M6.5 6.5A18 18 0 0 0 2 11s3.5 7 10 7a10.9 10.9 0 0 0 4.3-.9" /><path d="M9.6 9.6a3 3 0 0 0 4.2 4.2" /><path d="M3 3l18 18" /></>,
+  shield: <><path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6l7-3Z" /><path d="m9 12 2 2 4-4" /></>,
 };
 
 interface Props extends SVGProps<SVGSVGElement> {

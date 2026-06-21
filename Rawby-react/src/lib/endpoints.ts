@@ -74,6 +74,27 @@ export const ai = {
       .then((r) => r.data.prompts ?? []),
 };
 
+export const instagram = {
+  /** Returns whatever the server gives; caller extracts the like count. */
+  fetchReelLikes: (url: string) =>
+    api.post<Record<string, unknown>>("/api/fetch-reel-likes", { url }).then((r) => r.data),
+};
+
+export const admin = {
+  users: () => api.get<{ users?: unknown[] } | unknown[]>("/api/users").then((r) => r.data),
+  postUpdate: (body: { title: string; body: string }) =>
+    api.post("/api/updates", body).then((r) => r.data),
+  feedback: () => api.get("/api/feedback").then((r) => r.data),
+  deleteFeedback: (id: string) =>
+    api.delete(`/api/feedback/${encodeURIComponent(id)}`).then((r) => r.data),
+  allSuggestions: () =>
+    api.get<{ suggestions?: unknown[] } | unknown[]>("/api/admin/suggestions").then((r) => r.data),
+  replySuggestion: (id: string, reply: string) =>
+    api.post(`/api/admin/suggestions/${encodeURIComponent(id)}/reply`, { reply }).then((r) => r.data),
+  setAdmin: (username: string) =>
+    api.post("/api/admin/set-admin", { username }).then((r) => r.data),
+};
+
 export const community = {
   updates: () => api.get("/api/updates").then((r) => r.data),
   postPrompt: (text: string, category: string) =>

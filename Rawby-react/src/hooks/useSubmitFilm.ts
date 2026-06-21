@@ -5,6 +5,7 @@
 // ============================================================
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { session } from "../lib/endpoints";
+import { recalcTotal, newId } from "../lib/snapshotPatch";
 import { toast } from "../store/toast";
 import { LEVELS, LATE_MULTIPLIERS } from "../lib/constants";
 import type { MeResponse, ProjectHistoryItem, Snapshot } from "../types";
@@ -14,16 +15,13 @@ export interface SubmitInput {
   link?: string;
   level: string;
   lateIdx: number; // index into LATE_MULTIPLIERS
+  gear?: string[]; // gear item ids used
 }
 
 export function computeScore(level: string, lateIdx: number): number {
   const base = LEVELS.find((l) => l.name === level)?.points ?? 0;
   const mult = LATE_MULTIPLIERS[lateIdx]?.mult ?? 1;
   return Math.round(base * mult);
-}
-
-function newId() {
-  return globalThis.crypto?.randomUUID?.() ?? `f_${Date.now()}`;
 }
 
 export function useSubmitFilm() {
@@ -45,14 +43,17 @@ export function useSubmitFilm() {
         score,
         date: now.toISOString().slice(0, 10),
         submittedAt: now.toISOString(), // auto-tracked submit time
+        lateIdx: input.lateIdx,
+        gear: input.gear?.length ? input.gear : undefined,
         week: snap.weekNumber,
       };
 
       // Merge — keep every existing snapshot field intact.
+      const history = [project, ...prevHistory];
       const nextSnapshot: Snapshot = {
         ...snap,
-        history: [project, ...prevHistory],
-        totalScore: (snap.totalScore ?? 0) + score,
+        history,
+        totalScore: recalcTotal(history),
         streak: (snap.streak ?? 0) + 1,
       };
 

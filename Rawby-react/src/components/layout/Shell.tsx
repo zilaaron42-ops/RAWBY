@@ -10,7 +10,7 @@ import { FilmGrain } from "../ui/FilmGrain";
 import { Icon } from "../ui/Icon";
 import { Logo } from "../ui/Logo";
 import { ModeToggle } from "../ui/ThemeControls";
-import { NAV_ITEMS, SECONDARY_ITEMS, type NavItem } from "./nav";
+import { NAV_ITEMS, SECONDARY_ITEMS, ADMIN_ITEM, type NavItem } from "./nav";
 import { useAuth } from "../../store/auth";
 
 // 3D background is heavy — defer so the dashboard paints first.
@@ -18,7 +18,6 @@ const AuraScene = lazy(() =>
   import("../three/AuraScene").then((m) => ({ default: m.AuraScene }))
 );
 
-const ALL = [...NAV_ITEMS, ...SECONDARY_ITEMS];
 
 function SideLink({ item }: { item: NavItem }) {
   return (
@@ -53,6 +52,11 @@ function SideLink({ item }: { item: NavItem }) {
 export function Shell() {
   const location = useLocation();
   const user = useAuth((s) => s.user);
+  const navItems: NavItem[] = [
+    ...NAV_ITEMS,
+    ...SECONDARY_ITEMS,
+    ...(user?.isAdmin ? [ADMIN_ITEM] : []),
+  ];
 
   return (
     <div className="relative min-h-screen">
@@ -69,7 +73,7 @@ export function Shell() {
             <ModeToggle />
           </div>
           <nav aria-label="Primary" className="flex flex-1 flex-col gap-1">
-            {ALL.map((it) => (
+            {navItems.map((it) => (
               <SideLink key={it.to} item={it} />
             ))}
           </nav>
