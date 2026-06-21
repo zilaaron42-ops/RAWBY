@@ -16,7 +16,7 @@ export default function AuthHero({ onChange }: { onChange: (name: string) => voi
       <pointLight position={[0, 1.5, -4]} intensity={3} color="#E8B647" />
       <pointLight position={[3, 3, 2]} intensity={1.4} color="#F6DC9C" />
       <Suspense fallback={null}>
-        <CyclingHero scale={1.05} interval={6000} onChange={onChange} />
+        <CyclingHero scale={1.25} interval={6000} onChange={onChange} />
         <Particles count={300} />
         <PaintOnce />
       </Suspense>

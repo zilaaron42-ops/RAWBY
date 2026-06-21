@@ -61,7 +61,7 @@ export function AuraScene() {
             <Rig>
               {/* Cycling cinematic prop, parked off to the side, low-key */}
               <group position={[3.4, 0.2, -0.5]}>
-                <CyclingHero scale={0.6} interval={7000} />
+                <CyclingHero scale={0.72} interval={7000} />
               </group>
               <Particles count={420} />
               <PaintOnce />
