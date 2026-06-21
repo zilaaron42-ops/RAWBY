@@ -57,25 +57,29 @@ Future<Response> handleLogin(Request request) async {
       return Response(400, body: jsonEncode({'error': 'Username and password required'}), headers: _json);
     }
 
-    // ── Env-configured admin bootstrap ───────────────────────────────
-    // Lets the owner sign in even before an admin record exists. The
-    // credentials live in the server environment (ADMIN_USERNAME /
-    // ADMIN_PASSWORD), never in source. On first matching login the admin
-    // user is created (isAdmin + verified); thereafter the record exists.
+    // ── Env-configured admin login ───────────────────────────────────
+    // The owner signs in with ADMIN_USERNAME / ADMIN_PASSWORD (env only,
+    // never in source) and lands on the CANONICAL admin account — the same
+    // identity as `zaron.films` with full admin — not a separate "admin"
+    // user. Override the target account via ADMIN_ACCOUNT if needed.
     final adminUser = Platform.environment['ADMIN_USERNAME']?.trim();
     final adminPass = Platform.environment['ADMIN_PASSWORD']?.trim();
+    final adminAccount =
+        (Platform.environment['ADMIN_ACCOUNT']?.trim().isNotEmpty ?? false)
+            ? Platform.environment['ADMIN_ACCOUNT']!.trim()
+            : 'zaron.films';
     if (adminUser != null &&
         adminPass != null &&
         adminUser.isNotEmpty &&
         adminPass.isNotEmpty &&
         username == adminUser &&
         password == adminPass) {
-      var adminId = await Store.instance.getUserIdByUsername(username);
+      var adminId = await Store.instance.getUserIdByUsername(adminAccount);
       if (adminId == null) {
         adminId = Store.instance.generateId();
         await Store.instance.createUser(adminId, {
-          'username': username,
-          'displayName': 'Admin',
+          'username': adminAccount,
+          'displayName': 'Zaron',
           'email': '',
           'passwordHash': hashPassword(password),
           'isAdmin': true,
@@ -94,14 +98,14 @@ Future<Response> handleLogin(Request request) async {
           });
         }
       }
-      final adminToken = generateToken(adminId, username);
+      final adminToken = generateToken(adminId, adminAccount);
       final adminRecord = await Store.instance.getUserById(adminId);
       return Response.ok(jsonEncode({
         'token': adminToken,
         'user': {
           'id': adminId,
-          'username': username,
-          'displayName': adminRecord?['displayName'] ?? 'Admin',
+          'username': adminAccount,
+          'displayName': adminRecord?['displayName'] ?? 'Zaron',
           'email': adminRecord?['email'] ?? '',
           'isAdmin': true,
           'createdAt': adminRecord?['createdAt'],

@@ -15,6 +15,14 @@ interface Props {
 const fieldCls =
   "w-full rounded-xl border border-hairline bg-field px-4 py-3 text-sm text-text-hi outline-none transition-colors placeholder:text-text-dim/60 focus:border-cinema-500/70";
 
+// Auto late-penalty from the submit time. Deadline = Friday; Mon–Fri is the
+// filming window (on time), weekend after slips the multiplier.
+function computeAutoLate() {
+  const day = new Date().getDay(); // 0 Sun … 6 Sat
+  const idx = day === 6 ? 1 : day === 0 ? 2 : 0;
+  return { idx, ...LATE_MULTIPLIERS[idx] };
+}
+
 export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }: Props) {
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
@@ -28,7 +36,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
       setTitle("");
       setLink("");
       setLevel(defaultLevel);
-      setLateIdx(0);
+      setLateIdx(computeAutoLate().idx);
       submit.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,41 +102,31 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story" }:
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="film-level" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-dim">
-                Level
-              </label>
-              <select
-                id="film-level"
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
-                className={fieldCls}
-              >
-                {LEVELS.map((l) => (
-                  <option key={l.name} value={l.name} className="bg-ink-card">
-                    {l.name} · {l.points}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="film-timing" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-dim">
-                Timing
-              </label>
-              <select
-                id="film-timing"
-                value={lateIdx}
-                onChange={(e) => setLateIdx(Number(e.target.value))}
-                className={fieldCls}
-              >
-                {LATE_MULTIPLIERS.map((p, i) => (
-                  <option key={p.day} value={i} className="bg-ink-card">
-                    {p.day} · ×{p.mult}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div>
+            <label htmlFor="film-level" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-dim">
+              Level
+            </label>
+            <select
+              id="film-level"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className={fieldCls}
+            >
+              {LEVELS.map((l) => (
+                <option key={l.name} value={l.name} className="bg-ink-card">
+                  {l.name} · {l.points}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Submit time + penalty are tracked automatically */}
+          <div className="flex items-center justify-between rounded-xl border border-hairline bg-chip px-4 py-3">
+            <span className="inline-flex items-center gap-2 text-sm text-text-dim">
+              <Icon name="clock" size={15} />
+              Submitted now · {LATE_MULTIPLIERS[lateIdx].day}
+            </span>
+            <span className="text-sm font-semibold text-text-hi">×{LATE_MULTIPLIERS[lateIdx].mult}</span>
           </div>
 
           {/* Live score preview */}

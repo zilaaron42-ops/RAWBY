@@ -36,13 +36,15 @@ export function useSubmitFilm() {
       const prevHistory: ProjectHistoryItem[] = snap.history ?? me?.history ?? [];
       const score = computeScore(input.level, input.lateIdx);
 
+      const now = new Date();
       const project: ProjectHistoryItem = {
         id: newId(),
         title: input.title.trim(),
         link: input.link?.trim() || undefined,
         level: input.level,
         score,
-        date: new Date().toISOString().slice(0, 10),
+        date: now.toISOString().slice(0, 10),
+        submittedAt: now.toISOString(), // auto-tracked submit time
         week: snap.weekNumber,
       };
 

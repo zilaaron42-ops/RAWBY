@@ -61,9 +61,16 @@ export const ai = {
     stats?: unknown;
   }) => api.post<{ feedback: string }>("/api/skill-feedback", body).then((r) => r.data.feedback),
 
-  generatePrompts: (provider: AIProvider) =>
+  generatePrompts: (
+    provider: AIProvider,
+    opts?: { region?: string; seasonalPrompts?: boolean }
+  ) =>
     api
-      .post<{ prompts: GeneratedPrompt[] }>("/api/generate-prompts", { provider })
+      .post<{ prompts: GeneratedPrompt[] }>("/api/generate-prompts", {
+        provider,
+        region: opts?.region && opts.region !== "Global" ? opts.region : "",
+        seasonalPrompts: opts?.seasonalPrompts ?? false,
+      })
       .then((r) => r.data.prompts ?? []),
 };
 

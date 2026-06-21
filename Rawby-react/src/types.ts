@@ -83,6 +83,9 @@ export interface ProjectHistoryItem {
   week?: number;
   date?: string;
   link?: string;
+  submittedAt?: string; // ISO timestamp, captured automatically
+  gear?: string[]; // gear used on this project
+  likes?: number; // fetched reel likes (feeds scoring)
 }
 
 export interface LeaderboardEntry {

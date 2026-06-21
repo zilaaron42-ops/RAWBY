@@ -7,13 +7,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ai, session } from "../lib/endpoints";
 import { useAuth } from "../store/auth";
+import { useSettings } from "../store/settings";
 import { toast } from "../store/toast";
 import type { GeneratedPrompt, MeResponse, Snapshot } from "../types";
 
 export function useGeneratePrompts() {
   const provider = useAuth((s) => s.aiProvider);
+  const region = useSettings((s) => s.region);
+  const seasonalPrompts = useSettings((s) => s.seasonalPrompts);
   return useMutation({
-    mutationFn: () => ai.generatePrompts(provider),
+    mutationFn: () => ai.generatePrompts(provider, { region, seasonalPrompts }),
     onError: () => toast.error("Couldn't generate prompts — the server may be waking."),
   });
 }
