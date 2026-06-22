@@ -8,10 +8,22 @@ import { Icon } from "../components/ui/Icon";
 import { stagger } from "../lib/motion";
 import { useMe } from "../hooks/queries";
 import { useFetchLikes } from "../hooks/useFetchLikes";
+import { useVisibility } from "../hooks/usePersonal";
 import { useAuth } from "../store/auth";
-import type { ProjectHistoryItem } from "../types";
+import type { ProjectHistoryItem, Visibility } from "../types";
 
 const nf = new Intl.NumberFormat("en-US");
+
+function VisToggle({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className="flex w-full items-center justify-between py-2.5 text-left">
+      <span className="text-sm text-text-hi">{label}</span>
+      <span className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${on ? "bg-cinema-500" : "bg-hairline-strong"}`}>
+        <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${on ? "translate-x-4" : "translate-x-0.5"}`} />
+      </span>
+    </button>
+  );
+}
 
 function timeLabel(h: ProjectHistoryItem) {
   if (h.submittedAt) {
@@ -27,6 +39,8 @@ export default function Profile() {
   const snap = data?.snapshot;
   const history: ProjectHistoryItem[] = data?.snapshot?.history ?? data?.history ?? [];
   const fetchLikes = useFetchLikes();
+  const { visibility, set: setVis } = useVisibility();
+  const toggle = (k: keyof Visibility) => setVis.mutate({ [k]: !visibility[k] });
 
   return (
     <PageTransition>
@@ -53,6 +67,26 @@ export default function Profile() {
         <StatTile icon="flame" value={snap?.streak ?? 0} label="Streak" accent="#E85D75" />
         <StatTile icon="film" value={history.length} label="Films" accent="#3B82F6" />
       </motion.div>
+
+      {/* Privacy — what others see */}
+      <h3 className="h-display mb-3 mt-8 text-lg font-bold text-text-hi">Privacy</h3>
+      <GlassCard>
+        <VisToggle label="Public profile" on={visibility.publicProfile} onClick={() => toggle("publicProfile")} />
+        {visibility.publicProfile && (
+          <div className="mt-1 divide-y divide-divide border-t border-hairline pt-1">
+            <VisToggle label="Show rank" on={visibility.showRank} onClick={() => toggle("showRank")} />
+            <VisToggle label="Show total score" on={visibility.showScore} onClick={() => toggle("showScore")} />
+            <VisToggle label="Show streak" on={visibility.showStreak} onClick={() => toggle("showStreak")} />
+            <VisToggle label="Show film count" on={visibility.showFilms} onClick={() => toggle("showFilms")} />
+            <VisToggle label="Show my gear" on={visibility.showGear} onClick={() => toggle("showGear")} />
+          </div>
+        )}
+        <p className="mt-2 text-xs text-text-dim">
+          {visibility.publicProfile
+            ? "Others see your name plus the stats toggled on above."
+            : "Your profile is hidden from other filmmakers."}
+        </p>
+      </GlassCard>
 
       <h3 className="h-display mb-3 mt-8 text-lg font-bold text-text-hi">Film history</h3>
       {history.length === 0 ? (

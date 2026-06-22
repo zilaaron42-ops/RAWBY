@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PageTransition } from "../components/layout/PageTransition";
 import { GlassCard } from "../components/ui/GlassCard";
 import { GradientButton } from "../components/ui/GradientButton";
@@ -21,10 +21,13 @@ function asArray(d: any, key: string): any[] {
 
 export default function Admin() {
   const me = useAuth((s) => s.user);
+  const qc = useQueryClient();
 
   const [annT, setAnnT] = useState("");
   const [annB, setAnnB] = useState("");
   const [grant, setGrant] = useState("");
+  const [replyFor, setReplyFor] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   const post = useMutation({
     mutationFn: () => admin.postUpdate({ title: annT.trim(), body: annB.trim() }),
@@ -32,14 +35,29 @@ export default function Admin() {
     onError: () => toast.error("Couldn't post announcement"),
   });
   const mkAdmin = useMutation({
-    mutationFn: () => admin.setAdmin(grant.trim()),
-    onSuccess: () => { setGrant(""); toast.success("Admin granted"); },
+    mutationFn: (username: string) => admin.setAdmin(username.trim()),
+    onSuccess: () => {
+      setGrant("");
+      toast.success("Admin granted");
+      qc.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
     onError: () => toast.error("Couldn't grant admin"),
+  });
+  const reply = useMutation({
+    mutationFn: ({ id, text }: { id: string; text: string }) => admin.replySuggestion(id, text),
+    onSuccess: () => { setReplyFor(null); setReplyText(""); toast.success("Reply sent"); },
+    onError: () => toast.error("Couldn't send reply"),
+  });
+  const delFeedback = useMutation({
+    mutationFn: (id: string) => admin.deleteFeedback(id),
+    onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin", "feedback"] }); },
+    onError: () => toast.error("Couldn't delete"),
   });
 
   const isAdmin = !!me?.isAdmin;
   const users = useQuery({ queryKey: ["admin", "users"], queryFn: admin.users, enabled: isAdmin });
   const sugg = useQuery({ queryKey: ["admin", "suggestions"], queryFn: admin.allSuggestions, enabled: isAdmin });
+  const feedback = useQuery({ queryKey: ["admin", "feedback"], queryFn: admin.feedback, enabled: isAdmin });
 
   if (!isAdmin) {
     return (
@@ -73,7 +91,7 @@ export default function Admin() {
           <h3 className="h-display text-lg font-bold text-text-hi">Grant admin</h3>
           <p className="text-xs text-text-dim">Give another user admin rights by username.</p>
           <input value={grant} onChange={(e) => setGrant(e.target.value)} placeholder="username" className={fieldCls} />
-          <GradientButton variant="story" onClick={() => mkAdmin.mutate()} loading={mkAdmin.isPending} disabled={!grant.trim()}>
+          <GradientButton variant="story" onClick={() => mkAdmin.mutate(grant)} loading={mkAdmin.isPending} disabled={!grant.trim()}>
             <Icon name="user" size={15} /> Make admin
           </GradientButton>
         </GlassCard>
@@ -98,6 +116,14 @@ export default function Admin() {
                 </div>
                 <div className="truncate text-xs text-text-dim">@{u.username} · {u.totalScore ?? 0} pts</div>
               </div>
+              {!u.isAdmin && u.username && (
+                <button
+                  onClick={() => mkAdmin.mutate(u.username)}
+                  className="shrink-0 rounded-lg border border-hairline bg-chip px-2.5 py-1.5 text-xs font-medium text-text-dim transition-colors hover:text-cinema-400"
+                >
+                  Make admin
+                </button>
+              )}
             </GlassCard>
           ))}
         </div>
@@ -113,10 +139,57 @@ export default function Admin() {
         <EmptyState icon="bulb" title="No suggestions yet" />
       ) : (
         <div className="space-y-2">
-          {suggList.map((s, i) => (
-            <GlassCard key={s.id ?? i} className="py-3">
-              <p className="text-sm text-text-hi">{s.text ?? s.message ?? JSON.stringify(s)}</p>
-              {s.username && <div className="mt-1 text-xs text-text-dim">@{s.username}</div>}
+          {suggList.map((s, i) => {
+            const id = String(s.id ?? i);
+            return (
+              <GlassCard key={id} className="py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm text-text-hi">{s.text ?? s.message ?? JSON.stringify(s)}</p>
+                    {s.username && <div className="mt-1 text-xs text-text-dim">@{s.username}</div>}
+                    {s.reply && <div className="mt-1 text-xs text-cinema-400">Reply: {s.reply}</div>}
+                  </div>
+                  {s.id != null && (
+                    <button onClick={() => setReplyFor(replyFor === id ? null : id)} className="shrink-0 rounded-lg border border-hairline bg-chip px-2.5 py-1.5 text-xs text-text-dim hover:text-text-hi">
+                      Reply
+                    </button>
+                  )}
+                </div>
+                {replyFor === id && (
+                  <div className="mt-2 flex gap-2">
+                    <input value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Your reply…" className={fieldCls} />
+                    <GradientButton onClick={() => reply.mutate({ id, text: replyText.trim() })} loading={reply.isPending} disabled={!replyText.trim()}>
+                      <Icon name="send" size={14} />
+                    </GradientButton>
+                  </div>
+                )}
+              </GlassCard>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Feedback */}
+      <h3 className="h-display mb-3 mt-8 text-lg font-bold text-text-hi">
+        Feedback {asArray(feedback.data, "feedback").length ? <span className="text-sm font-normal text-text-dim">({asArray(feedback.data, "feedback").length})</span> : null}
+      </h3>
+      {feedback.isLoading ? (
+        <Spinner label="Loading feedback…" />
+      ) : asArray(feedback.data, "feedback").length === 0 ? (
+        <EmptyState icon="quote" title="No feedback yet" />
+      ) : (
+        <div className="space-y-2">
+          {asArray(feedback.data, "feedback").map((f, i) => (
+            <GlassCard key={f.id ?? i} className="flex items-start justify-between gap-3 py-3">
+              <div className="min-w-0">
+                <p className="text-sm text-text-hi">{f.text ?? f.message ?? JSON.stringify(f)}</p>
+                {f.username && <div className="mt-1 text-xs text-text-dim">@{f.username}</div>}
+              </div>
+              {f.id != null && (
+                <button onClick={() => delFeedback.mutate(String(f.id))} aria-label="Delete feedback" className="shrink-0 text-text-dim transition-colors hover:text-danger">
+                  <Icon name="plus" size={16} className="rotate-45" />
+                </button>
+              )}
             </GlassCard>
           ))}
         </div>

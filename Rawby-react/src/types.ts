@@ -72,6 +72,7 @@ export interface Snapshot {
   note?: string; // quick note Aurora can see
   profile?: UserProfile; // onboarding answers — personalises prompts
   activeDraft?: PromptWorkspace; // the prompt currently being worked out
+  visibility?: Visibility; // what others see on your profile
 }
 
 export interface UserProfile {
@@ -120,11 +121,24 @@ export interface ProjectHistoryItem {
   likes?: number; // fetched reel likes (feeds scoring)
 }
 
+export type GearStatus = "active" | "rested" | "retired";
+
 export interface GearItem {
   id: string;
   brand: string; // e.g. Sony, Rode, DJI
   type: string; // e.g. Camera body, Shotgun mic, Tripod
   category: string;
+  status?: GearStatus; // missing = active
+  restedAt?: string; // ISO, when auto/ manually rested
+}
+
+export interface Visibility {
+  publicProfile: boolean;
+  showScore: boolean;
+  showStreak: boolean;
+  showRank: boolean;
+  showFilms: boolean;
+  showGear: boolean;
 }
 
 export interface LeaderboardEntry {

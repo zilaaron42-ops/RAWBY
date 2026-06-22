@@ -4,7 +4,30 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { patchSnapshot } from "../lib/snapshotPatch";
 import { toast } from "../store/toast";
 import { useMe } from "./queries";
-import type { PromptWorkspace, UserProfile } from "../types";
+import type { PromptWorkspace, UserProfile, Visibility } from "../types";
+
+export const DEFAULT_VISIBILITY: Visibility = {
+  publicProfile: true,
+  showScore: true,
+  showStreak: true,
+  showRank: true,
+  showFilms: true,
+  showGear: false,
+};
+
+export function useVisibility() {
+  const qc = useQueryClient();
+  const { data } = useMe();
+  const visibility: Visibility = { ...DEFAULT_VISIBILITY, ...(data?.snapshot?.visibility ?? {}) };
+  const set = useMutation({
+    mutationFn: (patch: Partial<Visibility>) =>
+      patchSnapshot(qc, (s) => ({
+        ...s,
+        visibility: { ...DEFAULT_VISIBILITY, ...(s.visibility ?? {}), ...patch },
+      })),
+  });
+  return { visibility, set };
+}
 
 export function useProfile() {
   const qc = useQueryClient();
