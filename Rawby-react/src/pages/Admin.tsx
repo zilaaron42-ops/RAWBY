@@ -53,6 +53,11 @@ export default function Admin() {
     onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin", "feedback"] }); },
     onError: () => toast.error("Couldn't delete"),
   });
+  const delUser = useMutation({
+    mutationFn: (username: string) => admin.deleteUser(username),
+    onSuccess: () => { toast.success("User deleted"); qc.invalidateQueries({ queryKey: ["admin", "users"] }); qc.invalidateQueries({ queryKey: ["leaderboard"] }); },
+    onError: () => toast.error("Couldn't delete user"),
+  });
 
   const isAdmin = !!me?.isAdmin;
   const users = useQuery({ queryKey: ["admin", "users"], queryFn: admin.users, enabled: isAdmin });
@@ -116,14 +121,26 @@ export default function Admin() {
                 </div>
                 <div className="truncate text-xs text-text-dim">@{u.username} · {u.totalScore ?? 0} pts</div>
               </div>
-              {!u.isAdmin && u.username && (
-                <button
-                  onClick={() => mkAdmin.mutate(u.username)}
-                  className="shrink-0 rounded-lg border border-hairline bg-chip px-2.5 py-1.5 text-xs font-medium text-text-dim transition-colors hover:text-cinema-400"
-                >
-                  Make admin
-                </button>
-              )}
+              <div className="flex shrink-0 items-center gap-1">
+                {!u.isAdmin && u.username && (
+                  <button
+                    onClick={() => mkAdmin.mutate(u.username)}
+                    className="rounded-lg border border-hairline bg-chip px-2.5 py-1.5 text-xs font-medium text-text-dim transition-colors hover:text-cinema-400"
+                  >
+                    Make admin
+                  </button>
+                )}
+                {u.username && u.username !== me?.username && (
+                  <button
+                    onClick={() => delUser.mutate(u.username)}
+                    disabled={delUser.isPending}
+                    aria-label={`Delete ${u.username}`}
+                    className="rounded-lg border border-hairline bg-chip px-2.5 py-1.5 text-xs font-medium text-text-dim transition-colors hover:text-danger disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </GlassCard>
           ))}
         </div>

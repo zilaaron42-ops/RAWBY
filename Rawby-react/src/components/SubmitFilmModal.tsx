@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Modal } from "./ui/Modal";
 import { GradientButton } from "./ui/GradientButton";
 import { Icon } from "./ui/Icon";
-import { LEVELS, LATE_MULTIPLIERS } from "../lib/constants";
+import { LEVELS, LATE_MULTIPLIERS, VIDEO_CATEGORIES } from "../lib/constants";
 import { useSubmitFilm, computeScore } from "../hooks/useSubmitFilm";
 import { useGear } from "../hooks/useGear";
 
@@ -40,6 +40,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story", d
   const [level, setLevel] = useState(defaultLevel);
   const [lateIdx, setLateIdx] = useState(0);
   const [usedGear, setUsedGear] = useState<string[]>([]);
+  const [cats, setCats] = useState<string[]>([]);
   const submit = useSubmitFilm();
   const { gear } = useGear();
 
@@ -51,6 +52,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story", d
       setLevel(defaultLevel);
       setLateIdx(computeAutoLate(deadline).idx);
       setUsedGear([]);
+      setCats([]);
       submit.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +85,7 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story", d
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (title.trim()) submit.mutate({ title, link, level, lateIdx, gear: usedGear });
+            if (title.trim()) submit.mutate({ title, link, level, lateIdx, gear: usedGear, categories: cats });
           }}
           className="space-y-4"
         >
@@ -172,6 +174,33 @@ export function SubmitFilmModal({ open, onClose, defaultLevel = "Short Story", d
               </div>
             </div>
           )}
+
+          {/* Category (videography box) */}
+          <div>
+            <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-text-dim">
+              Category <span className="normal-case text-text-dim/70">(can be several)</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {VIDEO_CATEGORIES.map((c) => {
+                const on = cats.includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCats((u) => (on ? u.filter((x) => x !== c.id) : [...u, c.id]))}
+                    className="rounded-full border px-3 py-1 text-xs transition-colors"
+                    style={
+                      on
+                        ? { borderColor: c.color, background: `${c.color}22`, color: c.color }
+                        : { borderColor: "rgb(var(--hairline))", color: "rgb(var(--text-dim))" }
+                    }
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Live score preview */}
           <div className="flex items-center justify-between rounded-xl border border-cinema-500/30 bg-cinema-500/[0.08] px-4 py-3">

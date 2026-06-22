@@ -29,6 +29,8 @@ export default function Settings() {
   const setRegion = useSettings((s) => s.setRegion);
   const seasonal = useSettings((s) => s.seasonalPrompts);
   const setSeasonal = useSettings((s) => s.setSeasonal);
+  const showCategories = useSettings((s) => s.showCategories);
+  const setShowCategories = useSettings((s) => s.setShowCategories);
 
   return (
     <PageTransition>
@@ -80,6 +82,29 @@ export default function Settings() {
             <span
               className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
                 seasonal ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </span>
+        </button>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={showCategories}
+          onClick={() => setShowCategories(!showCategories)}
+          className="flex w-full items-center justify-between gap-4 rounded-xl border border-hairline bg-chip px-4 py-3 text-left transition-colors hover:border-hairline-strong"
+        >
+          <div>
+            <div className="text-sm font-medium text-text-hi">Videography box on Home</div>
+            <div className="text-xs text-text-dim">Show the category map + per-category stats.</div>
+          </div>
+          <span
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+              showCategories ? "bg-cinema-500" : "bg-hairline-strong"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                showCategories ? "translate-x-5" : "translate-x-0.5"
               }`}
             />
           </span>

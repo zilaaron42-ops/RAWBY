@@ -24,8 +24,10 @@ export const COUNTRIES = [
 interface SettingsState {
   region: string;
   seasonalPrompts: boolean;
+  showCategories: boolean; // the videography box on Home
   setRegion: (r: string) => void;
   setSeasonal: (s: boolean) => void;
+  setShowCategories: (s: boolean) => void;
 }
 
 export const useSettings = create<SettingsState>()(
@@ -33,8 +35,10 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       region: "Global",
       seasonalPrompts: true,
+      showCategories: true,
       setRegion: (region) => set({ region }),
       setSeasonal: (seasonalPrompts) => set({ seasonalPrompts }),
+      setShowCategories: (showCategories) => set({ showCategories }),
     }),
     { name: "rawby-settings" }
   )

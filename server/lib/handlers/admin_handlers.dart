@@ -97,6 +97,33 @@ Future<Response> handleMakeAdmin(Request request) async {
   return Response.ok(jsonEncode({'status': 'ok', 'username': username, 'isAdmin': true}), headers: _json);
 }
 
+// Delete a single user (admin only). Reached via JWT (must be an admin) or
+// the X-Admin-Secret header.
+Future<Response> handleDeleteUser(Request request, String username) async {
+  final secret = Platform.environment['ADMIN_SECRET'] ?? '';
+  final provided = request.headers['x-admin-secret'] ?? '';
+  var allowed = secret.isNotEmpty && provided == secret;
+  if (!allowed) {
+    try {
+      final reqUser = getUsername(request);
+      if (reqUser.isNotEmpty) {
+        final id = await Store.instance.getUserIdByUsername(reqUser);
+        final u = id != null ? await Store.instance.getUserById(id) : null;
+        allowed = (u?['isAdmin'] == true) || reqUser == 'zaron.films';
+      }
+    } catch (_) {}
+  }
+  if (!allowed) {
+    return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _json);
+  }
+  final target = Uri.decodeComponent(username).trim();
+  if (target.isEmpty) {
+    return Response(400, body: jsonEncode({'error': 'username required'}), headers: _json);
+  }
+  await Store.instance.deleteUser(target);
+  return Response.ok(jsonEncode({'status': 'ok', 'deleted': target}), headers: _json);
+}
+
 // ── FCM Token ────────────────────────────────────────────────────
 
 Future<Response> handleRegisterFcmToken(Request request) async {

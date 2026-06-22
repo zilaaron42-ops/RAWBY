@@ -27,6 +27,53 @@ export function likesBonus(level: string, likes: number, lateMult: number): numb
 
 export const GEAR_CATEGORIES = ["Filming", "Editing", "Digital"] as const;
 
+// The "videography box" — four corners + an emotional heart in the middle.
+// A film can belong to more than one (overlap is expected).
+export const VIDEO_CATEGORIES = [
+  {
+    id: "educational",
+    label: "Educational",
+    blurb: "Life lessons, how-tos, teaching",
+    icon: "bulb",
+    color: "#3B82F6",
+    corner: "tl",
+  },
+  {
+    id: "outdoors",
+    label: "Outdoors",
+    blurb: "Travel, drone, nature, adventure",
+    icon: "sun",
+    color: "#5A8A5E",
+    corner: "tr",
+  },
+  {
+    id: "commercial",
+    label: "Commercial",
+    blurb: "Unboxings, ads, show-arounds",
+    icon: "tag",
+    color: "#E8B647",
+    corner: "bl",
+  },
+  {
+    id: "mylife",
+    label: "My Life",
+    blurb: "BTS, a day in the life, your craft",
+    icon: "user",
+    color: "#A78BFA",
+    corner: "br",
+  },
+  {
+    id: "emotions",
+    label: "Emotions",
+    blurb: "Stories that say who you are",
+    icon: "heart",
+    color: "#E85D75",
+    corner: "center",
+  },
+] as const;
+
+export type VideoCategory = (typeof VIDEO_CATEGORIES)[number];
+
 // Late penalty multipliers (days past deadline).
 export const LATE_MULTIPLIERS = [
   { day: "On time", mult: 1.0 },

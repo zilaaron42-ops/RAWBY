@@ -16,6 +16,7 @@ export interface SubmitInput {
   level: string;
   lateIdx: number; // index into LATE_MULTIPLIERS
   gear?: string[]; // gear item ids used
+  categories?: string[]; // video taxonomy ids
 }
 
 export function computeScore(level: string, lateIdx: number): number {
@@ -45,6 +46,7 @@ export function useSubmitFilm() {
         submittedAt: now.toISOString(), // auto-tracked submit time
         lateIdx: input.lateIdx,
         gear: input.gear?.length ? input.gear : undefined,
+        categories: input.categories?.length ? input.categories : undefined,
         week: snap.weekNumber,
       };
 

@@ -7,6 +7,7 @@ import { StatTile } from "../components/ui/StatTile";
 import { FilmTag } from "../components/ui/FilmTag";
 import { Icon } from "../components/ui/Icon";
 import { SkeletonCard } from "../components/ui/Skeleton";
+import { CategoryBox } from "../components/CategoryBox";
 import { useMe } from "../hooks/queries";
 import { useProgress } from "../hooks/useProgress";
 import { useAuth } from "../store/auth";
@@ -47,6 +48,7 @@ export default function Home() {
   const gearCount = data?.snapshot?.gear?.length ?? 0;
   const region = useSettings((s) => s.region);
   const seasonal = useSettings((s) => s.seasonalPrompts);
+  const showCategories = useSettings((s) => s.showCategories);
 
   if (isLoading) {
     return (
@@ -63,6 +65,8 @@ export default function Home() {
     );
   }
 
+  const realPrompt = data?.snapshot?.promptText;
+  const hasPrompt = !!realPrompt;
   const progress = Math.min(1, Math.max(0, (7 - (snap.daysLeft ?? 0)) / 7));
 
   return (
@@ -83,56 +87,79 @@ export default function Home() {
           className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full blur-3xl"
           style={{ background: "radial-gradient(circle, rgb(var(--glow) / 0.22), transparent 70%)" }}
         />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <FilmTag level={snap.promptLevel} />
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-chip px-3 py-1 text-xs font-medium text-text-dim">
-                <Icon name="film" size={13} /> {snap.phase}
-              </span>
+        {hasPrompt ? (
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <FilmTag level={snap.promptLevel} />
+                {snap.phase && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-chip px-3 py-1 text-xs font-medium text-text-dim">
+                    <Icon name="film" size={13} /> {snap.phase}
+                  </span>
+                )}
+              </div>
+              <h2 className="h-display text-2xl font-bold leading-snug text-text-hi md:text-[1.75rem]">
+                {realPrompt}
+              </h2>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link to="/prompts">
+                  <GradientButton>
+                    Open this week’s prompt
+                    <Icon name="arrowRight" size={16} />
+                  </GradientButton>
+                </Link>
+                <Link to="/assistant">
+                  <GradientButton variant="ghost">
+                    <Icon name="sparkles" size={16} /> Ask Aurora
+                  </GradientButton>
+                </Link>
+              </div>
             </div>
-            <h2 className="h-display text-2xl font-bold leading-snug text-text-hi md:text-[1.75rem]">
-              {snap.promptText}
+
+            {/* Countdown ring */}
+            <div className="flex shrink-0 items-center justify-center">
+              <div className="relative flex h-32 w-32 items-center justify-center">
+                <svg viewBox="0 0 120 120" className="h-32 w-32 -rotate-90">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgb(var(--text-dim) / 0.18)" strokeWidth="8" />
+                  <motion.circle
+                    cx="60" cy="60" r="52" fill="none" stroke="rgb(var(--c-500))" strokeWidth="8"
+                    strokeLinecap="round" strokeDasharray={2 * Math.PI * 52}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 52 }}
+                    animate={{ strokeDashoffset: 2 * Math.PI * 52 * (1 - progress) }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center">
+                  <span className="h-display text-3xl font-bold text-text-hi tabular-nums">
+                    {snap.daysLeft}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider text-text-dim">days left</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="relative">
+            <h2 className="h-display text-2xl font-bold text-text-hi md:text-[1.75rem]">
+              No prompt locked in yet.
             </h2>
+            <p className="mt-1 text-sm text-text-dim">
+              Generate this week's set or write your own — then it shows up here with your countdown.
+            </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/prompts">
                 <GradientButton>
-                  Open this week’s prompt
-                  <Icon name="arrowRight" size={16} />
+                  <Icon name="sparkles" size={16} /> Generate a prompt
                 </GradientButton>
               </Link>
               <Link to="/assistant">
                 <GradientButton variant="ghost">
-                  <Icon name="sparkles" size={16} /> Ask Aurora
+                  <Icon name="sparkles" size={16} /> Plan with Aurora
                 </GradientButton>
               </Link>
             </div>
           </div>
-
-          {/* Countdown ring */}
-          <div className="flex shrink-0 items-center justify-center">
-            <div className="relative flex h-32 w-32 items-center justify-center">
-              <svg viewBox="0 0 120 120" className="h-32 w-32 -rotate-90">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="rgb(var(--text-dim) / 0.18)" strokeWidth="8" />
-                <motion.circle
-                  cx="60" cy="60" r="52" fill="none" stroke="rgb(var(--c-500))" strokeWidth="8"
-                  strokeLinecap="round" strokeDasharray={2 * Math.PI * 52}
-                  initial={{ strokeDashoffset: 2 * Math.PI * 52 }}
-                  animate={{ strokeDashoffset: 2 * Math.PI * 52 * (1 - progress) }}
-                  transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <span className="h-display text-3xl font-bold text-text-hi tabular-nums">
-                  {snap.daysLeft}
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-text-dim">
-                  days left
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </GlassCard>
 
       {/* Bento stat tiles */}
@@ -166,8 +193,22 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Weekly cycle — tap to track your progress */}
-      <GlassCard className="mt-6">
+      {/* Videography box */}
+      {showCategories && (
+        <div className="mt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="h-display text-lg font-bold text-text-hi">Your videography</h3>
+            <Link to="/settings" className="text-xs text-text-dim hover:text-text-hi">
+              Hide in Settings
+            </Link>
+          </div>
+          <CategoryBox history={history} />
+        </div>
+      )}
+
+      {/* Weekly cycle — tap to track your progress (only with an active prompt) */}
+      {hasPrompt && (
+      <GlassCard className="mt-8">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="h-display text-lg font-bold text-text-hi">Your progress</h3>
           <span className="text-xs text-text-dim">
@@ -220,6 +261,7 @@ export default function Home() {
           </Link>
         )}
       </GlassCard>
+      )}
 
       {/* History + Aurora */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">

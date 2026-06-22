@@ -154,6 +154,17 @@ class Store {
     await _fcmTokens.deleteMany({});
   }
 
+  Future<void> deleteUser(String username) async {
+    final lower = username.toLowerCase();
+    final user = await _users.findOne(where.eq('usernameLower', lower));
+    await _users.deleteOne(where.eq('usernameLower', lower));
+    final userId = user?['userId'];
+    if (userId != null) {
+      await _snapshots.deleteMany(where.eq('userId', userId));
+      await _fcmTokens.deleteMany(where.eq('userId', userId));
+    }
+  }
+
   Future<void> setUserAdmin(String username, bool isAdmin) async {
     await _users.updateOne(
       where.eq('usernameLower', username.toLowerCase()),

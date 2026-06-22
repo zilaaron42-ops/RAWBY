@@ -95,6 +95,8 @@ export const admin = {
     api.post(`/api/admin/suggestions/${encodeURIComponent(id)}/reply`, { reply }).then((r) => r.data),
   setAdmin: (username: string) =>
     api.post("/api/admin/set-admin", { username }).then((r) => r.data),
+  deleteUser: (username: string) =>
+    api.delete(`/api/admin/users/${encodeURIComponent(username)}`).then((r) => r.data),
 };
 
 export const community = {

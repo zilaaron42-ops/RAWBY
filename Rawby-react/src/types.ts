@@ -119,6 +119,7 @@ export interface ProjectHistoryItem {
   lateIdx?: number; // index into LATE_MULTIPLIERS at submit time
   gear?: string[]; // gear item ids used on this project
   likes?: number; // fetched reel likes (feeds scoring)
+  categories?: string[]; // video taxonomy ids (a film can span several)
 }
 
 export type GearStatus = "active" | "rested" | "retired";

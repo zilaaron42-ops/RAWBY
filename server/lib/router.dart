@@ -92,6 +92,8 @@ Handler buildRouter() {
   router.get('/api/users', protect(handleGetUsers));
   // Accepts X-Admin-Secret header (no JWT) or valid admin JWT
   router.delete('/api/admin/users/all', handleDeleteAllUsers);
+  // Delete a single user (admin JWT or X-Admin-Secret) — handler guards.
+  router.delete('/api/admin/users/<username>', protectWithParam(handleDeleteUser));
   // No JWT needed — protected by X-Admin-Secret header in handler
   router.post('/api/admin/set-admin', handleMakeAdmin);
 
