@@ -7,6 +7,8 @@ import { GradientButton } from "../components/ui/GradientButton";
 import { StatTile } from "../components/ui/StatTile";
 import { CountUp } from "../components/ui/CountUp";
 import { FilmTag } from "../components/ui/FilmTag";
+import { FilmStrip } from "../components/ui/FilmStrip";
+import { TiltCard } from "../components/ui/TiltCard";
 import { Eyebrow, Reveal } from "../components/ui/Bits";
 import { Icon } from "../components/ui/Icon";
 import { SkeletonCard } from "../components/ui/Skeleton";
@@ -112,13 +114,24 @@ export default function Home() {
         <div className="mb-3">
           <Eyebrow icon="film">{snap.weekNumber ? `Week ${snap.weekNumber}` : "This week"}</Eyebrow>
         </div>
-        <h1 className="h-display text-display-xl font-semibold leading-[1.02] md:text-display-2xl">
+        <h1 className="h-display text-display-xl font-semibold leading-[1.02] [text-wrap:balance] md:text-display-2xl">
           <span className="text-text-hi">Welcome back, </span>
           <span className="text-shine">{user?.displayName?.split(" ")[0] ?? "filmmaker"}.</span>
         </h1>
       </motion.div>
 
+      {/* Cinematic production-cycle ticker */}
+      <motion.div
+        className="mb-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <FilmStrip items={WEEKLY_CYCLE.map((p) => p.phase)} />
+      </motion.div>
+
       {/* Next-step hero */}
+      <TiltCard className="[perspective:1200px]">
       <GlassCard spotlight className="relative overflow-hidden p-6 md:p-8">
         <div
           className="animate-aurora-drift pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full blur-3xl"
@@ -145,7 +158,7 @@ export default function Home() {
                   )
                 )}
               </div>
-              <h2 className="h-display text-xl font-bold leading-snug text-text-hi md:text-2xl">
+              <h2 className="h-display text-display-sm font-semibold leading-tight text-text-hi [text-wrap:balance] md:text-display-md">
                 {shortPrompt}
               </h2>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -206,6 +219,7 @@ export default function Home() {
           </div>
         )}
       </GlassCard>
+      </TiltCard>
 
       {/* Bento stat tiles */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">

@@ -110,6 +110,11 @@ export default {
           "0%,100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-6px)" },
         },
+        // Seamless horizontal scroll for the film-strip ticker.
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         grain: "grain-shift 0.8s steps(4) infinite",
@@ -118,6 +123,7 @@ export default {
         "fade-in": "fade-in 0.4s ease-out both",
         "aurora-drift": "aurora-drift 14s ease-in-out infinite",
         float: "float 6s ease-in-out infinite",
+        marquee: "marquee 28s linear infinite",
       },
     },
   },
