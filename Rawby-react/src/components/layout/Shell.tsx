@@ -61,6 +61,7 @@ export function Shell() {
 
   return (
     <div className="relative min-h-screen">
+      <div className="ambient-aurora" aria-hidden="true" />
       <Suspense fallback={null}>
         <AuraScene />
       </Suspense>

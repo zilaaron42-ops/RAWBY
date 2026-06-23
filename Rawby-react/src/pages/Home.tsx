@@ -7,6 +7,7 @@ import { GradientButton } from "../components/ui/GradientButton";
 import { StatTile } from "../components/ui/StatTile";
 import { CountUp } from "../components/ui/CountUp";
 import { FilmTag } from "../components/ui/FilmTag";
+import { Eyebrow, Reveal } from "../components/ui/Bits";
 import { Icon } from "../components/ui/Icon";
 import { SkeletonCard } from "../components/ui/Skeleton";
 import { CategoryBox } from "../components/CategoryBox";
@@ -108,8 +109,8 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="mb-2 text-eyebrow font-semibold uppercase text-cinema-500">
-          {snap.weekNumber ? `Week ${snap.weekNumber}` : "This week"}
+        <div className="mb-3">
+          <Eyebrow icon="film">{snap.weekNumber ? `Week ${snap.weekNumber}` : "This week"}</Eyebrow>
         </div>
         <h1 className="h-display text-display-xl font-semibold leading-[1.02] md:text-display-2xl">
           <span className="text-text-hi">Welcome back, </span>
@@ -248,11 +249,12 @@ export default function Home() {
       </div>
 
       {/* Holiday mode — trips planned ahead with Aurora */}
-      <GlassCard className="mt-6">
+      <Reveal className="mt-12">
+      <GlassCard>
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon name="sun" size={18} className="text-cinema-400" />
-            <h3 className="h-display text-lg font-bold text-text-hi">Holiday mode</h3>
+            <h3 className="h-display text-display-sm font-semibold text-text-hi">Holiday mode</h3>
           </div>
           <button
             onClick={() => setPlanOpen(true)}
@@ -300,18 +302,22 @@ export default function Home() {
           </ul>
         )}
       </GlassCard>
+      </Reveal>
 
       {/* Videography box */}
       {showCategories && (
-        <div className="mt-8">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="h-display text-lg font-bold text-text-hi">Your videography</h3>
+        <Reveal className="mt-14">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <div className="mb-2"><Eyebrow icon="aperture">Your map</Eyebrow></div>
+              <h3 className="h-display text-display-md font-semibold text-text-hi">Your videography</h3>
+            </div>
             <Link to="/settings" className="text-xs text-text-dim hover:text-text-hi">
               Hide in Settings
             </Link>
           </div>
           <CategoryBox history={history} />
-        </div>
+        </Reveal>
       )}
 
       {/* Weekly cycle — tap to track your progress (only with an active prompt) */}
@@ -375,10 +381,10 @@ export default function Home() {
       )}
 
       {/* History + Aurora */}
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+      <Reveal className="mt-14 grid gap-4 lg:grid-cols-3">
         <GlassCard className="lg:col-span-2">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="h-display text-lg font-bold text-text-hi">Recent films</h3>
+            <h3 className="h-display text-display-sm font-semibold text-text-hi">Recent films</h3>
             <Link to="/profile" className="text-xs font-semibold text-cinema-400 hover:underline">
               View all
             </Link>
@@ -422,7 +428,7 @@ export default function Home() {
             </GradientButton>
           </Link>
         </GlassCard>
-      </div>
+      </Reveal>
 
       <PlanTripModal open={planOpen} onClose={() => setPlanOpen(false)} />
     </PageTransition>

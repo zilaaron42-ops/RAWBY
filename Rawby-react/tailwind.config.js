@@ -66,7 +66,7 @@ export default {
       },
       maxWidth: { prose: "68ch" },
       boxShadow: {
-        glass: "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 28px -6px rgba(0,0,0,0.5)",
+        glass: "0 1px 0 0 rgba(255,255,255,0.05) inset, 0 18px 44px -12px rgba(0,0,0,0.6)",
         glow: "0 0 0 1px rgb(var(--glow) / 0.22), 0 10px 34px -8px rgb(var(--glow) / 0.45)",
         "glow-sm": "0 0 0 1px rgb(var(--glow) / 0.18), 0 6px 18px -6px rgb(var(--glow) / 0.4)",
       },

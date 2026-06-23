@@ -164,6 +164,30 @@ body {
     @apply rounded-glass border border-hairline bg-glass shadow-glass backdrop-blur-xl;
   }
 
+  /* Full-page ambient mesh — soft gold/warm blobs, sits behind everything.
+     Gives the rich, layered gradient depth of high-end Framer sites. */
+  .ambient-aurora {
+    position: fixed;
+    inset: -10%;
+    z-index: -10;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 40% at 18% 12%, rgb(var(--c-500) / 0.16), transparent 70%),
+      radial-gradient(32% 36% at 86% 8%, rgb(var(--c-400) / 0.12), transparent 70%),
+      radial-gradient(40% 44% at 78% 88%, rgb(var(--glow) / 0.1), transparent 72%),
+      radial-gradient(50% 50% at 50% 120%, rgb(var(--c-600) / 0.1), transparent 70%);
+    filter: saturate(1.1);
+    animation: aurora-drift 22s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient-aurora { animation: none; }
+  }
+
+  /* Pill eyebrow chip — small rounded label above headings (Framer signature) */
+  .eyebrow-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-hairline bg-chip px-3 py-1 text-eyebrow font-semibold uppercase text-cinema-300;
+  }
+
   /* Interactive card hover — transform/opacity only (no layout shift) */
   .card-hover {
     @apply cursor-pointer transition-[transform,border-color,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:border-hairline-strong hover:shadow-glow-sm;
