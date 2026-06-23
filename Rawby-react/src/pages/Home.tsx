@@ -75,6 +75,12 @@ export default function Home() {
 
   const realPrompt = data?.snapshot?.promptText;
   const hasPrompt = !!realPrompt;
+  // Hero shows a single short line — the full prompt lives on the Prompts page.
+  const shortPrompt = (() => {
+    if (!realPrompt) return "";
+    const first = realPrompt.split(/(?<=[.!?])\s/)[0].trim();
+    return first.length > 120 ? `${first.slice(0, 117).trimEnd()}…` : first;
+  })();
 
   // Holiday mode: the countdown runs off a custom filming window (start →
   // deadline) instead of the weekly 7-day cycle. Set when you lock a prompt
@@ -127,8 +133,8 @@ export default function Home() {
                   )
                 )}
               </div>
-              <h2 className="h-display text-2xl font-bold leading-snug text-text-hi md:text-[1.75rem]">
-                {realPrompt}
+              <h2 className="h-display text-xl font-bold leading-snug text-text-hi md:text-2xl">
+                {shortPrompt}
               </h2>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/prompts">

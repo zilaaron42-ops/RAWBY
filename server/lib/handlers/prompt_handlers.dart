@@ -330,7 +330,7 @@ String _buildLocationHint({required String region, required bool seasonal}) {
   final buf = StringBuffer('\n\nREGIONAL CONTEXT:');
   if (region.isNotEmpty) {
     buf.write(
-        '\n- Setting: $region. Locations, plants, weather, architecture and street life must be plausible for this region.');
+        '\n- Setting: $region. At least TWO of the 3 prompts must be UNMISTAKABLY set in $region: name real, specific places — actual cities, neighbourhoods, landscapes, landmarks, rivers, transit — plus plants, weather, architecture, food and cultural texture a local would instantly recognise. A native of $region should read it and think "this is here". Do NOT write generic locations that could be anywhere. The third prompt may be neutral but must never contradict $region.');
   }
   if (seasonal) {
     final now = DateTime.now().toUtc();
