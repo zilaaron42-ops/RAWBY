@@ -11,15 +11,13 @@ import { GradientButton } from "../components/ui/GradientButton";
 import { Eyebrow, Reveal } from "../components/ui/Bits";
 import { FilmStrip } from "../components/ui/FilmStrip";
 import { Scribble } from "../components/ui/Scribble";
+import { AuroraBackground } from "../components/ui/AuroraBackground";
 import { Icon, type IconName } from "../components/ui/Icon";
 import { Logo } from "../components/ui/Logo";
 import { FilmGrain } from "../components/ui/FilmGrain";
 import { CategoryBox } from "../components/CategoryBox";
 import { LEVELS, WEEKLY_CYCLE } from "../lib/constants";
 
-const AuraScene = lazy(() =>
-  import("../components/three/AuraScene").then((m) => ({ default: m.AuraScene }))
-);
 const AuthHero = lazy(() => import("../components/three/AuthHero"));
 
 const STEPS: { n: string; icon: IconName; title: string; body: string }[] = [
@@ -67,11 +65,7 @@ function TopBar() {
 export default function Landing() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <div className="ambient-aurora" aria-hidden="true" />
-      <div className="cine-vignette" aria-hidden="true" />
-      <Suspense fallback={null}>
-        <AuraScene />
-      </Suspense>
+      <AuroraBackground />
       <FilmGrain opacity={0.06} />
 
       <div className="relative z-base">

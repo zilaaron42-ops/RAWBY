@@ -3,21 +3,16 @@
 // mobile + a slim mobile top bar. Hosts the 3D AuraScene, grain,
 // and animated routes.
 // ============================================================
-import { Suspense, lazy } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FilmGrain } from "../ui/FilmGrain";
+import { AuroraBackground } from "../ui/AuroraBackground";
 import { Icon } from "../ui/Icon";
 import { Logo } from "../ui/Logo";
 import { ModeToggle } from "../ui/ThemeControls";
 import { Onboarding } from "../Onboarding";
 import { NAV_ITEMS, NAV_GROUPS, SECONDARY_ITEMS, ADMIN_ITEM, type NavItem } from "./nav";
 import { useAuth } from "../../store/auth";
-
-// 3D background is heavy — defer so the dashboard paints first.
-const AuraScene = lazy(() =>
-  import("../three/AuraScene").then((m) => ({ default: m.AuraScene }))
-);
 
 function SideLink({ item }: { item: NavItem }) {
   return (
@@ -85,10 +80,7 @@ export function Shell() {
 
   return (
     <div className="relative min-h-screen">
-      <div className="ambient-aurora" aria-hidden="true" />
-      <Suspense fallback={null}>
-        <AuraScene />
-      </Suspense>
+      <AuroraBackground />
       <FilmGrain />
       <Onboarding />
 
