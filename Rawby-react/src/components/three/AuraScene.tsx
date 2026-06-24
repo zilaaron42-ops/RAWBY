@@ -37,15 +37,6 @@ function Rig({ children }: { children: React.ReactNode }) {
 export function AuraScene() {
   return (
     <div className="fixed inset-0 -z-10">
-      {/* Radial glow gradients (always on, cheap) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 18% 12%, rgb(var(--glow) / 0.16), transparent 60%), radial-gradient(55% 45% at 85% 88%, rgba(90,138,94,0.14), transparent 60%)",
-        }}
-      />
-
       {(
         <Canvas
           camera={{ position: [0, 0, 6], fov: 45 }}
@@ -53,27 +44,27 @@ export function AuraScene() {
           gl={{ antialias: true, alpha: true }}
           style={{ position: "absolute", inset: 0 }}
         >
-          <Env intensity={0.4} />
-          <ambientLight intensity={0.9} />
-          <directionalLight position={[5, 5, 5]} intensity={1.8} color="#F6DC9C" />
-          <pointLight position={[-4, -2, 3]} intensity={1} color="#6FA373" />
-          <pointLight position={[0, 1, -4]} intensity={2.2} color="#E8B647" />
+          <Env intensity={0.3} />
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[5, 5, 5]} intensity={1.3} color="#F3DCA2" />
+          <pointLight position={[0, 1, -4]} intensity={1.4} color="#E8B647" />
           <Suspense fallback={null}>
             <Rig>
-              <Particles count={420} />
+              <Particles count={170} />
               <PaintOnce />
             </Rig>
           </Suspense>
-          <fog attach="fog" args={["#0A0B0D", 6, 14]} />
+          <fog attach="fog" args={["#0A0B0D", 5, 12]} />
         </Canvas>
       )}
 
-      {/* Vignette to keep text legible over the scene */}
+      {/* Deep filmic vignette — keeps the scene to a quiet glow at centre and
+          sinks the edges to true black so content reads cleanly. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 100% at 50% 40%, transparent 40%, rgb(var(--scene-veil)) 100%)",
+            "radial-gradient(130% 105% at 50% 34%, transparent 38%, rgb(var(--bg) / 0.92) 100%)",
         }}
       />
     </div>

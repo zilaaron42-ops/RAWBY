@@ -3,11 +3,13 @@ import type { ReactNode } from "react";
 
 type Variant = "cinema" | "green" | "story" | "ghost";
 
+// Disciplined set: gold is the only bright primary. Everything else is a
+// deep, desaturated, filmic tone or a quiet charcoal — no candy gradients.
 const VARIANTS: Record<Variant, string> = {
-  cinema: "bg-gradient-to-br from-cinema-400 to-cinema-600 text-[#1A1100] shadow-glow",
-  green: "bg-gradient-to-br from-green-400 to-green-600 text-white shadow-[0_8px_30px_-8px_rgba(90,138,94,0.45)]",
-  story: "bg-[linear-gradient(135deg,#E85D75,#B12B5C)] text-white shadow-[0_8px_30px_-8px_rgba(225,93,117,0.45)]",
-  ghost: "bg-chip text-text-hi border border-hairline hover:bg-glass-hover",
+  cinema: "bg-gradient-to-b from-cinema-300 to-cinema-500 text-[#1a1200] shadow-glow",
+  green: "bg-[linear-gradient(180deg,#5E8E62,#33543A)] text-white shadow-[0_10px_30px_-12px_rgba(90,138,94,0.5)]",
+  story: "bg-[linear-gradient(180deg,#A8506B,#5E1E3E)] text-white shadow-[0_10px_30px_-12px_rgba(150,50,90,0.5)]",
+  ghost: "border border-hairline bg-[rgb(var(--card-fill))] text-text-hi hover:border-hairline-strong hover:bg-glass-hover",
 };
 
 type Props = Omit<HTMLMotionProps<"button">, "children"> & {

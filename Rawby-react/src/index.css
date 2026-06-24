@@ -61,28 +61,31 @@
 /* ── Light / dark surfaces — semantic tokens. ── */
 :root,
 [data-theme="dark"] {
-  /* Warm espresso dark — tungsten-lit, analog. Reads more human than a
-     cold blue-black, and lets the gold sit in the same temperature. */
-  --bg: 21 17 14;
-  --surface: 31 26 22;
-  --card: 39 33 28;
-  --text-hi: 245 240 232;
-  --text-dim: 171 161 148;
-  --hairline: 255 246 235 / 0.09;
-  --hairline-strong: 255 246 235 / 0.17;
-  --glass: 255 247 236 / 0.04;
-  --glass-hover: 255 247 236 / 0.07;
-  --field: 0 0 0 / 0.26;
-  --chip: 255 247 236 / 0.05;
-  --divide: 255 247 236 / 0.06;
-  --grain-opacity: 0.085;
-  --scene-veil: 21 17 14 / 0.55;
+  /* Neutral filmic black — near-black with the faintest warm-neutral cast.
+     All the warmth comes from the gold accent, not the base, so nothing
+     reads muddy/brown. Crisp charcoal cards over it. */
+  --bg: 12 12 14;
+  --surface: 19 19 22;
+  --card: 26 26 30;
+  --card-fill: 23 23 27 / 0.76;
+  --text-hi: 244 243 240;
+  --text-dim: 161 162 168;
+  --hairline: 255 255 255 / 0.08;
+  --hairline-strong: 255 255 255 / 0.16;
+  --glass: 255 255 255 / 0.04;
+  --glass-hover: 255 255 255 / 0.07;
+  --field: 0 0 0 / 0.28;
+  --chip: 255 255 255 / 0.045;
+  --divide: 255 255 255 / 0.06;
+  --grain-opacity: 0.05;
+  --scene-veil: 12 12 14 / 0.55;
 }
 [data-theme="light"] {
   color-scheme: light;
   --bg: 244 244 243;
   --surface: 255 255 255;
   --card: 255 255 255;
+  --card-fill: 255 255 255 / 0.82;
   --text-hi: 15 23 42;
   --text-dim: 71 85 105;
   --hairline: 15 23 42 / 0.1;
@@ -161,28 +164,24 @@ body {
 }
 
 @layer components {
-  /* Glass surface — backdrop blur, translucent fill, hairline border */
+  /* Card surface — crisp charcoal fill + fine hairline + depth. Lighter blur
+     than before; the near-solid fill reads intentional, not a glassy AI smear. */
   .glass {
-    @apply rounded-glass border border-hairline bg-glass shadow-glass backdrop-blur-xl;
+    @apply rounded-glass border border-hairline shadow-glass;
+    background: rgb(var(--card-fill));
+    backdrop-filter: blur(10px);
   }
 
-  /* Full-page ambient mesh — soft gold/warm blobs, sits behind everything.
-     Gives the rich, layered gradient depth of high-end Framer sites. */
+  /* Full-page ambient — ONE restrained warm glow off the top edge. No green,
+     no multi-blob mesh (that read murky/AI). Quiet, filmic, intentional. */
   .ambient-aurora {
     position: fixed;
-    inset: -10%;
+    inset: 0;
     z-index: -10;
     pointer-events: none;
     background:
-      radial-gradient(38% 40% at 18% 12%, rgb(var(--c-500) / 0.16), transparent 70%),
-      radial-gradient(32% 36% at 86% 8%, rgb(var(--c-400) / 0.12), transparent 70%),
-      radial-gradient(40% 44% at 78% 88%, rgb(var(--glow) / 0.1), transparent 72%),
-      radial-gradient(50% 50% at 50% 120%, rgb(var(--c-600) / 0.1), transparent 70%);
-    filter: saturate(1.1);
-    animation: aurora-drift 22s ease-in-out infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ambient-aurora { animation: none; }
+      radial-gradient(80% 46% at 50% -16%, rgb(var(--c-500) / 0.12), transparent 58%),
+      radial-gradient(38% 28% at 88% 0%, rgb(var(--c-400) / 0.05), transparent 70%);
   }
 
   /* Pill eyebrow chip — small rounded label above headings (Framer signature) */
