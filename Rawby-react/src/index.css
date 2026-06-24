@@ -61,33 +61,34 @@
 /* ── Light / dark surfaces — semantic tokens. ── */
 :root,
 [data-theme="dark"] {
-  /* Neutral filmic black — near-black with the faintest warm-neutral cast.
-     All the warmth comes from the gold accent, not the base, so nothing
-     reads muddy/brown. Crisp charcoal cards over it. */
-  --bg: 12 12 14;
-  --surface: 19 19 22;
-  --card: 26 26 30;
-  --card-fill: 23 23 27 / 0.76;
-  --text-hi: 244 243 240;
-  --text-dim: 161 162 168;
-  --hairline: 255 255 255 / 0.08;
-  --hairline-strong: 255 255 255 / 0.16;
-  --glass: 255 255 255 / 0.04;
-  --glass-hover: 255 255 255 / 0.07;
-  --field: 0 0 0 / 0.28;
-  --chip: 255 255 255 / 0.045;
-  --divide: 255 255 255 / 0.06;
-  --grain-opacity: 0.05;
-  --scene-veil: 12 12 14 / 0.55;
+  /* Monochrome minimal (Instagram-like). Softer than pure black — a neutral
+     charcoal so the UI reads calm, not harsh. Almost no colour in the chrome;
+     the accent shows up only on hover / active / links. */
+  --bg: 20 20 23;
+  --surface: 27 27 31;
+  --card: 33 33 38;
+  --card-fill: 31 31 36 / 0.82;
+  --text-hi: 245 245 247;
+  --text-dim: 163 164 170;
+  --hairline: 255 255 255 / 0.09;
+  --hairline-strong: 255 255 255 / 0.17;
+  --glass: 255 255 255 / 0.045;
+  --glass-hover: 255 255 255 / 0.08;
+  --field: 0 0 0 / 0.24;
+  --chip: 255 255 255 / 0.05;
+  --divide: 255 255 255 / 0.07;
+  --grain-opacity: 0.04;
+  --scene-veil: 20 20 23 / 0.55;
 }
 [data-theme="light"] {
   color-scheme: light;
-  --bg: 244 244 243;
-  --surface: 255 255 255;
-  --card: 255 255 255;
-  --card-fill: 255 255 255 / 0.82;
-  --text-hi: 15 23 42;
-  --text-dim: 71 85 105;
+  /* Softer than stark white — a warm light grey paper so it's easy on the eye. */
+  --bg: 234 233 230;
+  --surface: 245 244 242;
+  --card: 250 249 247;
+  --card-fill: 250 249 247 / 0.85;
+  --text-hi: 24 24 27;
+  --text-dim: 88 88 96;
   --hairline: 15 23 42 / 0.1;
   --hairline-strong: 15 23 42 / 0.18;
   --glass: 255 255 255 / 0.72;

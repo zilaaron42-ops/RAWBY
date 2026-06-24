@@ -4,60 +4,43 @@
 // and animated routes.
 // ============================================================
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { FilmGrain } from "../ui/FilmGrain";
 import { AuroraBackground } from "../ui/AuroraBackground";
 import { Icon } from "../ui/Icon";
 import { Logo } from "../ui/Logo";
 import { ModeToggle } from "../ui/ThemeControls";
 import { Onboarding } from "../Onboarding";
-import { NAV_ITEMS, NAV_GROUPS, SECONDARY_ITEMS, ADMIN_ITEM, type NavItem } from "./nav";
+import { NAV_ITEMS, SECONDARY_ITEMS, ADMIN_ITEM, type NavItem } from "./nav";
 import { useAuth } from "../../store/auth";
 
+// Instagram-style nav row: roomy, icon + label, no persistent background.
+// Active = bold label + accent icon; hover = subtle wash.
 function SideLink({ item }: { item: NavItem }) {
   return (
     <NavLink
       to={item.to}
       end={item.to === "/home"}
       className={({ isActive }) =>
-        `group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[0.875rem] font-medium transition-colors duration-200 ${
-          isActive ? "text-text-hi" : "text-text-dim hover:bg-glass hover:text-text-hi"
+        `group flex items-center gap-4 rounded-xl px-3 py-2.5 text-[0.95rem] transition-colors duration-200 hover:bg-glass ${
+          isActive ? "font-semibold text-text-hi" : "font-normal text-text-dim hover:text-text-hi"
         }`
       }
     >
       {({ isActive }) => (
         <>
-          {isActive && (
-            <motion.span
-              layoutId="nav-active"
-              className="absolute inset-0 -z-10 rounded-lg border border-hairline bg-[rgb(var(--card-fill))]"
-              transition={{ type: "spring", stiffness: 420, damping: 34 }}
-            />
-          )}
           <Icon
             name={item.icon}
-            size={18}
-            className={isActive ? "text-cinema-400" : "transition-colors group-hover:text-text-hi"}
+            size={23}
+            strokeWidth={isActive ? 2.4 : 1.9}
+            className={`shrink-0 transition-transform duration-200 group-hover:scale-110 ${
+              isActive ? "text-cinema-400" : ""
+            }`}
           />
           {item.label}
         </>
       )}
     </NavLink>
-  );
-}
-
-function NavSection({ label, items }: { label?: string; items: NavItem[] }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      {label && (
-        <div className="px-3 pb-1 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-text-dim/55">
-          {label}
-        </div>
-      )}
-      {items.map((it) => (
-        <SideLink key={it.to} item={it} />
-      ))}
-    </div>
   );
 }
 
@@ -75,7 +58,11 @@ function Avatar({ initial, size = "md" }: { initial: string; size?: "sm" | "md" 
 export function Shell() {
   const location = useLocation();
   const user = useAuth((s) => s.user);
-  const youItems: NavItem[] = [...SECONDARY_ITEMS, ...(user?.isAdmin ? [ADMIN_ITEM] : [])];
+  const allItems: NavItem[] = [
+    ...NAV_ITEMS,
+    ...SECONDARY_ITEMS,
+    ...(user?.isAdmin ? [ADMIN_ITEM] : []),
+  ];
   const initial = user?.displayName?.[0]?.toUpperCase() ?? "?";
 
   return (
@@ -92,11 +79,10 @@ export function Shell() {
             <ModeToggle />
           </div>
 
-          <nav aria-label="Primary" className="flex flex-1 flex-col gap-1 overflow-y-auto">
-            {NAV_GROUPS.map((g, i) => (
-              <NavSection key={g.label ?? i} label={g.label} items={g.items} />
+          <nav aria-label="Primary" className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
+            {allItems.map((it) => (
+              <SideLink key={it.to} item={it} />
             ))}
-            <NavSection label="You" items={youItems} />
           </nav>
 
           {user && (

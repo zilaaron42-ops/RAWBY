@@ -54,18 +54,15 @@ export function CategoryBox({ history }: { history: ProjectHistoryItem[] }) {
               className={`glass group relative flex min-h-[156px] flex-col justify-between overflow-hidden p-5 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-glow-sm ${CORNER_ALIGN[pos]}`}
             >
               <span
-                className="pointer-events-none absolute h-24 w-24 rounded-full opacity-30 blur-2xl transition-opacity group-hover:opacity-60"
+                className="pointer-events-none absolute h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-70"
                 style={{
-                  background: `radial-gradient(circle, ${c.color}66, transparent 70%)`,
+                  background: "radial-gradient(circle, rgb(var(--c-500) / 0.45), transparent 70%)",
                   [pos.includes("t") ? "top" : "bottom"]: "-1.5rem",
                   [pos.includes("l") ? "left" : "right"]: "-1.5rem",
                 }}
               />
               <div className={`flex w-full items-center gap-2.5 ${flip ? "flex-row-reverse" : ""}`}>
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg ring-1 ring-inset"
-                  style={{ background: `${c.color}1c`, color: c.color, "--tw-ring-color": `${c.color}33` } as React.CSSProperties}
-                >
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-chip text-text-dim ring-1 ring-inset ring-hairline transition-colors duration-300 group-hover:text-cinema-400">
                   <Icon name={c.icon as IconName} size={17} />
                 </span>
                 <span className="text-[0.95rem] font-semibold text-text-hi">{c.label}</span>
@@ -85,17 +82,13 @@ export function CategoryBox({ history }: { history: ProjectHistoryItem[] }) {
 
       {/* Emotional core — a calm dark medallion with a rose accent, not a ball */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 flex h-[6.5rem] w-[6.5rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full text-center"
+        className="pointer-events-none absolute left-1/2 top-1/2 flex h-[6.5rem] w-[6.5rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-cinema-500/40 text-center"
         style={{
           background: "rgb(var(--surface))",
-          border: `1px solid ${heart.color}55`,
-          boxShadow: `0 0 0 6px rgb(var(--bg)), 0 0 28px -4px ${heart.color}66`,
+          boxShadow: "0 0 0 6px rgb(var(--bg)), 0 0 28px -6px rgb(var(--c-500) / 0.5)",
         }}
       >
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full"
-          style={{ background: `${heart.color}1f`, color: heart.color }}
-        >
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cinema-500/15 text-cinema-400">
           <Icon name="heart" size={16} />
         </span>
         <div className="mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-text-hi">Emotions</div>
