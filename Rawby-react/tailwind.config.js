@@ -58,7 +58,7 @@ export default {
         "display-xl": ["3rem", { lineHeight: "1.02", letterSpacing: "-0.024em" }],
         "display-2xl": ["clamp(2.75rem,6vw,4.25rem)", { lineHeight: "0.98", letterSpacing: "-0.028em" }],
       },
-      borderRadius: { glass: "18px" },
+      borderRadius: { glass: "22px" },
       zIndex: { bg: "-10", base: "10", nav: "30", grain: "40", modal: "50", toast: "60" },
       transitionTimingFunction: {
         out: "cubic-bezier(0.22,1,0.36,1)",

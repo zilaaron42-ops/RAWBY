@@ -8,96 +8,97 @@
 
 /* ── Accent themes — cinema-* scale reads these RGB triplets, so one
    swap recolours every accent + the logo. Default = amber (gold). ── */
+/* Pastel accents — soft, creamy, easy on harsh warm-black. Each --c-500 is a
+   muted pastel; buttons fill it under dark ink text. */
 :root,
 [data-accent="amber"] {
-  --c-300: 246 220 156;
-  --c-400: 240 200 104;
-  --c-500: 232 182 71;
-  --c-600: 201 148 44;
-  --c-700: 143 105 24;
-  --brand-1: #f2d27a;
-  --brand-2: #e8b647;
-  --brand-3: #b4831f;
-  --brand-ink: #3a2904;
-  --glow: 232 182 71;
+  --c-300: 248 232 188;
+  --c-400: 242 217 160;
+  --c-500: 232 201 122;
+  --c-600: 196 165 96;
+  --c-700: 142 116 60;
+  --brand-1: #f3e3ac;
+  --brand-2: #e8c97a;
+  --brand-3: #b5934f;
+  --brand-ink: #2c2208;
+  --glow: 232 201 122;
 }
 [data-accent="green"] {
-  --c-300: 143 189 147;
-  --c-400: 111 163 115;
-  --c-500: 90 138 94;
-  --c-600: 61 107 65;
-  --c-700: 42 77 45;
-  --brand-1: #7fb184;
-  --brand-2: #5a8a5e;
-  --brand-3: #2a4d2d;
-  --brand-ink: #0c2410;
-  --glow: 90 138 94;
+  --c-300: 200 222 200;
+  --c-400: 174 206 174;
+  --c-500: 150 186 150;
+  --c-600: 116 152 116;
+  --c-700: 80 108 80;
+  --brand-1: #c8dec8;
+  --brand-2: #96ba96;
+  --brand-3: #506c50;
+  --brand-ink: #15240f;
+  --glow: 150 186 150;
 }
 [data-accent="azure"] {
-  --c-300: 147 197 253;
-  --c-400: 96 165 250;
-  --c-500: 59 130 246;
-  --c-600: 37 99 235;
-  --c-700: 29 78 216;
-  --brand-1: #8fc1fc;
-  --brand-2: #3b82f6;
-  --brand-3: #1d4ed8;
-  --brand-ink: #06203f;
-  --glow: 59 130 246;
+  --c-300: 201 217 247;
+  --c-400: 174 199 241;
+  --c-500: 148 180 232;
+  --c-600: 116 148 204;
+  --c-700: 84 110 160;
+  --brand-1: #c9d9f7;
+  --brand-2: #94b4e8;
+  --brand-3: #546ea0;
+  --brand-ink: #0a1a30;
+  --glow: 148 180 232;
 }
 [data-accent="rose"] {
-  --c-300: 244 168 184;
-  --c-400: 236 107 133;
-  --c-500: 232 93 117;
-  --c-600: 177 43 92;
-  --c-700: 138 30 71;
-  --brand-1: #f4a8b8;
-  --brand-2: #e85d75;
-  --brand-3: #8a1e47;
-  --brand-ink: #3a0a1d;
-  --glow: 232 93 117;
+  --c-300: 246 209 217;
+  --c-400: 240 186 198;
+  --c-500: 230 160 178;
+  --c-600: 196 122 144;
+  --c-700: 150 86 104;
+  --brand-1: #f6d1d9;
+  --brand-2: #e6a0b2;
+  --brand-3: #965668;
+  --brand-ink: #2e0f18;
+  --glow: 230 160 178;
 }
 
 /* ── Light / dark surfaces — semantic tokens. ── */
 :root,
 [data-theme="dark"] {
-  /* Monochrome minimal (Instagram-like). Softer than pure black — a neutral
-     charcoal so the UI reads calm, not harsh. Almost no colour in the chrome;
-     the accent shows up only on hover / active / links. */
-  --bg: 20 20 23;
-  --surface: 27 27 31;
-  --card: 33 33 38;
-  --card-fill: 31 31 36 / 0.82;
-  --text-hi: 245 245 247;
-  --text-dim: 163 164 170;
-  --hairline: 255 255 255 / 0.09;
-  --hairline-strong: 255 255 255 / 0.17;
-  --glass: 255 255 255 / 0.045;
-  --glass-hover: 255 255 255 / 0.08;
-  --field: 0 0 0 / 0.24;
-  --chip: 255 255 255 / 0.05;
-  --divide: 255 255 255 / 0.07;
-  --grain-opacity: 0.04;
-  --scene-veil: 20 20 23 / 0.55;
+  /* Rich warm-black — deep, "brownish" near-black with a warm tint so pastel
+     accents glow against it. Harsh/deep but not muddy. */
+  --bg: 18 14 11;
+  --surface: 28 23 18;
+  --card: 36 29 23;
+  --card-fill: 32 26 20 / 0.82;
+  --text-hi: 245 240 232;
+  --text-dim: 169 159 147;
+  --hairline: 255 244 230 / 0.09;
+  --hairline-strong: 255 244 230 / 0.17;
+  --glass: 255 244 230 / 0.045;
+  --glass-hover: 255 244 230 / 0.08;
+  --field: 0 0 0 / 0.26;
+  --chip: 255 244 230 / 0.05;
+  --divide: 255 244 230 / 0.07;
+  --grain-opacity: 0.045;
+  --scene-veil: 18 14 11 / 0.55;
 }
 [data-theme="light"] {
   color-scheme: light;
-  /* Softer than stark white — a warm light grey paper so it's easy on the eye. */
-  --bg: 234 233 230;
-  --surface: 245 244 242;
-  --card: 250 249 247;
-  --card-fill: 250 249 247 / 0.85;
-  --text-hi: 24 24 27;
-  --text-dim: 88 88 96;
-  --hairline: 15 23 42 / 0.1;
-  --hairline-strong: 15 23 42 / 0.18;
-  --glass: 255 255 255 / 0.72;
-  --glass-hover: 255 255 255 / 0.88;
-  --field: 15 23 42 / 0.04;
-  --chip: 15 23 42 / 0.05;
-  --divide: 15 23 42 / 0.08;
-  --grain-opacity: 0.025;
-  --scene-veil: 244 244 243 / 0.5;
+  /* Brownish white — warm cream paper, warm brown ink. */
+  --bg: 236 229 217;
+  --surface: 247 241 231;
+  --card: 251 246 238;
+  --card-fill: 251 246 238 / 0.86;
+  --text-hi: 38 30 23;
+  --text-dim: 102 90 78;
+  --hairline: 38 30 23 / 0.12;
+  --hairline-strong: 38 30 23 / 0.2;
+  --glass: 255 252 246 / 0.72;
+  --glass-hover: 255 252 246 / 0.9;
+  --field: 38 30 23 / 0.05;
+  --chip: 38 30 23 / 0.05;
+  --divide: 38 30 23 / 0.09;
+  --grain-opacity: 0.02;
+  --scene-veil: 236 229 217 / 0.5;
 }
 
 * {
@@ -165,12 +166,16 @@ body {
 }
 
 @layer components {
-  /* Card surface — crisp charcoal fill + fine hairline + depth. Lighter blur
-     than before; the near-solid fill reads intentional, not a glassy AI smear. */
+  /* Unified glass surface — translucent fill, fine hairline, a bright inset
+     top highlight (Tahoe shine) + soft depth. Smooth curved corners. */
   .glass {
-    @apply rounded-glass border border-hairline shadow-glass;
+    @apply rounded-glass border border-hairline;
     background: rgb(var(--card-fill));
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(14px) saturate(1.3);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.07),
+      inset 0 0 0 1px rgb(255 255 255 / 0.02),
+      0 18px 44px -16px rgba(0, 0, 0, 0.55);
   }
 
   /* Full-page ambient — ONE restrained warm glow off the top edge. No green,

@@ -358,60 +358,76 @@ export default function Home() {
         </Reveal>
       )}
 
-      {/* Production checklist — every phase visible + tappable to tick off. */}
+      {/* Production stepper — connected nodes, a filling line + progress bar. */}
       <GlassCard className="mt-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h3 className="h-display text-xl font-semibold text-text-hi">This week's steps</h3>
-            <p className="text-xs text-text-dim">Tap each step as you finish it.</p>
+            <p className="text-xs text-text-dim">Tap a step to tick it off.</p>
           </div>
           <span className="rounded-full border border-hairline bg-chip px-3 py-1 text-xs font-semibold tabular-nums text-text-dim">
             {prog.done.length}/{WEEKLY_CYCLE.length} done
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
-          {WEEKLY_CYCLE.map((p, i) => {
-            const done = prog.done.includes(p.phase);
-            const today = holiday ? i === holidayPhaseIdx : isToday(p.day);
-            const dayLabel = holiday
-              ? `Day ${Math.floor((i * totalWindow) / WEEKLY_CYCLE.length) + 1}`
-              : p.day;
-            return (
-              <button
-                key={p.phase + i}
-                type="button"
-                onClick={() => prog.toggle.mutate(p.phase)}
-                aria-pressed={done}
-                className={`group relative flex flex-col gap-1 rounded-xl border p-3.5 text-left transition-colors ${
-                  done
-                    ? "border-cinema-500/45 bg-cinema-500/[0.1]"
-                    : today
-                      ? "border-cinema-500/70 bg-cinema-500/10"
-                      : "border-hairline bg-chip hover:border-hairline-strong hover:bg-glass"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider ${today && !done ? "text-cinema-400" : "text-text-dim"}`}>
-                    {today ? "Today" : dayLabel}
-                  </span>
-                  <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${
-                      done ? "border-cinema-500 bg-cinema-500 text-[#16161a]" : "border-hairline-strong text-transparent group-hover:border-cinema-500/60"
-                    }`}
-                  >
-                    <Icon name="check" size={12} />
-                  </span>
-                </div>
-                <div className={`text-sm font-semibold ${done ? "text-text-hi line-through decoration-cinema-500/50" : "text-text-hi"}`}>
-                  {p.phase}
-                </div>
-                <div className="text-[11px] leading-tight text-text-dim">{p.desc}</div>
-              </button>
-            );
-          })}
+
+        {/* overall progress */}
+        <div className="mb-7 h-1.5 w-full overflow-hidden rounded-full bg-chip">
+          <motion.div
+            className="h-full rounded-full bg-gradient-to-r from-cinema-400 to-cinema-600"
+            initial={false}
+            animate={{ width: `${(prog.done.length / WEEKLY_CYCLE.length) * 100}%` }}
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          />
         </div>
+
+        <div className="no-scrollbar overflow-x-auto pb-1">
+          <div className="flex min-w-[640px] items-start">
+            {WEEKLY_CYCLE.map((p, i) => {
+              const done = prog.done.includes(p.phase);
+              const prevDone = i > 0 && prog.done.includes(WEEKLY_CYCLE[i - 1].phase);
+              const today = holiday ? i === holidayPhaseIdx : isToday(p.day);
+              const dayLabel = holiday ? `Day ${Math.floor((i * totalWindow) / WEEKLY_CYCLE.length) + 1}` : p.day;
+              const last = i === WEEKLY_CYCLE.length - 1;
+              return (
+                <div key={p.phase + i} className="flex flex-1 flex-col items-center">
+                  <div className="flex w-full items-center">
+                    <span className={`h-0.5 flex-1 rounded-full transition-colors ${i === 0 ? "opacity-0" : prevDone ? "bg-cinema-500" : "bg-hairline-strong"}`} />
+                    <button
+                      type="button"
+                      onClick={() => prog.toggle.mutate(p.phase)}
+                      aria-pressed={done}
+                      title={p.phase}
+                      className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+                        done
+                          ? "border-cinema-500 bg-cinema-500 text-[#16161a]"
+                          : today
+                            ? "border-cinema-500 text-cinema-400"
+                            : "border-hairline-strong text-text-dim hover:border-cinema-500/60 hover:text-text-hi"
+                      }`}
+                    >
+                      {today && !done && <span className="absolute inset-0 animate-ping rounded-full border border-cinema-500/50" />}
+                      {done ? <Icon name="check" size={16} /> : <span className="text-xs font-bold tabular-nums">{i + 1}</span>}
+                    </button>
+                    <span className={`h-0.5 flex-1 rounded-full transition-colors ${last ? "opacity-0" : done ? "bg-cinema-500" : "bg-hairline-strong"}`} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => prog.toggle.mutate(p.phase)}
+                    className="mt-2.5 flex flex-col items-center gap-0.5 px-1 text-center"
+                  >
+                    <span className={`text-[9px] font-semibold uppercase tracking-wide ${today && !done ? "text-cinema-400" : "text-text-dim"}`}>
+                      {today ? "Today" : dayLabel}
+                    </span>
+                    <span className="text-[11px] font-semibold leading-tight text-text-hi">{p.phase}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {WEEKLY_CYCLE.every((p) => prog.done.includes(p.phase)) && (
-          <Link to="/prompts" className="mt-4 block">
+          <Link to="/prompts" className="mt-6 block">
             <GradientButton className="w-full">
               <Icon name="check" size={16} /> All steps done — submit your film
             </GradientButton>
