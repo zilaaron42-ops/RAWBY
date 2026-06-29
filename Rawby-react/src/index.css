@@ -48,16 +48,17 @@
   --glow: 148 180 232;
 }
 [data-accent="rose"] {
-  --c-300: 246 209 217;
-  --c-400: 240 186 198;
-  --c-500: 230 160 178;
-  --c-600: 196 122 144;
-  --c-700: 150 86 104;
-  --brand-1: #f6d1d9;
-  --brand-2: #e6a0b2;
-  --brand-3: #965668;
-  --brand-ink: #2e0f18;
-  --glow: 230 160 178;
+  /* Ember — warm red/orange, not pink. */
+  --c-300: 250 190 168;
+  --c-400: 242 138 104;
+  --c-500: 232 96 68;
+  --c-600: 192 64 42;
+  --c-700: 146 46 30;
+  --brand-1: #f6b89e;
+  --brand-2: #e86044;
+  --brand-3: #963624;
+  --brand-ink: #2e0d06;
+  --glow: 232 96 68;
 }
 
 /* ── Light / dark surfaces — semantic tokens. ── */

@@ -28,6 +28,9 @@ export function ThemeBackground() {
           muted
           playsInline
           preload="auto"
+          onLoadedMetadata={(e) => {
+            e.currentTarget.playbackRate = 0.45; // slow + cinematic
+          }}
           onError={() => setFailed((f) => ({ ...f, [accent]: true }))}
           className="animate-fade-in absolute inset-0 h-full w-full object-cover"
           style={{ filter: "brightness(1.1) saturate(1.15) contrast(1.04)" }}
