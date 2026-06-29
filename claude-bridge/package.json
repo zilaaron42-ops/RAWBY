@@ -1,0 +1,17 @@
+{
+  "name": "rawby-claude-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny service that lets RAWBY's Aurora answer using YOUR Claude subscription via the Claude Agent SDK (OAuth), instead of the pay-per-token API.",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.1.0",
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

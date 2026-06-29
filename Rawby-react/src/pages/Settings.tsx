@@ -35,6 +35,8 @@ export default function Settings() {
   const setHolidayMode = useSettings((s) => s.setHolidayMode);
   const holidayDays = useSettings((s) => s.holidayDays);
   const setHolidayDays = useSettings((s) => s.setHolidayDays);
+  const useClaude = useSettings((s) => s.useClaude);
+  const setUseClaude = useSettings((s) => s.setUseClaude);
 
   return (
     <PageTransition>
@@ -177,6 +179,43 @@ export default function Settings() {
             </div>
           </div>
         )}
+      </GlassCard>
+
+      {/* Aurora brain */}
+      <GlassCard className="mb-4 space-y-4">
+        <div className="flex items-center gap-2">
+          <Icon name="sparkles" size={18} className="text-cinema-400" />
+          <div>
+            <div className="text-sm font-semibold text-text-hi">Aurora's brain</div>
+            <div className="text-xs text-text-dim">
+              By default Aurora runs on Groq (free). Switch her to your own Claude subscription via
+              the bridge — see claude-bridge/README. Falls back to Groq if the bridge isn't set up.
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={useClaude}
+          onClick={() => setUseClaude(!useClaude)}
+          className="flex w-full items-center justify-between gap-4 rounded-xl border border-hairline bg-chip px-4 py-3 text-left transition-colors hover:border-hairline-strong"
+        >
+          <div>
+            <div className="text-sm font-medium text-text-hi">Use my Claude (Pro)</div>
+            <div className="text-xs text-text-dim">Route Aurora through your Claude plan.</div>
+          </div>
+          <span
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
+              useClaude ? "bg-cinema-500" : "bg-hairline-strong"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
+                useClaude ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </span>
+        </button>
       </GlassCard>
 
       <GlassCard className="divide-y divide-divide">

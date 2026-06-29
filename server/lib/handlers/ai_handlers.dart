@@ -199,6 +199,44 @@ Future<String> _callClaude({
   return (content['text'] as String).trim();
 }
 
+/// Route a chat through the owner's Claude subscription via the Agent SDK
+/// bridge (see /claude-bridge). Flattens the conversation into one transcript
+/// prompt since the SDK takes a single prompt string.
+Future<String> _callClaudeBridge({
+  required String bridgeUrl,
+  required String systemPrompt,
+  required List<Map<String, dynamic>> messages,
+}) async {
+  final buf = StringBuffer();
+  for (final m in messages) {
+    final role = (m['role'] == 'user') ? 'User' : 'Aurora';
+    buf.writeln('$role: ${m['content']}');
+    buf.writeln();
+  }
+  buf.write('Aurora:');
+
+  final secret = Platform.environment['BRIDGE_SECRET'] ?? '';
+  final base = bridgeUrl.replaceAll(RegExp(r'/+$'), '');
+  final res = await http
+      .post(
+        Uri.parse('$base/chat'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (secret.isNotEmpty) 'X-Bridge-Secret': secret,
+        },
+        body: jsonEncode({'system': systemPrompt, 'prompt': buf.toString()}),
+      )
+      .timeout(const Duration(seconds: 120));
+
+  if (res.statusCode >= 400) {
+    throw StateError('bridge ${res.statusCode}: ${res.body}');
+  }
+  final data = jsonDecode(res.body) as Map<String, dynamic>;
+  final reply = (data['reply'] as String?)?.trim() ?? '';
+  if (reply.isEmpty) throw StateError('bridge returned empty reply');
+  return reply;
+}
+
 Future<Response> handleAiChat(Request request) async {
   try {
     final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
@@ -228,17 +266,26 @@ Future<Response> handleAiChat(Request request) async {
       }
     }
 
-    final reply = provider == 'claude'
-        ? await _callClaude(
-            systemPrompt: _chatSystemPrompt,
-            messages: messages,
-            maxTokens: 900,
-          )
-        : await _callGroq(
-            systemPrompt: _chatSystemPrompt,
-            messages: messages,
-            maxTokens: 900,
-          );
+    final bridgeUrl = Platform.environment['CLAUDE_BRIDGE_URL'];
+    String reply;
+    if (provider == 'claude' && bridgeUrl != null && bridgeUrl.isNotEmpty) {
+      // Route through the owner's Claude subscription (Agent SDK bridge).
+      // If it fails for any reason, fall back to Groq so Aurora never breaks.
+      try {
+        reply = await _callClaudeBridge(
+          bridgeUrl: bridgeUrl,
+          systemPrompt: _chatSystemPrompt,
+          messages: messages,
+        );
+      } catch (e) {
+        stderr.writeln('[ai-chat] bridge failed, falling back to groq: $e');
+        reply = await _callGroq(systemPrompt: _chatSystemPrompt, messages: messages, maxTokens: 900);
+      }
+    } else if (provider == 'claude') {
+      reply = await _callClaude(systemPrompt: _chatSystemPrompt, messages: messages, maxTokens: 900);
+    } else {
+      reply = await _callGroq(systemPrompt: _chatSystemPrompt, messages: messages, maxTokens: 900);
+    }
 
     return Response.ok(jsonEncode({'reply': reply}), headers: _json);
   } catch (e, st) {

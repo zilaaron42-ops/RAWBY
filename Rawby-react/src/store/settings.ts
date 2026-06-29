@@ -27,11 +27,13 @@ interface SettingsState {
   showCategories: boolean; // the videography box on Home
   holidayMode: boolean; // break the weekly Friday cycle — the clock starts when you start a project
   holidayDays: number; // length of the filming window in holiday mode
+  useClaude: boolean; // route Aurora through the owner's Claude subscription (bridge)
   setRegion: (r: string) => void;
   setSeasonal: (s: boolean) => void;
   setShowCategories: (s: boolean) => void;
   setHolidayMode: (s: boolean) => void;
   setHolidayDays: (n: number) => void;
+  setUseClaude: (s: boolean) => void;
 }
 
 export const useSettings = create<SettingsState>()(
@@ -42,11 +44,13 @@ export const useSettings = create<SettingsState>()(
       showCategories: true,
       holidayMode: false,
       holidayDays: 7,
+      useClaude: false,
       setRegion: (region) => set({ region }),
       setSeasonal: (seasonalPrompts) => set({ seasonalPrompts }),
       setShowCategories: (showCategories) => set({ showCategories }),
       setHolidayMode: (holidayMode) => set({ holidayMode }),
       setHolidayDays: (holidayDays) => set({ holidayDays: Math.max(1, Math.min(60, holidayDays)) }),
+      setUseClaude: (useClaude) => set({ useClaude }),
     }),
     { name: "rawby-settings" }
   )

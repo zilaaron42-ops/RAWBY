@@ -14,6 +14,7 @@ import { useNote, useAurora } from "../hooks/usePersonal";
 import { useTrips } from "../hooks/useTrips";
 import { gearLabels, filmSummaries, tripSummaries } from "../lib/personalize";
 import { useAuth } from "../store/auth";
+import { useSettings } from "../store/settings";
 import { toast } from "../store/toast";
 import type { ChatMessage, ChatContext } from "../types";
 
@@ -38,6 +39,7 @@ export default function Assistant() {
   const { note, save: saveNote } = useNote();
   const { thread, saveThread } = useAurora();
   const { trips } = useTrips();
+  const useClaude = useSettings((s) => s.useClaude);
   const [noteDraft, setNoteDraft] = useState(note);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -74,7 +76,7 @@ export default function Assistant() {
   };
 
   const m = useMutation({
-    mutationFn: (history: ChatMessage[]) => ai.chat(history, context, "groq"),
+    mutationFn: (history: ChatMessage[]) => ai.chat(history, context, useClaude ? "claude" : "groq"),
     onSuccess: (reply) =>
       setMessages((prev) => {
         const next = [...prev, { role: "assistant" as const, content: reply }];
