@@ -11,7 +11,7 @@ import { GradientButton } from "../components/ui/GradientButton";
 import { Eyebrow, Reveal } from "../components/ui/Bits";
 import { FilmStrip } from "../components/ui/FilmStrip";
 import { Scribble } from "../components/ui/Scribble";
-import { AuroraBackground } from "../components/ui/AuroraBackground";
+import { ThemeBackground } from "../components/ui/ThemeBackground";
 import { Icon, type IconName } from "../components/ui/Icon";
 import { Logo } from "../components/ui/Logo";
 import { FilmGrain } from "../components/ui/FilmGrain";
@@ -65,7 +65,7 @@ function TopBar() {
 export default function Landing() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      <AuroraBackground />
+      <ThemeBackground />
       <FilmGrain opacity={0.06} />
 
       <div className="relative z-base">

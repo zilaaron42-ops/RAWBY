@@ -1,15 +1,15 @@
-// Per-theme cinematic backdrop. Each accent gets its own looping video
-// (drop real footage into /public/bg/<accent>.mp4). Until a file exists the
-// video errors and we fall back to the animated gold-aurora layer, so the app
-// always has a moving background. A veil + vignette keep glass + text readable.
+// Per-theme cinematic backdrop. Each accent streams its own looping video
+// (free CC0 footage from Pexels' CDN). If a stream fails we fall back to the
+// animated gold-aurora layer, so the app always has a moving background.
+// A veil + vignette keep glass + text readable.
 import { useState } from "react";
 import { useTheme } from "../../store/theme";
 
 const SRC: Record<string, string> = {
-  amber: "/bg/amber.mp4", // golden black hole in space
-  green: "/bg/green.mp4", // nature scene
-  azure: "/bg/azure.mp4", // ocean
-  rose: "/bg/rose.mp4", // fire / red city
+  amber: "/bg/amber.mp4", // spiral galaxy / deep space
+  green: "/bg/green.mp4", // forest, drone over trees
+  azure: "/bg/azure.mp4", // ocean waves
+  rose: "/bg/rose.mp4", // campfire flames
 };
 
 export function ThemeBackground() {

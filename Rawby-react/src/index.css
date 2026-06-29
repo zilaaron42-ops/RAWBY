@@ -182,18 +182,6 @@ body {
       0 20px 48px -18px rgba(0, 0, 0, 0.6);
   }
 
-  /* Full-page ambient — ONE restrained warm glow off the top edge. No green,
-     no multi-blob mesh (that read murky/AI). Quiet, filmic, intentional. */
-  .ambient-aurora {
-    position: fixed;
-    inset: 0;
-    z-index: -10;
-    pointer-events: none;
-    background:
-      radial-gradient(80% 46% at 50% -16%, rgb(var(--c-500) / 0.12), transparent 58%),
-      radial-gradient(38% 28% at 88% 0%, rgb(var(--c-400) / 0.05), transparent 70%);
-  }
-
   /* Animated aurora background — adapted from 21st.dev (Aceternity aurora),
      recoloured to RAWBY gold and toned right down. Streaks of warm light drift
      slowly behind the app, masked to the top so content stays clean. */

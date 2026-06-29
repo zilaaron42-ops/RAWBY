@@ -1,5 +1,5 @@
 // Cinematic split layout for login/register. 3D reel hero on the left
-// (desktop), glass form on the right. Shares the AuraScene background.
+// (desktop), glass form on the right. Shares the themed video background.
 import { Suspense, lazy, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HERO_LABELS } from "../three/heroLabels";

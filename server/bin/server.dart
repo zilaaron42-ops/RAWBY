@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
+import 'package:shelf_static/shelf_static.dart';
 import 'package:args/args.dart';
 import 'package:rawby_server/router.dart';
 import 'package:rawby_server/store.dart';
@@ -18,6 +19,25 @@ Future<void> main(List<String> args) async {
 
   final app = buildRouter();
 
+  // Serve the built React SPA (committed under server/web) so the whole app is
+  // reachable at the same origin as the API. The API router runs first; unknown
+  // paths fall through to static files, and unknown GET routes fall back to
+  // index.html for client-side routing.
+  Handler rootHandler = app;
+  if (Directory('web').existsSync()) {
+    final staticHandler = createStaticHandler('web', defaultDocument: 'index.html');
+    final indexFile = File('web/index.html');
+    Future<Response> spaFallback(Request r) async {
+      if (r.method == 'GET' && !r.url.path.startsWith('api/') && indexFile.existsSync()) {
+        return Response.ok(indexFile.readAsBytesSync(),
+            headers: {'content-type': 'text/html; charset=utf-8'});
+      }
+      return Response.notFound('Not found');
+    }
+    rootHandler = Cascade().add(app).add(staticHandler).add(spaFallback).handler;
+    print('  Serving SPA from ./web');
+  }
+
   final handler = const Pipeline()
       .addMiddleware(logRequests())
       .addMiddleware(corsHeaders(headers: {
@@ -26,7 +46,7 @@ Future<void> main(List<String> args) async {
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Secret, Accept',
         'Access-Control-Max-Age': '86400',
       }))
-      .addHandler(app);
+      .addHandler(rootHandler);
 
   final server = await shelf_io.serve(handler, InternetAddress.anyIPv4, port);
   print('✅ RAWBY Server running on http://${server.address.host}:${server.port}');

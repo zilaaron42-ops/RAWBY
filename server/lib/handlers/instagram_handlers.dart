@@ -105,7 +105,7 @@ Future<Response> handleFetchReelLikes(Request request) async {
   }), headers: _json);
 }
 
-/// GET /api/instagram-handle?handle=<username>
+/// GET `/api/instagram-handle?handle=<username>`
 /// Returns follower count + recent post stats for the connected account.
 /// Note: Instagram Graph API only returns stats for your own account.
 Future<Response> handleInstagramHandleStats(Request request) async {
